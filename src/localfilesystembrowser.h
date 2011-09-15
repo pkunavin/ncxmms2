@@ -50,7 +50,7 @@ namespace ncxmms2
 			{
 				ItemFile,
 				ItemDirectory,
-				ItemOther,
+				ItemOther
 			};
 			
 			FileSystemItem(const std::string& name, ItemType type) : m_name(name), m_type(type){};
