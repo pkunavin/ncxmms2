@@ -94,9 +94,6 @@ bool LocalFileSystemBrowser::setCurrentDir(const ncxmms2::LocalFileSystemBrowser
 		if (strcmp(dirEntry->d_name, ".")==0 || strcmp(dirEntry->d_name, "..")==0)
 			continue;
 		
-		if (strcmp(currentPath, "/")==0 && strcmp(dirEntry->d_name, "..")==0)
-			continue;
-		
 		FileSystemItem::ItemType itemType;
 		switch(dirEntry->d_type) {
 			case DT_REG     : itemType=FileSystemItem::ItemFile;      break;
