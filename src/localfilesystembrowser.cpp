@@ -16,6 +16,7 @@
 
 #include <cstring>
 #include <algorithm>
+#include <set>
 #include <sys/types.h>
 #include <dirent.h>
 #include <stdlib.h>
@@ -214,7 +215,11 @@ void LocalFileSystemBrowser::itemEntered(int item)
 		
 		case FileSystemItem::ItemFile:
 			//TODO Play item
-			m_xmmsClient->playlist.addUrl(std::string("file://").append(filePath(item)));
+			if (isPlaylistFile(m_currentDirEntries[item].name())) {
+				addPlaylistFile(std::string("file://").append(filePath(item)));
+			} else {
+				m_xmmsClient->playlist.addUrl(std::string("file://").append(filePath(item)));
+			}
 			NotificationArea::showMessage((boost::format("Adding %1% to active playlist") 
 			                               % m_currentDirEntries[item].name()).str());
 			break;
@@ -232,12 +237,16 @@ void LocalFileSystemBrowser::keyPressedEvent(const KeyEvent& keyEvent)
 			const int item=currentItem();
 			if (m_currentDirEntries[item].isDirectory()) {
 				m_xmmsClient->playlist.addRecursive(std::string("file://").append(filePath(item)));
-				NotificationArea::showMessage((boost::format("Adding %1% directory to active playlist") 
-											   % m_currentDirEntries[item].name()).str());
+				NotificationArea::showMessage((boost::format("Adding %1% directory to active playlist")
+				                               % m_currentDirEntries[item].name()).str());
 			} else if (m_currentDirEntries[item].isFile()) {
-				m_xmmsClient->playlist.addUrl(std::string("file://").append(filePath(item)));
-				NotificationArea::showMessage((boost::format("Adding %1% to active playlist") 
-											   % m_currentDirEntries[item].name()).str());
+				if (isPlaylistFile(m_currentDirEntries[item].name())) {
+					addPlaylistFile(std::string("file://").append(filePath(item)));
+				} else {
+					m_xmmsClient->playlist.addUrl(std::string("file://").append(filePath(item)));
+				}
+				NotificationArea::showMessage((boost::format("Adding %1% to active playlist")
+				                               % m_currentDirEntries[item].name()).str());
 			}
 			break;
 		}
@@ -251,3 +260,25 @@ void LocalFileSystemBrowser::keyPressedEvent(const KeyEvent& keyEvent)
 	}
 }
 
+bool LocalFileSystemBrowser::isPlaylistFile(const std::string& fileName) const
+{
+	const std::string::size_type dotPos=fileName.rfind('.');
+	if (dotPos==std::string::npos || dotPos+1>=fileName.size() || dotPos==0)
+		return false;
+
+	const std::string suffix=fileName.substr(dotPos+1);
+
+	static const std::set<std::string> playlistFileSuffixes{"cue", "m3u", "pls", "asx"};
+	return playlistFileSuffixes.find(suffix)!=playlistFileSuffixes.end();
+}
+
+void LocalFileSystemBrowser::addPlaylistFile(const std::string& fileName)
+{
+	m_xmmsClient->collection.idlistFromPlaylistFile(fileName)(Xmms::bind(&LocalFileSystemBrowser::addIdList, this));
+}
+
+bool LocalFileSystemBrowser::addIdList(const Xmms::Coll::Coll& idlist)
+{
+	m_xmmsClient->playlist.addIdlist(idlist);
+	return true;
+}

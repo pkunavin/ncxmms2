@@ -23,6 +23,11 @@
 namespace Xmms
 {
 	class Client;
+
+	namespace Coll
+	{
+		class Coll;
+	}
 }
 
 namespace ncxmms2
@@ -83,6 +88,10 @@ namespace ncxmms2
 		std::string filePath(int item) const;
 		void cd(const std::string& dir);
 		
+		bool isPlaylistFile(const std::string& fileName) const;
+		void addPlaylistFile(const std::string& fileName);
+		bool addIdList(const Xmms::Coll::Coll& idlist);
+
 		class ViewportState
 		{
 		public:
