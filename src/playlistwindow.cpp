@@ -215,6 +215,7 @@ bool PlaylistWindow::handlePlaylistRename(const Xmms::Dict& change)
 		&& change.get<std::string>("namespace")=="Playlists"
 		&& change.get<std::string>("name")==m_activePlaylist) {
 			m_activePlaylist=change.get<std::string>("newname");
+			updateWindowTitle();
 	}
 		
 	return true;
