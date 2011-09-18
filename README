@@ -1,2 +1,25 @@
 ncxmms2 is an ncurses xmms2 client. The aim of this project is to write ncmpcpp
 like client for xmms2. 
+
+Currently supported features:
+ - Base features:
+   - Display playback status
+   - Playback control
+   
+ - Screens:
+  - Playlist screen
+  - Local file system browser screen
+  
+Hotkeys:
+ Screens switching:
+  Playlist screen : 2
+  Local file system browser screen : 3
+  
+ Playback control:
+  Toggle : P
+  Stop : s
+  Next : >
+  Prev : <
+  Seek forward : f
+  Seek backward ; b
+  
