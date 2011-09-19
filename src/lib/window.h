@@ -18,7 +18,6 @@
 #define WINDOW_H
 
 #include <string>
-#include <vector>
 
 #include <boost/function.hpp>
 #include "keyevent.h"

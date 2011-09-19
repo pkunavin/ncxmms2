@@ -47,8 +47,8 @@ void Window::move(int yPos, int xPos)
 	d->xPos=xPos;
 	delwin(d->cursesWin);
 	d->cursesWin=d->parent
-				 ? derwin(d->parent->d->cursesWin, d->lines, d->cols, yPos, xPos)
-				 : newwin(d->lines, d->cols, yPos, xPos);
+	             ? derwin(d->parent->d->cursesWin, d->lines, d->cols, yPos, xPos)
+	             : newwin(d->lines, d->cols, yPos, xPos);
 	
 	update();
 }
@@ -56,12 +56,16 @@ void Window::move(int yPos, int xPos)
 void Window::hide()
 {
 	d->isVisible=false;
+	for (auto child : d->children)
+		child->hide();
 }
 
 void Window::show()
 {
 	d->isVisible=true;
 	showEvent();
+	for (auto child : d->children)
+		child->show();
 }
 
 bool Window::isHidden() const
@@ -81,8 +85,8 @@ void Window::resizeEvent(const Size& size)
 
 	delwin(d->cursesWin);
 	d->cursesWin=d->parent
-				 ? derwin(d->parent->d->cursesWin, d->lines, d->cols, d->yPos, d->xPos)
-				 : newwin(d->lines, d->cols, d->yPos, d->xPos);
+	             ? derwin(d->parent->d->cursesWin, d->lines, d->cols, d->yPos, d->xPos)
+	             : newwin(d->lines, d->cols, d->yPos, d->xPos);
 	
 	update();
 }

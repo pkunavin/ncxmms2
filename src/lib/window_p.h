@@ -1,6 +1,7 @@
 #ifndef WINDOW_P_H
 #define WINDOW_P_H
 
+#include <vector>
 #include "window.h"
 
 namespace ncxmms2
