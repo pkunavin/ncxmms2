@@ -21,6 +21,7 @@
 #include "statuswindow.h"
 #include "playlistwindow.h"
 #include "localfilesystembrowser.h"
+#include "playlistsbrowser.h"
 #include "headerwindow.h"
 #include "notificationarea.h"
 #include "hotkeys.h"
@@ -45,14 +46,18 @@ MainWindow::MainWindow(Xmms::Client* xmmsClient) :
 	m_stackedWindow=new StackedWindow(lines()-statusWindowLines-headerWindowLines, cols(), headerWindowLines, 0, this);
 	m_statusWindow=new StatusWindow(m_xmmsClient, statusWindowLines, cols(), lines()-statusWindowLines, 0, this);
 	
+	m_stackedWindow->setFocus();
+	
+	const int screenLines=m_stackedWindow->lines();
+	const int screenCols=m_stackedWindow->cols();
 	std::map<StackedWindows, Window*> stakedWindows=
 	{
-		{StackedPlaylistWindow,         new PlaylistWindow(xmmsClient, m_stackedWindow->lines(),  m_stackedWindow->cols(), 0, 0, m_stackedWindow)},
-		{StackedLocalFileBrowserWindow, new LocalFileSystemBrowser(xmmsClient, m_stackedWindow->lines(),  m_stackedWindow->cols(), 0, 0, m_stackedWindow)}
-		
+		{StackedPlaylistWindow,         new PlaylistWindow("_active", xmmsClient, screenLines, screenCols, 0, 0, m_stackedWindow)},
+		{StackedLocalFileBrowserWindow, new LocalFileSystemBrowser(xmmsClient, screenLines, screenCols, 0, 0, m_stackedWindow)},
+		{StackedPlaylistsBrowser,       new PlaylistsBrowser(xmmsClient, screenLines, screenCols, 0, 0, m_stackedWindow)}
 	};
 	
-	for (auto it=stakedWindows.begin(); it!=stakedWindows.end(); ++it) {
+	for (auto it=stakedWindows.begin(), it_end=stakedWindows.end(); it!=it_end; ++it) {
 		StackedWindows stackedWindow=(*it).first;
 		Window *window=(*it).second;
 		m_stackedWindow->addWindow(window);
@@ -71,6 +76,10 @@ void MainWindow::keyPressedEvent(const KeyEvent& keyEvent)
 			
 		case Hotkeys::LocalFileSystemBrowserScreen: 
 			setVisibleWindow(StackedLocalFileBrowserWindow); 
+			break;
+			
+		case Hotkeys::PlaylistsBrowserScreen:
+			setVisibleWindow(StackedPlaylistsBrowser); 
 			break;
 			
 		case Hotkeys::PlaybackToggle:
@@ -107,7 +116,7 @@ void MainWindow::keyPressedEvent(const KeyEvent& keyEvent)
 			Application::shutdown();
 			break;
 			
-		default : m_stackedWindow->keyPressedEvent(keyEvent);
+		default : Window::keyPressedEvent(keyEvent);
 	}
 	
 }

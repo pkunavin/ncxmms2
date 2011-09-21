@@ -14,28 +14,28 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef HOTKEYS_H
-#define HOTKEYS_H
+
+#ifndef PLAYLISTVIEWER_H
+#define PLAYLISTVIEWER_H
+
+#include "playlistwindow.h"
 
 namespace ncxmms2
 {
-	namespace Hotkeys
-	{	
-		const int Quit = 'q';
+	class PlaylistViewer : public PlaylistWindow
+	{
+	public:
+		PlaylistViewer(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent=0);
 		
-		// Screens switching
-		const int PlaylistScreen               = '2';
-		const int LocalFileSystemBrowserScreen = '3';
-		const int PlaylistsBrowserScreen       = '6';
+	protected:
+		virtual void itemEntered(int item);
 		
-		// Playback control
-		const int PlaybackToggle       = 'P';
-		const int PlaybackStop         = 's';
-		const int PlaybackNext         = '>';
-		const int PlaybackPrev         = '<';
-		const int PlaybackSeekForward  = 'f';
-		const int PlaybackSeekBackward = 'b';
+	private:
+		Xmms::Client *m_xmmsClient;
+		std::string m_currentPlaylist;
+		bool getCurrentPlaylist(const std::string& playlist);
 		
-	}
+	};
 }
-#endif // HOTKEYS_H
+
+#endif // PLAYLISTVIEWER_H

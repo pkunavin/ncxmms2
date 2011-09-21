@@ -11,7 +11,10 @@ set(SOURCES
     notificationarea.cpp
     settings.cpp
     commandlineoptions.cpp
-    song.cpp)
+    song.cpp
+    playlistsbrowser.cpp
+    playlistslistview.cpp
+    playlistviewer.cpp)
 
 set(HEADERS
     mainwindow.h
@@ -25,7 +28,10 @@ set(HEADERS
     hotkeys.h
     settings.h
     commandlineoptions.h
-    song.h)
+    song.h
+    playlistsbrowser.h
+    playlistslistview.h
+    playlistviewer.h)
 
 add_executable(ncxmms2 ${SOURCES})
 

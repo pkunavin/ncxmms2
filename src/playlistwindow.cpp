@@ -25,15 +25,19 @@
 
 using namespace ncxmms2;
 
-PlaylistWindow::PlaylistWindow(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent) :
+PlaylistWindow::PlaylistWindow(const std::string& playlist, Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent) :
 	AbstractItemView(lines, cols, yPos, xPos, parent),
 	m_xmmsClient(xmmsClient),
 	m_currentPosition(-1),
 	m_playbackStatus(Xmms::Playback::STOPPED),
 	m_totalDuration(0)
 {
-	m_xmmsClient->playlist.currentActive()(Xmms::bind(&PlaylistWindow::getActivePlaylist, this));
-	m_xmmsClient->playlist.broadcastLoaded()(Xmms::bind(&PlaylistWindow::getActivePlaylist, this));
+	if (playlist=="_active") {
+		m_xmmsClient->playlist.currentActive()(Xmms::bind(&PlaylistWindow::getActivePlaylist, this));
+		m_xmmsClient->playlist.broadcastLoaded()(Xmms::bind(&PlaylistWindow::getActivePlaylist, this));
+	} else if (!playlist.empty()) {
+		getActivePlaylist(playlist);
+	}
 	
 	m_xmmsClient->playlist.broadcastChanged()(Xmms::bind(&PlaylistWindow::processPlaylistChange, this));
 	m_xmmsClient->playlist.broadcastCurrentPos()(Xmms::bind(&PlaylistWindow::getCurrentPosition, this));
@@ -47,10 +51,21 @@ PlaylistWindow::PlaylistWindow(Xmms::Client *xmmsClient, int lines, int cols, in
 	setHideCurrentItemInterval(10);
 }
 
+void PlaylistWindow::setPlaylist(const std::string &playlist)
+{
+	// This will not work if class constructed with "_active" playlist name.
+	getActivePlaylist(playlist);
+}
+
+const std::string& PlaylistWindow::playlist() const
+{
+	return m_playlist;
+}
+
 void PlaylistWindow::updateWindowTitle()
 {
 	std::string titleString("Playlist: ");
-	titleString.append(m_activePlaylist);
+	titleString.append(m_playlist);
 	
 	if (m_idList.size()) {
 		titleString.append(" (");
@@ -68,9 +83,9 @@ void PlaylistWindow::updateWindowTitle()
 
 bool PlaylistWindow::getActivePlaylist(const std::string& playlist)
 {
-	m_activePlaylist=playlist;
-	m_xmmsClient->playlist.listEntries(m_activePlaylist)(Xmms::bind(&PlaylistWindow::getEntries, this));
-	m_xmmsClient->playlist.currentPos(m_activePlaylist)(Xmms::bind(&PlaylistWindow::getCurrentPosition, this));
+	m_playlist=playlist;
+	m_xmmsClient->playlist.listEntries(m_playlist)(Xmms::bind(&PlaylistWindow::getEntries, this));
+	m_xmmsClient->playlist.currentPos(m_playlist)(Xmms::bind(&PlaylistWindow::getCurrentPosition, this));
 	updateWindowTitle();
 	return true;
 }
@@ -123,7 +138,7 @@ bool PlaylistWindow::getSongInfo(int position, const Xmms::PropDict& info)
 
 bool PlaylistWindow::processPlaylistChange(const Xmms::Dict& change)
 {
-	if (change.get<std::string>("name")!=m_activePlaylist)
+	if (change.get<std::string>("name")!=m_playlist)
 		return true;
 	
 	switch (change.get<int>("type")) {
@@ -188,7 +203,7 @@ bool PlaylistWindow::processPlaylistChange(const Xmms::Dict& change)
 		case XMMS_PLAYLIST_CHANGED_SHUFFLE:
 		case XMMS_PLAYLIST_CHANGED_SORT:
 		case XMMS_PLAYLIST_CHANGED_UPDATE:
-			m_xmmsClient->playlist.listEntries(m_activePlaylist)(Xmms::bind(&PlaylistWindow::getEntries, this));
+			m_xmmsClient->playlist.listEntries(m_playlist)(Xmms::bind(&PlaylistWindow::getEntries, this));
 			break;
 	}
 	
@@ -197,7 +212,7 @@ bool PlaylistWindow::processPlaylistChange(const Xmms::Dict& change)
 
 bool PlaylistWindow::getCurrentPosition(const Xmms::Dict& position)
 {	
-	if (!position.contains("name") || position.get<std::string>("name")!=m_activePlaylist)
+	if (!position.contains("name") || position.get<std::string>("name")!=m_playlist)
 		return true;
 	
 	if (position.contains("position")) {
@@ -213,8 +228,8 @@ bool PlaylistWindow::handlePlaylistRename(const Xmms::Dict& change)
 {
 	if (change.get<int>("type")==XMMS_COLLECTION_CHANGED_RENAME
 		&& change.get<std::string>("namespace")=="Playlists"
-		&& change.get<std::string>("name")==m_activePlaylist) {
-			m_activePlaylist=change.get<std::string>("newname");
+		&& change.get<std::string>("name")==m_playlist) {
+			m_playlist=change.get<std::string>("newname");
 			updateWindowTitle();
 	}
 		

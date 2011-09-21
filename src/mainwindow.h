@@ -39,7 +39,8 @@ namespace ncxmms2
 		enum StackedWindows
 		{
 			StackedPlaylistWindow,
-			StackedLocalFileBrowserWindow
+			StackedLocalFileBrowserWindow,
+			StackedPlaylistsBrowser
 		};
 		
 		virtual void keyPressedEvent(const KeyEvent& keyEvent);
