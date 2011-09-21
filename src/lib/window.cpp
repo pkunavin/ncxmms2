@@ -73,9 +73,30 @@ bool Window::isHidden() const
 	return !d->isVisible;
 }
 
+void Window::setFocus()
+{
+	if (!d->parent)
+		return;
+	
+	Window *old=d->parent->d->focusedWindow;
+	d->parent->d->focusedWindow=this;
+	if (old)
+		old->update();
+	update();
+}
+
+bool Window::hasFocus() const
+{
+	if (!d->parent)
+		return true;
+	
+	return d->parent->d->focusedWindow==this;
+}
+
 void Window::keyPressedEvent(const KeyEvent& keyEvent)
 {
-
+	if (d->focusedWindow)
+		d->focusedWindow->keyPressedEvent(keyEvent);
 }
 
 void Window::resizeEvent(const Size& size)

@@ -11,6 +11,7 @@ namespace ncxmms2
 	public:
 		WindowPrivate(int lines_, int cols_, int yPos_, int xPos_, Window* parent_) :
 			parent(parent_),
+			focusedWindow(NULL),
 			lines(lines_),
 			cols(cols_),
 			yPos(yPos_),
@@ -20,6 +21,7 @@ namespace ncxmms2
 		WINDOW *cursesWin;
 		Window *parent;
 		std::vector<Window*> children;
+		Window *focusedWindow;
 
 		int lines;
 		int cols;

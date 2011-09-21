@@ -18,7 +18,6 @@
 #define WINDOW_H
 
 #include <string>
-
 #include <boost/function.hpp>
 #include "keyevent.h"
 #include "size.h"
@@ -44,6 +43,9 @@ namespace ncxmms2
 		void hide();
 		void show();
 		bool isHidden() const;
+		
+		void setFocus();
+		bool hasFocus() const;
 		
 		void setTitle(const std::string& title);
 		const std::string& title() const;
