@@ -28,7 +28,12 @@ AbstractItemView::AbstractItemView(int lines, int cols, int yPos, int xPos, Wind
 	m_currentItemHidden(false),
 	m_hideCurrentItemSelectionInterval(0)
 {
-	m_hideSelectionTimer.connectTimeoutSignal(boost::bind(&AbstractItemView::hideCurrentItemSelection, this));
+	m_hideSelectionTimer.connectTimeoutSignal(boost::bind(&AbstractItemView::hideCurrentItem, this));
+}
+
+void AbstractItemView::setCurrentItemChangedCallback(const CurrentItemChangedCallback& callback)
+{
+	m_currentItemChangedCallback=callback;
 }
 
 void AbstractItemView::reset()
@@ -36,13 +41,13 @@ void AbstractItemView::reset()
 	const int itemsNum=itemsCount();
 	
 	if (itemsNum>0) {
-		m_currentItem=0;
+		changeCurrentItem(0);
 		m_viewportFirstItem=0;
 		m_viewportLastItem=itemsNum>lines() ? lines() : itemsNum;
 		if (m_hideCurrentItemSelectionInterval)
 			m_hideSelectionTimer.start(m_hideCurrentItemSelectionInterval);
 	} else {
-		m_currentItem=-1;
+		changeCurrentItem(-1);
 		m_viewportFirstItem=-1;
 		m_viewportLastItem=-1;
 	}
@@ -84,8 +89,12 @@ void AbstractItemView::redrawAll()
 	}
 
 	Painter painter(this);
-	for (int i=m_viewportLastItem;i<lines();++i) {
-		painter.clearLine(i);
+	if (m_viewportFirstItem==-1) {
+		painter.clearWindow();
+	} else {
+		for (int i=m_viewportLastItem;i<lines();++i) {
+			painter.clearLine(i);
+		}
 	}
 
 	painter.flush();
@@ -164,7 +173,7 @@ void AbstractItemView::setCurrentItem(int item)
 	if (!(item>=m_viewportFirstItem && item<m_viewportLastItem))
 		setViewportFirstItem(item);
 	
-	m_currentItem=item;
+	changeCurrentItem(item);
 	redrawAll();
 }
 
@@ -266,12 +275,14 @@ void AbstractItemView::scrollUp()
 		return;
 
 	if (m_currentItem>0) {
-		drawItem(m_currentItem--);
+		changeCurrentItem(m_currentItem-1);
+		
 		if (m_currentItem<m_viewportFirstItem) {
 			--m_viewportFirstItem;
 			--m_viewportLastItem;
 			redrawAll();
 		} else {
+			drawItem(m_currentItem+1);
 			redrawItem(m_currentItem);
 		}
 	}
@@ -283,15 +294,23 @@ void AbstractItemView::scrollDown()
 		return;
 
 	if (m_currentItem<itemsCount()-1) {
-		drawItem(m_currentItem++);
+		changeCurrentItem(m_currentItem+1);
 		if (m_currentItem>=m_viewportLastItem) {
 			++m_viewportFirstItem;
 			++m_viewportLastItem;
 			redrawAll();
 		} else {
+			drawItem(m_currentItem-1);
 			redrawItem(m_currentItem);
 		}
 	}
+}
+
+void AbstractItemView::changeCurrentItem(int item)
+{
+	m_currentItem=item;
+	if (!m_currentItemChangedCallback.empty())
+		m_currentItemChangedCallback(m_currentItem);
 }
 
 void AbstractItemView::resizeEvent(const Size& size)
@@ -331,7 +350,7 @@ void AbstractItemView::resizeEvent(const Size& size)
 	Window::resizeEvent(size);
 }
 
-void AbstractItemView::hideCurrentItemSelection()
+void AbstractItemView::hideCurrentItem()
 {
 	m_hideSelectionTimer.stop();
 	m_currentItemHidden=true;

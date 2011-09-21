@@ -31,15 +31,19 @@ namespace ncxmms2
 		virtual void keyPressedEvent(const KeyEvent& keyEvent);
 		virtual void resizeEvent(const Size& size);
 		
-	protected:	
-		virtual void drawItem(int item)=0;
-		virtual int itemsCount() const=0;
-		
 		int currentItem() const;
 		void setCurrentItem(int item);
 		bool isCurrentItemHidden() const;
 		void setHideCurrentItemInterval(unsigned int sec);
 		void showCurrentItem();
+		void hideCurrentItem();
+		
+		typedef boost::function<void (int)> CurrentItemChangedCallback;
+		void setCurrentItemChangedCallback(const CurrentItemChangedCallback& callback);
+		
+	protected:
+		virtual void drawItem(int item)=0;
+		virtual int itemsCount() const=0;
 		
 		int itemLine(int item) const;
 		
@@ -72,7 +76,9 @@ namespace ncxmms2
 		Timer m_hideSelectionTimer;
 		bool m_currentItemHidden;
 		unsigned int m_hideCurrentItemSelectionInterval;
-		void hideCurrentItemSelection();
+		
+		CurrentItemChangedCallback m_currentItemChangedCallback;
+		void changeCurrentItem(int item);
 		
 		void scrollUp();
 		void scrollDown();
