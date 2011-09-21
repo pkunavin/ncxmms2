@@ -9,11 +9,13 @@ Currently supported features:
  - Screens:
   - Playlist screen
   - Local file system browser screen
+  - Playlists browser screen
   
 Hotkeys:
  Screens switching:
   Playlist screen : 2
   Local file system browser screen : 3
+  Playlists browser screen : 6
   
  Playback control:
   Toggle : P
