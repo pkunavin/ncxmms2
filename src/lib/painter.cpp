@@ -147,6 +147,11 @@ void Painter::drawHLine(int startX, int startY, int length, int symbol)
 	mvwhline(d->cursesWin, startY, startX, symbol, length);
 }
 
+void Painter::drawVLine(int startX, int startY, int length, int symbol)
+{
+	mvwvline(d->cursesWin, startY, startX, symbol, length);
+}
+
 void Painter::flush()
 {
 	wrefresh(d->cursesWin);

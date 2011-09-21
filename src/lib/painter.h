@@ -46,6 +46,7 @@ namespace ncxmms2
 		void squeezedPrint(const std::string& string, std::string::size_type maxLength);
 
 		void drawHLine(int startX, int startY, int length, int symbol=0);
+		void drawVLine(int startX, int startY, int length, int symbol=0);
 
 		void flush();
 
