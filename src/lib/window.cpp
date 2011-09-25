@@ -19,10 +19,9 @@
 
 using namespace ncxmms2;
 
-Window::Window(int lines, int cols, int yPos, int xPos, Window* parent)
+Window::Window(int lines, int cols, int yPos, int xPos, Window* parent) :
+	d(new WindowPrivate(lines, cols, yPos, xPos, parent))
 {
-	d=new WindowPrivate(lines, cols, yPos, xPos, parent);
-
 	if (parent)	{
 		d->cursesWin=derwin(parent->d->cursesWin, lines, cols, yPos, xPos);
 		parent->d->children.push_back(this);
@@ -145,7 +144,5 @@ Window::~Window()
 	delwin(d->cursesWin);
 	for (auto child : d->children)
 		delete child;
-
-	delete d;
 }
 

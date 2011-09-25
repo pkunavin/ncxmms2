@@ -18,6 +18,7 @@
 #define WINDOW_H
 
 #include <string>
+#include <memory>
 #include <boost/function.hpp>
 #include "keyevent.h"
 #include "size.h"
@@ -57,9 +58,9 @@ namespace ncxmms2
 		void update();
 						
 	private:
-		WindowPrivate *d;
 		Window(const Window& other);
 		Window& operator=(const Window& other);
+		std::unique_ptr<WindowPrivate> d;
 		friend class Painter;
 	};
 }

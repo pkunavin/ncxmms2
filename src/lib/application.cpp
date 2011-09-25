@@ -63,10 +63,8 @@ void Application::shutdown()
 	inst=0;
 }
 
-Application::Application(bool useColors)
+Application::Application(bool useColors) : d(new ApplicationPrivate())
 {
-	d=new ApplicationPrivate();
-
 	setlocale(LC_ALL, "");
 	
 	//Init ncurses
@@ -184,7 +182,5 @@ Application::~Application()
 	g_source_remove(d->stdinPollSource);
 	g_main_loop_unref(d->mainLoop);
 	endwin();
-
-	delete d;
 }
 

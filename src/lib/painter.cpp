@@ -34,10 +34,8 @@ namespace ncxmms2
 
 using namespace ncxmms2;
 
-Painter::Painter(Window *window)
+Painter::Painter(Window *window) : d(new PainterPrivate(window, window->d->cursesWin))
 {
-	d=new PainterPrivate(window, window->d->cursesWin);
-
 	wmove(d->cursesWin, 0, 0);
 	wbkgdset(d->cursesWin, A_NORMAL);
 	wattrset(d->cursesWin, A_NORMAL);
@@ -45,7 +43,7 @@ Painter::Painter(Window *window)
 
 Painter::~Painter()
 {
-	delete d;
+
 }
 
 void Painter::move(int x, int y)

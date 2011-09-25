@@ -17,6 +17,7 @@
 #ifndef TIMER_H
 #define TIMER_H
 
+#include <memory>
 #include <boost/function.hpp>
 
 namespace ncxmms2
@@ -37,7 +38,7 @@ namespace ncxmms2
 	private:
 		Timer(const Timer& other);
 		Timer& operator=(const Timer& other);
-		TimerPrivate *d;
+		std::unique_ptr<TimerPrivate> d;
 	};
 }
 

@@ -17,6 +17,7 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
+#include <memory>
 #include "size.h"
 
 namespace ncxmms2
@@ -40,7 +41,7 @@ namespace ncxmms2
 		Application(const Application& other);
 		Application& operator=(const Application& other);
 		static Application *inst;
-		ApplicationPrivate *d;
+		std::unique_ptr<ApplicationPrivate> d;
 		friend class ApplicationPrivate;
 	};
 }

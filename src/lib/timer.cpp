@@ -33,9 +33,9 @@ namespace ncxmms2
 
 using namespace ncxmms2;
 
-Timer::Timer()
+Timer::Timer() : d(new TimerPrivate())
 {
-	d=new TimerPrivate();
+
 }
 
 void Timer::connectTimeoutSignal(const Timer::TimeoutFunction& function)
@@ -46,7 +46,7 @@ void Timer::connectTimeoutSignal(const Timer::TimeoutFunction& function)
 void Timer::start(unsigned int interval)
 {
 	stop();
-	d->id=g_timeout_add_seconds(interval, TimerPrivate::timeoutCallback, d);
+	d->id=g_timeout_add_seconds(interval, TimerPrivate::timeoutCallback, d.get());
 }
 
 void Timer::stop()
@@ -70,7 +70,5 @@ Timer::~Timer()
 {
 	if (d->id)
 		g_source_remove(d->id);
-
-	delete d;
 }
 
