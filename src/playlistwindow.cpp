@@ -84,6 +84,7 @@ void PlaylistWindow::updateWindowTitle()
 bool PlaylistWindow::getActivePlaylist(const std::string& playlist)
 {
 	m_playlist=playlist;
+	m_currentPosition=-1;
 	m_xmmsClient->playlist.listEntries(m_playlist)(Xmms::bind(&PlaylistWindow::getEntries, this));
 	m_xmmsClient->playlist.currentPos(m_playlist)(Xmms::bind(&PlaylistWindow::getCurrentPosition, this));
 	updateWindowTitle();
