@@ -128,12 +128,17 @@ void AbstractItemView::itemRemoved(int item)
 {
 	const int itemsNum=itemsCount();
 	
-	if (m_currentItem>item || m_currentItem==itemsNum)
-		--m_currentItem;
+	if (m_currentItem>item || m_currentItem==itemsNum) {
+		changeCurrentItem(m_currentItem-1);
+	} else if (m_currentItem==item) {
+		/* Current item number is not changed, but items are moving,
+		  so information corresponding to the current item is changed */
+		changeCurrentItem(m_currentItem);
+	}
 	
 	if (lines()>itemsNum) {
 		m_viewportLastItem=itemsNum;
-		update();
+		redrawAll();
 	} else {
 		if (item<m_viewportFirstItem) {
 			--m_viewportFirstItem;
