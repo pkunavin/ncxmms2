@@ -53,6 +53,7 @@ namespace ncxmms2
 		bool getCurrentId(const int& id);
 		bool getCurrentIdInfo(const Xmms::PropDict& info);
 		bool getPlaytime(const int& playtime);
+		bool handleIdInfoChanged(const int& id);
 	};
 }
 

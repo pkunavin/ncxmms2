@@ -33,6 +33,7 @@ StatusWindow::StatusWindow(Xmms::Client* client, int lines, int cols, int yPos, 
 	
 	m_xmmsClient->playback.currentID()(Xmms::bind(&StatusWindow::getCurrentId, this));
 	m_xmmsClient->playback.broadcastCurrentID()(Xmms::bind(&StatusWindow::getCurrentId, this));
+	m_xmmsClient->medialib.broadcastEntryChanged()(Xmms::bind(&StatusWindow::handleIdInfoChanged, this));
 	
 	m_xmmsClient->playback.getPlaytime()(Xmms::bind(&StatusWindow::getPlaytime, this));
 	m_xmmsClient->playback.signalPlaytime()(Xmms::bind(&StatusWindow::getPlaytime, this));
@@ -64,6 +65,13 @@ bool StatusWindow::getPlaytime(const int& playtime)
 {
 	m_playbackPlaytime=playtime;
 	update();
+	return true;
+}
+
+bool StatusWindow::handleIdInfoChanged(const int& id)
+{
+	if (m_currentSong.id()==id)
+		m_xmmsClient->medialib.getInfo(id)(Xmms::bind(&StatusWindow::getCurrentIdInfo, this));
 	return true;
 }
 
