@@ -306,7 +306,7 @@ void PlaylistWindow::keyPressedEvent(const KeyEvent& keyEvent)
 {	
 	if (keyEvent.key()==KeyEvent::KeyDelete) {
 		if (m_idList.size() && !isCurrentItemHidden()) {
-			m_xmmsClient->playlist.removeEntry(currentItem());
+			m_xmmsClient->playlist.removeEntry(currentItem(), m_playlist);
 			showCurrentItem();
 		}
 	} else {
