@@ -14,8 +14,8 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef STATUSWINDOW_H
-#define STATUSWINDOW_H
+#ifndef PLAYBACKSTATUSWINDOW_H
+#define PLAYBACKSTATUSWINDOW_H
 
 #include <xmmsclient/xmmsclient++.h>
 
@@ -25,10 +25,10 @@
 
 namespace ncxmms2
 {
-	class StatusWindow : public Window
+	class PlaybackStatusWindow : public Window
 	{
 	public:
-		StatusWindow(Xmms::Client *client, int lines, int cols, int yPos, int xPos, Window *parent=0);
+		PlaybackStatusWindow(Xmms::Client *client, int lines, int cols, int yPos, int xPos, Window *parent=0);
 	
 		void showMessage(const std::string& message);
 		
@@ -57,4 +57,4 @@ namespace ncxmms2
 	};
 }
 
-#endif // STATUSWINDOW_H
+#endif // PLAYBACKSTATUSWINDOW_H

@@ -17,13 +17,13 @@
 #include <stdexcept>
 
 #include "notificationarea.h"
-#include "statuswindow.h"
+#include "playbackstatuswindow.h"
 
 using namespace ncxmms2;
 
 NotificationArea *NotificationArea::inst=0;
 
-void NotificationArea::start(StatusWindow* statusWindow)
+void NotificationArea::start(PlaybackStatusWindow* statusWindow)
 {
 	delete inst;
 	inst=new NotificationArea(statusWindow);
@@ -44,7 +44,7 @@ void NotificationArea::showMessage(const std::string& message)
 	}
 }
 
-NotificationArea::NotificationArea(StatusWindow *statusWindow) : m_statusWindow(statusWindow)
+NotificationArea::NotificationArea(PlaybackStatusWindow *statusWindow) : m_statusWindow(statusWindow)
 {
 
 }

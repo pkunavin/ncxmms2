@@ -19,23 +19,23 @@
 
 namespace ncxmms2
 {
-	class StatusWindow;
+	class PlaybackStatusWindow;
 	
 	class NotificationArea
 	{
 	public:
-		static void start(StatusWindow *statusWindow);
+		static void start(PlaybackStatusWindow *statusWindow);
 		static void shutdown();
 		static void showMessage(const std::string& message);
 
 	private:
-		NotificationArea(StatusWindow *statusWindow);
+		NotificationArea(PlaybackStatusWindow *statusWindow);
 		~NotificationArea();
 		NotificationArea(const NotificationArea& other);
 		NotificationArea& operator=(const NotificationArea& other);
 		
 		static NotificationArea *inst;
-		StatusWindow *m_statusWindow;
+		PlaybackStatusWindow *m_statusWindow;
 	};
 }
 

@@ -28,7 +28,7 @@ namespace ncxmms2
 {
 	class HeaderWindow;
 	class StackedWindow;
-	class StatusWindow;
+	class PlaybackStatusWindow;
 	
 	class MainWindow : public Window
 	{
@@ -49,7 +49,7 @@ namespace ncxmms2
 	private:
 		HeaderWindow *m_headerWindow;
 		StackedWindow *m_stackedWindow;
-		StatusWindow *m_statusWindow;
+		PlaybackStatusWindow *m_statusWindow;
 		Xmms::Client *m_xmmsClient;
 		
 		const int m_minimumCols;

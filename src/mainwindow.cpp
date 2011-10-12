@@ -18,7 +18,7 @@
 #include <stdexcept>
 
 #include "mainwindow.h"
-#include "statuswindow.h"
+#include "playbackstatuswindow.h"
 #include "playlistwindow.h"
 #include "localfilesystembrowser.h"
 #include "playlistsbrowser.h"
@@ -44,7 +44,7 @@ MainWindow::MainWindow(Xmms::Client* xmmsClient) :
 	
 	m_headerWindow=new HeaderWindow(headerWindowLines, cols(), 0, 0, this);
 	m_stackedWindow=new StackedWindow(lines()-statusWindowLines-headerWindowLines, cols(), headerWindowLines, 0, this);
-	m_statusWindow=new StatusWindow(m_xmmsClient, statusWindowLines, cols(), lines()-statusWindowLines, 0, this);
+	m_statusWindow=new PlaybackStatusWindow(m_xmmsClient, statusWindowLines, cols(), lines()-statusWindowLines, 0, this);
 	
 	m_stackedWindow->setFocus();
 	

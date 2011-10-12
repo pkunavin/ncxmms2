@@ -2,7 +2,7 @@
 set(SOURCES
     main.cpp
     mainwindow.cpp
-    statuswindow.cpp
+    playbackstatuswindow.cpp
     utils.cpp
     xmms2client.cpp
     playlistwindow.cpp
@@ -19,7 +19,7 @@ set(SOURCES
 set(HEADERS
     mainwindow.h
     utils.h
-    statuswindow.h
+    playbackstatuswindow.h
     xmms2client.h
     playlistwindow.h
     localfilesystembrowser.h

@@ -15,67 +15,67 @@
  */
 
 #include <boost/format.hpp>
-#include "statuswindow.h"
+#include "playbackstatuswindow.h"
 #include "utils.h"
 #include "lib/painter.h"
 
 using namespace ncxmms2;
 
-StatusWindow::StatusWindow(Xmms::Client* client, int lines, int cols, int yPos, int xPos, Window* parent) : 
+PlaybackStatusWindow::PlaybackStatusWindow(Xmms::Client* client, int lines, int cols, int yPos, int xPos, Window* parent) : 
 	Window(lines, cols, yPos, xPos, parent),
 	m_xmmsClient(client),
 	m_playbackStatus(Xmms::Playback::STOPPED),
 	m_playbackPlaytime(0),
 	m_isShowingMessage(false)
 {
-	m_xmmsClient->playback.getStatus()(Xmms::bind(&StatusWindow::getPlaybackStatus, this));
-	m_xmmsClient->playback.broadcastStatus()(Xmms::bind(&StatusWindow::getPlaybackStatus, this));
+	m_xmmsClient->playback.getStatus()(Xmms::bind(&PlaybackStatusWindow::getPlaybackStatus, this));
+	m_xmmsClient->playback.broadcastStatus()(Xmms::bind(&PlaybackStatusWindow::getPlaybackStatus, this));
 	
-	m_xmmsClient->playback.currentID()(Xmms::bind(&StatusWindow::getCurrentId, this));
-	m_xmmsClient->playback.broadcastCurrentID()(Xmms::bind(&StatusWindow::getCurrentId, this));
-	m_xmmsClient->medialib.broadcastEntryChanged()(Xmms::bind(&StatusWindow::handleIdInfoChanged, this));
+	m_xmmsClient->playback.currentID()(Xmms::bind(&PlaybackStatusWindow::getCurrentId, this));
+	m_xmmsClient->playback.broadcastCurrentID()(Xmms::bind(&PlaybackStatusWindow::getCurrentId, this));
+	m_xmmsClient->medialib.broadcastEntryChanged()(Xmms::bind(&PlaybackStatusWindow::handleIdInfoChanged, this));
 	
-	m_xmmsClient->playback.getPlaytime()(Xmms::bind(&StatusWindow::getPlaytime, this));
-	m_xmmsClient->playback.signalPlaytime()(Xmms::bind(&StatusWindow::getPlaytime, this));
+	m_xmmsClient->playback.getPlaytime()(Xmms::bind(&PlaybackStatusWindow::getPlaytime, this));
+	m_xmmsClient->playback.signalPlaytime()(Xmms::bind(&PlaybackStatusWindow::getPlaytime, this));
 	
-	m_messageTimer.connectTimeoutSignal(boost::bind(&StatusWindow::hideMessage, this));
+	m_messageTimer.connectTimeoutSignal(boost::bind(&PlaybackStatusWindow::hideMessage, this));
 }
 
-bool StatusWindow::getPlaybackStatus(const Xmms::Playback::Status& status)
+bool PlaybackStatusWindow::getPlaybackStatus(const Xmms::Playback::Status& status)
 {
 	m_playbackStatus=status;
 	update();
 	return true;
 }
 
-bool StatusWindow::getCurrentId(const int& id)
+bool PlaybackStatusWindow::getCurrentId(const int& id)
 {
-	m_xmmsClient->medialib.getInfo(id)(Xmms::bind(&StatusWindow::getCurrentIdInfo, this));
+	m_xmmsClient->medialib.getInfo(id)(Xmms::bind(&PlaybackStatusWindow::getCurrentIdInfo, this));
 	return true;
 }
 
-bool StatusWindow::getCurrentIdInfo(const Xmms::PropDict& info)
+bool PlaybackStatusWindow::getCurrentIdInfo(const Xmms::PropDict& info)
 {
 	m_currentSong.loadInfo(info);
 	update();
 	return true;
 }
 
-bool StatusWindow::getPlaytime(const int& playtime)
+bool PlaybackStatusWindow::getPlaytime(const int& playtime)
 {
 	m_playbackPlaytime=playtime;
 	update();
 	return true;
 }
 
-bool StatusWindow::handleIdInfoChanged(const int& id)
+bool PlaybackStatusWindow::handleIdInfoChanged(const int& id)
 {
 	if (m_currentSong.id()==id)
-		m_xmmsClient->medialib.getInfo(id)(Xmms::bind(&StatusWindow::getCurrentIdInfo, this));
+		m_xmmsClient->medialib.getInfo(id)(Xmms::bind(&PlaybackStatusWindow::getCurrentIdInfo, this));
 	return true;
 }
 
-void StatusWindow::showEvent()
+void PlaybackStatusWindow::showEvent()
 {
 	Painter painter(this);
 	painter.drawHLine(0, 0, cols());
@@ -126,7 +126,7 @@ void StatusWindow::showEvent()
 	painter.flush();
 }
 
-void StatusWindow::showMessage(const std::string& message)
+void PlaybackStatusWindow::showMessage(const std::string& message)
 {
 	m_message=message;
 	m_isShowingMessage=true;
@@ -134,13 +134,13 @@ void StatusWindow::showMessage(const std::string& message)
 	update();
 }
 
-void StatusWindow::hideMessage()
+void PlaybackStatusWindow::hideMessage()
 {
 	m_isShowingMessage=false;
 	update();
 }
 
-Xmms::Playback::Status StatusWindow::playbackStatus() const
+Xmms::Playback::Status PlaybackStatusWindow::playbackStatus() const
 {
 	return m_playbackStatus;
 }
