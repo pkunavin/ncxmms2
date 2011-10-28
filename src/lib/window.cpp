@@ -40,6 +40,16 @@ int Window::cols() const
 	return d->cols;
 }
 
+int Window::xPos() const
+{
+	return d->xPos;
+}
+
+int Window::yPos() const
+{
+	return d->yPos;
+}
+
 void Window::move(int yPos, int xPos)
 {
 	d->yPos=yPos;
@@ -50,6 +60,9 @@ void Window::move(int yPos, int xPos)
 	             : newwin(d->lines, d->cols, yPos, xPos);
 	
 	update();
+	
+	for (auto child : d->children)
+		child->move(child->yPos(), child->xPos());
 }
 
 void Window::hide()

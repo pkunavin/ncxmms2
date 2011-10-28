@@ -39,6 +39,9 @@ namespace ncxmms2
 		int lines() const;
 		int cols() const;
 		
+		int xPos() const;
+		int yPos() const;
+		
 		void move(int yPos, int xPos);
 		
 		void hide();
