@@ -104,38 +104,39 @@ void Painter::printString(const std::string& string)
 	waddstr(d->cursesWin, string.c_str());
 }
 
-void Painter::printString(const std::string &string, std::string::size_type maxLength)
+void Painter::printString(const std::string& string, std::string::size_type maxLength)
 {
 	if (string.size()<=maxLength) {
 		waddstr(d->cursesWin, string.c_str());
 	} else {
-		char *buffer=new char[string.size()+1];
-		buffer[string.size()]='\0';
-		g_utf8_strncpy(buffer, string.c_str(), maxLength);
-		waddstr(d->cursesWin, buffer);
-		delete [] buffer;
+		const char *str=string.c_str();
+		while (maxLength && *str) {
+			str=g_utf8_next_char(str);
+			--maxLength;
+		}
+		waddnstr(d->cursesWin, string.c_str(), str-string.c_str());
 	}
 }
 
-void Painter::squeezedPrint(const std::string &string, std::string::size_type maxLength)
+void Painter::squeezedPrint(const std::string& string, std::string::size_type maxLength)
 {
 	if (string.size()<=maxLength) {
 		waddstr(d->cursesWin, string.c_str());
 	} else {
-		const std::string::size_type xBegin=getcurx(d->cursesWin);
-		const std::string::size_type yBegin=getcury(d->cursesWin);
-
-		printString(string, maxLength);
-
-		const std::string::size_type xEnd=getcurx(d->cursesWin);
-		const std::string::size_type yEnd=getcury(d->cursesWin);
-		if ((yEnd-yBegin)*d->window->cols()+(xEnd-xBegin)==maxLength) {
-			if (xEnd<3) {
-				wmove(d->cursesWin, yEnd-1, d->window->cols()-(3-xEnd));
-			} else {
-				wmove(d->cursesWin, yEnd, xEnd-3);
+		const char *str=string.c_str();
+		while (maxLength && *str) {
+			str=g_utf8_next_char(str);
+			--maxLength;
+		}
+		
+		if (!maxLength) {
+			for (int i=0; i<3; ++i) {
+				str=g_utf8_prev_char(str);
 			}
+			waddnstr(d->cursesWin, string.c_str(), str-string.c_str());
 			waddstr(d->cursesWin, "...");
+		} else {
+			waddstr(d->cursesWin, string.c_str());
 		}
 	}
 }
