@@ -5,7 +5,8 @@ set(SOURCES
     stackedwindow.cpp
     abstractitemview.cpp
     timer.cpp
-    painter.cpp)
+    painter.cpp
+    label.cpp)
 
 set(HEADERS
     application.h
@@ -17,7 +18,8 @@ set(HEADERS
     timer.h
     colors.h
     painter.h
-    keyevent.h)
+    keyevent.h
+    label.h)
 
 add_library(ncxmms2-lib ${SOURCES})
 
