@@ -41,7 +41,8 @@ Window *StackedWindow::window(int index) const
 
 void StackedWindow::setCurrentIndex(int index)
 {
-	m_windows[m_currentIndex]->hide();
+	if (m_currentIndex!=-1)
+		m_windows[m_currentIndex]->hide();
 	m_currentIndex=index;
 	m_windows[index]->show();
 }
