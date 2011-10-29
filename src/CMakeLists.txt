@@ -8,13 +8,14 @@ set(SOURCES
     playlistwindow.cpp
     localfilesystembrowser.cpp
     headerwindow.cpp
-    notificationarea.cpp
     settings.cpp
     commandlineoptions.cpp
     song.cpp
     playlistsbrowser.cpp
     playlistslistview.cpp
-    playlistviewer.cpp)
+    playlistviewer.cpp
+    statusarea.cpp
+    playbackprogressbar.cpp)
 
 set(HEADERS
     mainwindow.h
@@ -24,14 +25,15 @@ set(HEADERS
     playlistwindow.h
     localfilesystembrowser.h
     headerwindow.h
-    notificationarea.h
     hotkeys.h
     settings.h
     commandlineoptions.h
     song.h
     playlistsbrowser.h
     playlistslistview.h
-    playlistviewer.h)
+    playlistviewer.h
+    statusarea.h
+    playbackprogressbar.h)
 
 add_executable(ncxmms2 ${SOURCES})
 

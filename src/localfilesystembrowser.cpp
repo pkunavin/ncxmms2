@@ -24,7 +24,7 @@
 #include <xmmsclient/xmmsclient++.h>
 
 #include "localfilesystembrowser.h"
-#include "notificationarea.h"
+#include "statusarea.h"
 #include "settings.h"
 
 #include "lib/painter.h"
@@ -220,8 +220,8 @@ void LocalFileSystemBrowser::itemEntered(int item)
 			} else {
 				m_xmmsClient->playlist.addUrl(std::string("file://").append(filePath(item)));
 			}
-			NotificationArea::showMessage((boost::format("Adding %1% to active playlist") 
-			                               % m_currentDirEntries[item].name()).str());
+			StatusArea::showMessage((boost::format("Adding %1% to active playlist") 
+			                         % m_currentDirEntries[item].name()).str());
 			break;
 				
 		case FileSystemItem::ItemOther:
@@ -237,16 +237,16 @@ void LocalFileSystemBrowser::keyPressedEvent(const KeyEvent& keyEvent)
 			const int item=currentItem();
 			if (m_currentDirEntries[item].isDirectory()) {
 				m_xmmsClient->playlist.addRecursive(std::string("file://").append(filePath(item)));
-				NotificationArea::showMessage((boost::format("Adding %1% directory to active playlist")
-				                               % m_currentDirEntries[item].name()).str());
+				StatusArea::showMessage((boost::format("Adding %1% directory to active playlist")
+				                         % m_currentDirEntries[item].name()).str());
 			} else if (m_currentDirEntries[item].isFile()) {
 				if (isPlaylistFile(m_currentDirEntries[item].name())) {
 					addPlaylistFile(std::string("file://").append(filePath(item)));
 				} else {
 					m_xmmsClient->playlist.addUrl(std::string("file://").append(filePath(item)));
 				}
-				NotificationArea::showMessage((boost::format("Adding %1% to active playlist")
-				                               % m_currentDirEntries[item].name()).str());
+				StatusArea::showMessage((boost::format("Adding %1% to active playlist")
+				                         % m_currentDirEntries[item].name()).str());
 			}
 			break;
 		}

@@ -18,9 +18,7 @@
 #define PLAYBACKSTATUSWINDOW_H
 
 #include <xmmsclient/xmmsclient++.h>
-
 #include "song.h"
-#include "lib/timer.h"
 #include "lib/window.h"
 
 namespace ncxmms2
@@ -30,23 +28,25 @@ namespace ncxmms2
 	public:
 		PlaybackStatusWindow(Xmms::Client *client, int lines, int cols, int yPos, int xPos, Window *parent=0);
 	
-		void showMessage(const std::string& message);
-		
 		Xmms::Playback::Status playbackStatus() const;
+		
+		typedef boost::function<void (int)> PlaytimeChangedCallback;
+		void setPlaytimeChangedCallback(const PlaytimeChangedCallback& callback);
+		
+		typedef boost::function<void (const Song&)> CurrentSongChangedCallback;
+		void setCurrentSongChangedCallback(const CurrentSongChangedCallback& callback);
 		
 	protected:
 		virtual void showEvent();
 		
 	private:
+		PlaytimeChangedCallback m_playtimeChangedCallback;
+		CurrentSongChangedCallback m_currentSongChangedCallback;
+		
 		Xmms::Client *m_xmmsClient;
 		Xmms::Playback::Status m_playbackStatus;
 		Song m_currentSong;
 		int m_playbackPlaytime;
-		
-		bool m_isShowingMessage;
-		std::string m_message;
-		Timer m_messageTimer;
-		void hideMessage();
 		
 		// Callbacks
 		bool getPlaybackStatus(const Xmms::Playback::Status& status);

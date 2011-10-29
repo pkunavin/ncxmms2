@@ -14,29 +14,28 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef NOTIFICATIONAREA_H
-#define NOTIFICATIONAREA_H
+#ifndef PLAYBACKPROGRESSBAR_H
+#define PLAYBACKPROGRESSBAR_H
 
-namespace ncxmms2
+#include "lib/window.h"
+
+namespace ncxmms2 
 {
-	class PlaybackStatusWindow;
-	
-	class NotificationArea
+	class PlaybackProgressBar : public Window
 	{
 	public:
-		static void start(PlaybackStatusWindow *statusWindow);
-		static void shutdown();
-		static void showMessage(const std::string& message);
-
-	private:
-		NotificationArea(PlaybackStatusWindow *statusWindow);
-		~NotificationArea();
-		NotificationArea(const NotificationArea& other);
-		NotificationArea& operator=(const NotificationArea& other);
+		PlaybackProgressBar(int lines, int cols, int yPos, int xPos, Window *parent=0);
 		
-		static NotificationArea *inst;
-		PlaybackStatusWindow *m_statusWindow;
+		void setValue(int value);
+		void setMaxValue(int maxValue);
+		
+	protected:
+		void showEvent();
+		
+	private:
+		int m_value;
+		int m_maxValue;
 	};
 }
 
-#endif // NOTIFICATIONAREA_H
+#endif // PLAYBACKPROGRESSBAR_H

@@ -14,50 +14,48 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef STATUSAREA_H
+#define STATUSAREA_H
 
+#include <xmmsclient/xmmsclient++/playback.h>
+#include "song.h"
 #include "lib/window.h"
+#include "lib/timer.h"
 
-namespace Xmms 
+namespace ncxmms2 
 {
-	class Client;
-}
-
-namespace ncxmms2
-{
-	class HeaderWindow;
+	class PlaybackProgressBar;
 	class StackedWindow;
-	class StatusArea;
 	
-	class MainWindow : public Window
+	class StatusArea : public Window
 	{
 	public:
-		MainWindow(Xmms::Client *xmmsClient);
-		~MainWindow();
+		StatusArea(Xmms::Client *client, int lines, int cols, int yPos, int xPos, Window *parent=0);
+		~StatusArea();
+		
+		static void showMessage(const std::string& message);
+		
+		Xmms::Playback::Status playbackStatus() const;
+		
+		void resizeEvent(const Size &size);
+	
+	private:
+		static StatusArea *inst;
+		
+		PlaybackProgressBar *m_playbackProgressBar;
 		
 		enum StackedWindows
 		{
-			StackedPlaylistWindow,
-			StackedLocalFileBrowserWindow,
-			StackedPlaylistsBrowser
+			StackedPlaybackStatusWindow,
+			StackedMessageWindow
 		};
 		
-		virtual void keyPressedEvent(const KeyEvent& keyEvent);
-		virtual void resizeEvent(const Size& size);
-		
-	private:
-		HeaderWindow *m_headerWindow;
 		StackedWindow *m_stackedWindow;
-		StatusArea *m_statusArea;
-		Xmms::Client *m_xmmsClient;
+		Timer m_timer;
 		
-		const int m_minimumCols;
-		
-		void setVisibleWindow(StackedWindows win);
-		void handleStackedWindowTitleChanged(StackedWindows win, const std::string& title);
+		void _showMessage(const std::string& message);
 	};
+	
 }
 
-
-#endif // MAINWINDOW_H
+#endif // STATUSAREA_H

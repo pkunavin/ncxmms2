@@ -25,8 +25,7 @@ PlaybackStatusWindow::PlaybackStatusWindow(Xmms::Client* client, int lines, int 
 	Window(lines, cols, yPos, xPos, parent),
 	m_xmmsClient(client),
 	m_playbackStatus(Xmms::Playback::STOPPED),
-	m_playbackPlaytime(0),
-	m_isShowingMessage(false)
+	m_playbackPlaytime(0)
 {
 	m_xmmsClient->playback.getStatus()(Xmms::bind(&PlaybackStatusWindow::getPlaybackStatus, this));
 	m_xmmsClient->playback.broadcastStatus()(Xmms::bind(&PlaybackStatusWindow::getPlaybackStatus, this));
@@ -37,8 +36,16 @@ PlaybackStatusWindow::PlaybackStatusWindow(Xmms::Client* client, int lines, int 
 	
 	m_xmmsClient->playback.getPlaytime()(Xmms::bind(&PlaybackStatusWindow::getPlaytime, this));
 	m_xmmsClient->playback.signalPlaytime()(Xmms::bind(&PlaybackStatusWindow::getPlaytime, this));
-	
-	m_messageTimer.connectTimeoutSignal(boost::bind(&PlaybackStatusWindow::hideMessage, this));
+}
+
+void PlaybackStatusWindow::setPlaytimeChangedCallback(const PlaytimeChangedCallback& callback)
+{
+	m_playtimeChangedCallback=callback;
+}
+
+void PlaybackStatusWindow::setCurrentSongChangedCallback(const CurrentSongChangedCallback& callback)
+{
+	m_currentSongChangedCallback=callback;
 }
 
 bool PlaybackStatusWindow::getPlaybackStatus(const Xmms::Playback::Status& status)
@@ -57,6 +64,9 @@ bool PlaybackStatusWindow::getCurrentId(const int& id)
 bool PlaybackStatusWindow::getCurrentIdInfo(const Xmms::PropDict& info)
 {
 	m_currentSong.loadInfo(info);
+	if (!m_currentSongChangedCallback.empty())
+		m_currentSongChangedCallback(m_currentSong);
+	
 	update();
 	return true;
 }
@@ -64,6 +74,9 @@ bool PlaybackStatusWindow::getCurrentIdInfo(const Xmms::PropDict& info)
 bool PlaybackStatusWindow::getPlaytime(const int& playtime)
 {
 	m_playbackPlaytime=playtime;
+	if (!m_playtimeChangedCallback.empty())
+		m_playtimeChangedCallback(playtime);
+	
 	update();
 	return true;
 }
@@ -78,66 +91,38 @@ bool PlaybackStatusWindow::handleIdInfoChanged(const int& id)
 void PlaybackStatusWindow::showEvent()
 {
 	Painter painter(this);
-	painter.drawHLine(0, 0, cols());
-
+	painter.clearLine(0);
+	
+	painter.setBold(true);
+	switch (m_playbackStatus) {
+		case Xmms::Playback::PLAYING : painter.printString("Playing: " ); break;
+		case Xmms::Playback::STOPPED : painter.printString("[Stopped] "); break;
+		case Xmms::Playback::PAUSED  : painter.printString("[Paused] " ); break;
+	}
+	painter.setBold(false);
+	
+	std::string timeString;
+	timeString.reserve(19); // [xx:xx;xx/xx;xx;xx]
+	timeString.push_back('[');
+	timeString.append(Utils::getTimeStringFromInt(m_playbackPlaytime));
 	if (m_currentSong.duration()>0) {
-		const unsigned int pos=((double)m_playbackPlaytime/(double)m_currentSong.duration())*cols();
-		painter.setBold(true);
-		painter.drawHLine(0, 0, pos);
-		painter.setBold(false);
+		timeString.push_back('/');
+		timeString.append(m_currentSong.durationString());
 	}
-
-	painter.clearLine(1);
+	timeString.push_back(']');
 	
-	if (!m_isShowingMessage) {
-		painter.setBold(true);
-		switch (m_playbackStatus) {
-			case Xmms::Playback::PLAYING : painter.printString("Playing: " ); break;
-			case Xmms::Playback::STOPPED : painter.printString("[Stopped] "); break;
-			case Xmms::Playback::PAUSED  : painter.printString("[Paused] " ); break;
-		}
-		painter.setBold(false);
-	
-		std::string timeString;
-		timeString.reserve(19); // [xx:xx;xx/xx;xx;xx]
-		timeString.push_back('[');
-		timeString.append(Utils::getTimeStringFromInt(m_playbackPlaytime));
-		if (m_currentSong.duration()>0) {
-			timeString.push_back('/');
-			timeString.append(m_currentSong.durationString());
-		}
-		timeString.push_back(']');
-	
-		if (!m_currentSong.artist().empty()) {
-			painter.squeezedPrint((boost::format("%1% - %2%") % m_currentSong.artist() % m_currentSong.title()).str(),
-								  cols()-painter.xPosition()-timeString.size()-1);
-		} else {
-			painter.squeezedPrint(m_currentSong.title(), cols()-painter.xPosition()-timeString.size()-1);
-		}
-		
-		painter.move(cols()-timeString.size(), 1);
-		painter.setBold(true);
-		painter.printString(timeString);
+	if (!m_currentSong.artist().empty()) {
+		painter.squeezedPrint((boost::format("%1% - %2%") % m_currentSong.artist() % m_currentSong.title()).str(),
+		                      cols()-painter.xPosition()-timeString.size()-1);
 	} else {
-		painter.setBold(true);
-		painter.printString(m_message);
+		painter.squeezedPrint(m_currentSong.title(), cols()-painter.xPosition()-timeString.size()-1);
 	}
+	
+	painter.move(cols()-timeString.size(), 0);
+	painter.setBold(true);
+	painter.printString(timeString);
 	
 	painter.flush();
-}
-
-void PlaybackStatusWindow::showMessage(const std::string& message)
-{
-	m_message=message;
-	m_isShowingMessage=true;
-	m_messageTimer.start(5);
-	update();
-}
-
-void PlaybackStatusWindow::hideMessage()
-{
-	m_isShowingMessage=false;
-	update();
 }
 
 Xmms::Playback::Status PlaybackStatusWindow::playbackStatus() const

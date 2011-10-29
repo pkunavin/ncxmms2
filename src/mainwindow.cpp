@@ -18,12 +18,11 @@
 #include <stdexcept>
 
 #include "mainwindow.h"
-#include "playbackstatuswindow.h"
+#include "statusarea.h"
 #include "playlistwindow.h"
 #include "localfilesystembrowser.h"
 #include "playlistsbrowser.h"
 #include "headerwindow.h"
-#include "notificationarea.h"
 #include "hotkeys.h"
 
 #include "lib/application.h"
@@ -36,15 +35,15 @@ MainWindow::MainWindow(Xmms::Client* xmmsClient) :
 	m_xmmsClient(xmmsClient),
 	m_minimumCols(std::string("[Stopped] ...[xx::xx::xx/xx::xx::xx]").size())
 {
-	const int statusWindowLines=2;
+	const int statusAreaLines=2;
 	const int headerWindowLines=2;
 	
-	if (lines()<statusWindowLines+1+headerWindowLines || cols()<m_minimumCols)
+	if (lines()<statusAreaLines+1+headerWindowLines || cols()<m_minimumCols)
 		throw std::runtime_error("Terminal too small!");
 	
 	m_headerWindow=new HeaderWindow(headerWindowLines, cols(), 0, 0, this);
-	m_stackedWindow=new StackedWindow(lines()-statusWindowLines-headerWindowLines, cols(), headerWindowLines, 0, this);
-	m_statusWindow=new PlaybackStatusWindow(m_xmmsClient, statusWindowLines, cols(), lines()-statusWindowLines, 0, this);
+	m_stackedWindow=new StackedWindow(lines()-statusAreaLines-headerWindowLines, cols(), headerWindowLines, 0, this);
+	m_statusArea=new StatusArea(m_xmmsClient, statusAreaLines, cols(), lines()-statusAreaLines, 0, this);
 	
 	m_stackedWindow->setFocus();
 	
@@ -64,7 +63,6 @@ MainWindow::MainWindow(Xmms::Client* xmmsClient) :
 		window->setTitleChangedCallback(boost::bind(&MainWindow::handleStackedWindowTitleChanged, this, stackedWindow, _1));
 	}
 	setVisibleWindow(StackedPlaylistWindow);
-	NotificationArea::start(m_statusWindow);
 }
 
 void MainWindow::keyPressedEvent(const KeyEvent& keyEvent)
@@ -83,7 +81,7 @@ void MainWindow::keyPressedEvent(const KeyEvent& keyEvent)
 			break;
 			
 		case Hotkeys::PlaybackToggle:
-			if (m_statusWindow->playbackStatus()==Xmms::Playback::PLAYING) {
+			if (m_statusArea->playbackStatus()==Xmms::Playback::PLAYING) {
 				m_xmmsClient->playback.pause();
 			} else {
 				m_xmmsClient->playback.start();
@@ -123,14 +121,14 @@ void MainWindow::keyPressedEvent(const KeyEvent& keyEvent)
 
 void MainWindow::resizeEvent(const ncxmms2::Size& size)
 {
-	if (size.lines()<m_statusWindow->lines()+1+m_headerWindow->lines() || size.cols()<m_minimumCols)
+	if (size.lines()<m_statusArea->lines()+1+m_headerWindow->lines() || size.cols()<m_minimumCols)
 		throw std::runtime_error("Terminal too small!");
 	
-	ncxmms2::Window::resizeEvent(size);
+	Window::resizeEvent(size);
 	m_headerWindow->resizeEvent(Size(m_headerWindow->lines(), size.cols()));
-	m_stackedWindow->resizeEvent(Size(size.lines()-m_statusWindow->lines()-m_headerWindow->lines(), size.cols()));
-	m_statusWindow->move(size.lines()-m_statusWindow->lines(), 0);
-	m_statusWindow->resizeEvent(Size(m_statusWindow->lines(), size.cols()));
+	m_stackedWindow->resizeEvent(Size(size.lines()-m_statusArea->lines()-m_headerWindow->lines(), size.cols()));
+	m_statusArea->move(size.lines()-m_statusArea->lines(), 0);
+	m_statusArea->resizeEvent(Size(m_statusArea->lines(), size.cols()));
 }
 
 void MainWindow::setVisibleWindow(StackedWindows win)
@@ -147,6 +145,6 @@ void MainWindow::handleStackedWindowTitleChanged(StackedWindows win, const std::
 
 MainWindow::~MainWindow()
 {
-	NotificationArea::shutdown();
+
 }
 
