@@ -99,46 +99,51 @@ void Painter::setColor(ncxmms2::Color color)
 	wattron(d->cursesWin, COLOR_PAIR(color));
 }
 
-void Painter::printString(const std::string& string)
+void Painter::printString(const std::string& str)
 {
-	waddstr(d->cursesWin, string.c_str());
+	waddstr(d->cursesWin, str.c_str());
 }
 
-void Painter::printString(const std::string& string, std::string::size_type maxLength)
+void Painter::printString(const std::string& str, std::string::size_type maxLength)
 {
-	if (string.size()<=maxLength) {
-		waddstr(d->cursesWin, string.c_str());
+	if (str.size()<=maxLength) {
+		waddstr(d->cursesWin, str.c_str());
 	} else {
-		const char *str=string.c_str();
-		while (maxLength && *str) {
-			str=g_utf8_next_char(str);
+		const char *c_str=str.c_str();
+		while (maxLength && *c_str) {
+			c_str=g_utf8_next_char(c_str);
 			--maxLength;
 		}
-		waddnstr(d->cursesWin, string.c_str(), str-string.c_str());
+		waddnstr(d->cursesWin, str.c_str(), c_str-str.c_str());
 	}
 }
 
-void Painter::squeezedPrint(const std::string& string, std::string::size_type maxLength)
+void Painter::squeezedPrint(const std::string& str, std::string::size_type maxLength)
 {
-	if (string.size()<=maxLength) {
-		waddstr(d->cursesWin, string.c_str());
+	if (str.size()<=maxLength) {
+		waddstr(d->cursesWin, str.c_str());
 	} else {
-		const char *str=string.c_str();
-		while (maxLength && *str) {
-			str=g_utf8_next_char(str);
+		const char *c_str=str.c_str();
+		while (maxLength && *c_str) {
+			c_str=g_utf8_next_char(c_str);
 			--maxLength;
 		}
 		
 		if (!maxLength) {
 			for (int i=0; i<3; ++i) {
-				str=g_utf8_prev_char(str);
+				c_str=g_utf8_prev_char(c_str);
 			}
-			waddnstr(d->cursesWin, string.c_str(), str-string.c_str());
+			waddnstr(d->cursesWin, str.c_str(), c_str-str.c_str());
 			waddstr(d->cursesWin, "...");
 		} else {
-			waddstr(d->cursesWin, string.c_str());
+			waddstr(d->cursesWin, str.c_str());
 		}
 	}
+}
+
+void Painter::printString(const std::wstring& str)
+{
+	waddnwstr(d->cursesWin, str.c_str(), str.size());
 }
 
 void Painter::drawHLine(int startX, int startY, int length, int symbol)

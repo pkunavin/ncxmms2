@@ -42,9 +42,10 @@ namespace ncxmms2
 		void setBold(bool bold);
 		void setColor(Color color);
 
-		void printString(const std::string& string);
-		void printString(const std::string& string, std::string::size_type maxLength);
-		void squeezedPrint(const std::string& string, std::string::size_type maxLength);
+		void printString(const std::string& str);
+		void printString(const std::string& str, std::string::size_type maxLength);
+		void printString(const std::wstring& str);
+		void squeezedPrint(const std::string& str, std::string::size_type maxLength);
 
 		void drawHLine(int startX, int startY, int length, int symbol=0);
 		void drawVLine(int startX, int startY, int length, int symbol=0);
