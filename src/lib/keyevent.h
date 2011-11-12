@@ -24,10 +24,16 @@ namespace ncxmms2
 	class KeyEvent
 	{
 	public:
-		KeyEvent(int key) : m_key(key){}
+		typedef wchar_t key_t;
+		
+		KeyEvent(key_t key, bool isFunctionKey) : m_key(key)
+		{
+			m_isFunctionKey=isFunctionKey || key==KeyEnter;
+		}
 
-		int key() const    {return m_key;}
-
+		key_t key() const          {return m_key;}
+		bool isFunctionKey() const {return m_isFunctionKey;}
+		
 		enum
 		{
 			KeyDown   = KEY_DOWN,
@@ -40,7 +46,8 @@ namespace ncxmms2
 		};
 
 	private:
-		const int m_key;
+		key_t m_key;
+		bool m_isFunctionKey;
 	};
 }
 

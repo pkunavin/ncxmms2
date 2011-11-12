@@ -21,21 +21,23 @@ namespace ncxmms2
 {
 	namespace Hotkeys
 	{	
-		const int Quit = 'q';
-		
-		// Screens switching
-		const int PlaylistScreen               = '2';
-		const int LocalFileSystemBrowserScreen = '3';
-		const int PlaylistsBrowserScreen       = '6';
-		
-		// Playback control
-		const int PlaybackToggle       = 'P';
-		const int PlaybackStop         = 's';
-		const int PlaybackNext         = '>';
-		const int PlaybackPrev         = '<';
-		const int PlaybackSeekForward  = 'f';
-		const int PlaybackSeekBackward = 'b';
-		
+		enum 
+		{
+			Quit = 'q',
+			
+			// Screens switching
+			PlaylistScreen               = '2',
+			LocalFileSystemBrowserScreen = '3',
+			PlaylistsBrowserScreen       = '6',
+			
+			// Playback control
+			PlaybackToggle       = 'P',
+			PlaybackStop         = 's',
+			PlaybackNext         = '>',
+			PlaybackPrev         = '<',
+			PlaybackSeekForward  = 'f',
+			PlaybackSeekBackward = 'b'
+		};
 	}
 }
 #endif // HOTKEYS_H

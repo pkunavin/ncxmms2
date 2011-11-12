@@ -72,6 +72,7 @@ Application::Application(bool useColors) : d(new ApplicationPrivate())
 	cbreak();
 	noecho();
 	curs_set(FALSE);
+	nodelay(stdscr, TRUE);
 	keypad(stdscr, TRUE);
 	
 	if (has_colors() && useColors	) {
@@ -138,7 +139,11 @@ Size Application::terminalSize()
 
 gboolean ApplicationPrivate::stdinEvent(GIOChannel* iochan, GIOCondition cond, gpointer data)
 {
-	Application::inst->d->mainWindow->keyPressedEvent(KeyEvent(getch()));
+	static_assert(sizeof(wint_t)==sizeof(wchar_t), "wchar_t is too small for storing UTF chars!");
+	wint_t key;
+	int res=get_wch(&key);
+	if (res!=ERR)
+		Application::inst->d->mainWindow->keyPressedEvent(KeyEvent(key, res==KEY_CODE_YES));
 	return TRUE;
 }
 
@@ -165,6 +170,7 @@ void ApplicationPrivate::resizeSignalHandler(int signal)
 	cbreak();
 	noecho();
 	curs_set(FALSE);
+	nodelay(stdscr, TRUE);
 	keypad(stdscr, TRUE);
 	refresh();
 	
