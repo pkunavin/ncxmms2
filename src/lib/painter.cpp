@@ -99,6 +99,16 @@ void Painter::setColor(ncxmms2::Color color)
 	wattron(d->cursesWin, COLOR_PAIR(color));
 }
 
+void Painter::printChar(char ch)
+{
+	waddnstr(d->cursesWin, &ch, 1);
+}
+
+void Painter::printChar(wchar_t ch)
+{
+	waddnwstr(d->cursesWin, &ch, 1);
+}
+
 void Painter::printString(const std::string& str)
 {
 	waddstr(d->cursesWin, str.c_str());
