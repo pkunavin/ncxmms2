@@ -128,6 +128,11 @@ void Painter::printString(const std::string& str, std::string::size_type maxLeng
 	}
 }
 
+void Painter::printString(const char *str)
+{
+	waddstr(d->cursesWin, str);
+}
+
 void Painter::squeezedPrint(const std::string& str, std::string::size_type maxLength)
 {
 	if (str.size()<=maxLength) {
@@ -154,6 +159,11 @@ void Painter::squeezedPrint(const std::string& str, std::string::size_type maxLe
 void Painter::printString(const std::wstring& str)
 {
 	waddnwstr(d->cursesWin, str.c_str(), str.size());
+}
+
+void Painter::printString(const wchar_t *str, size_t maxLength)
+{
+	waddnwstr(d->cursesWin, str, maxLength);
 }
 
 void Painter::drawHLine(int startX, int startY, int length, int symbol)
