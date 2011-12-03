@@ -20,6 +20,7 @@
 #include <xmmsclient/xmmsclient++/playback.h>
 #include "song.h"
 #include "lib/window.h"
+#include "lib/lineedit.h"
 #include "lib/timer.h"
 
 namespace ncxmms2 
@@ -34,6 +35,9 @@ namespace ncxmms2
 		~StatusArea();
 		
 		static void showMessage(const std::string& message);
+		static void askQuestion(const std::string& question,
+		                        const LineEdit::ResultCallback& answerCallback,
+		                        const std::string& initialAnswer=std::string());
 		
 		Xmms::Playback::Status playbackStatus() const;
 		
@@ -47,13 +51,17 @@ namespace ncxmms2
 		enum StackedWindows
 		{
 			StackedPlaybackStatusWindow,
-			StackedMessageWindow
+			StackedMessageWindow,
+			StackedQuestionWindow
 		};
 		
 		StackedWindow *m_stackedWindow;
 		Timer m_timer;
 		
 		void _showMessage(const std::string& message);
+		void _askQuestion(const std::string& question,
+		                  const LineEdit::ResultCallback& answerCallback,
+		                  const std::string& initialAnswer=std::string());
 	};
 	
 }

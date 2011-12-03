@@ -21,6 +21,7 @@
 #include "statusarea.h"
 #include "playbackprogressbar.h"
 #include "playbackstatuswindow.h"
+#include "questionwindow.h"
 
 #include "lib/label.h"
 #include "lib/stackedwindow.h"
@@ -44,15 +45,16 @@ StatusArea::StatusArea(Xmms::Client* client, int lines, int cols, int yPos, int 
 	const std::map <StackedWindows, Window*> stackedWins=
 	{
 		{StackedPlaybackStatusWindow, new PlaybackStatusWindow(client, stackedWindowLines, cols, 0, 0, m_stackedWindow)},
-		{StackedMessageWindow,        new Label(stackedWindowLines, cols, 0, 0, m_stackedWindow)}
+		{StackedMessageWindow,        new Label(stackedWindowLines, cols, 0, 0, m_stackedWindow)},
+		{StackedQuestionWindow,       new QuestionWindow(cols, 0, 0, m_stackedWindow)}
 	};
 	
 	std::for_each(stackedWins.begin(), stackedWins.end(), [this](const std::pair<StackedWindows, Window*>& value)
 	{
 		m_stackedWindow->addWindow(value.second);
 	});
+	m_stackedWindow->setFocus();
 	m_stackedWindow->setCurrentIndex(StackedPlaybackStatusWindow);
-
 
 	m_playbackProgressBar=new PlaybackProgressBar(stackedWindowLines, cols, 0, 0, this);
 	auto *playbackStatusWin=static_cast<PlaybackStatusWindow*>(m_stackedWindow->window(StackedPlaybackStatusWindow));
@@ -85,11 +87,39 @@ void StatusArea::showMessage(const std::string& message)
 	}
 }
 
-void StatusArea::_showMessage(const std::string &message)
+void StatusArea::_showMessage(const std::string& message)
 {
 	static_cast<Label*>(m_stackedWindow->window(StackedMessageWindow))->setText(message);
 	m_stackedWindow->setCurrentIndex(StackedMessageWindow);
 	m_timer.start(5);
+}
+
+void StatusArea::askQuestion(const std::string& question, 
+                             const LineEdit::ResultCallback& answerCallback, 
+                             const std::string& initialAnswer)
+{
+	if (inst) {
+		inst->_askQuestion(question, answerCallback, initialAnswer);
+	} else {
+		throw std::runtime_error(std::string(__PRETTY_FUNCTION__).append(" : there is no instance of StatusArea!"));
+	}
+}
+
+void StatusArea::_askQuestion(const std::string& question,
+                              const LineEdit::ResultCallback& answerCallback,
+                              const std::string& initialAnswer)
+{
+	auto resultCallback=[answerCallback, this](const std::string& answer, LineEdit::ResultCode result)
+	{
+		m_stackedWindow->setCurrentIndex(StackedPlaybackStatusWindow);
+		if (!answerCallback.empty())
+			answerCallback(answer, result);
+	};
+	
+	QuestionWindow *questionWin=static_cast<QuestionWindow*>(m_stackedWindow->window(StackedQuestionWindow));
+	questionWin->askQuestion(question, resultCallback, initialAnswer);
+	m_stackedWindow->setCurrentIndex(StackedQuestionWindow);
+	m_timer.stop();
 }
 
 void StatusArea::resizeEvent(const Size &size)
