@@ -15,7 +15,9 @@
  */
 
 #include <algorithm>
+#include <boost/format.hpp>
 #include "playlistslistview.h"
+#include "statusarea.h"
 #include "lib/painter.h"
 
 using namespace ncxmms2;
@@ -144,9 +146,78 @@ void PlaylistsListView::itemEntered(int item)
 
 void PlaylistsListView::keyPressedEvent(const KeyEvent &keyEvent)
 {
-	if (keyEvent.key()==KeyEvent::KeyDelete && itemsCount()>1) {
-		m_xmmsClient->playlist.remove(m_playlists[currentItem()]);
-	} else {
-		AbstractItemView::keyPressedEvent(keyEvent);
+	switch (keyEvent.key()) {
+		case KeyEvent::KeyDelete:
+			if (itemsCount()>1)
+				m_xmmsClient->playlist.remove(m_playlists[currentItem()]);
+			break;
+			
+		case 'n':
+			StatusArea::askQuestion("Create new playlist: ", 
+			                        [this](const std::string& playlist, LineEdit::ResultCode result)
+			{
+				if (result == LineEdit::Accepted)
+					createPlaylist(playlist);
+			});
+			break;
+			
+		case 'r':
+		{
+			const std::string playlist=m_playlists[currentItem()];
+			auto resultCallback=[this, playlist](const std::string& newName, LineEdit::ResultCode result)
+			{
+				if (result == LineEdit::Accepted)
+					renamePlaylist(playlist, newName);
+			};
+
+			StatusArea::askQuestion("Rename playlist: ", resultCallback, playlist);
+			break;
+		}
+			
+		default: AbstractItemView::keyPressedEvent(keyEvent);
 	}
+}
+
+void PlaylistsListView::createPlaylist(const std::string &playlist)
+{
+	if (playlist.empty()) {
+		StatusArea::showMessage("Can't create playlist with empty name!");
+		return;
+	}
+		
+	if (playlist[0] == '_') {
+		StatusArea::showMessage("Playlist's name shouldn't start with _ !");
+		return;
+	}
+	
+	if (std::find(m_playlists.begin(), m_playlists.end(), playlist) != m_playlists.end()) {
+		StatusArea::showMessage((boost::format("\"%1%\" playlist already exists!") % playlist).str());
+		return;
+	}
+	
+	m_xmmsClient->playlist.create(playlist);
+}
+
+void PlaylistsListView::renamePlaylist(const std::string& oldName, const std::string& newName)
+{
+	if (std::find(m_playlists.begin(), m_playlists.end(), oldName) == m_playlists.end())
+		return;
+	
+	if (newName.empty()) {
+		StatusArea::showMessage("Playlist's name shouldn't be empty!");
+		return;
+	}
+	
+	if (newName[0] == '_') {
+		StatusArea::showMessage("Playlist's name shouldn't start with _ !");
+		return;
+	}
+	
+	auto it=std::find(m_playlists.begin(), m_playlists.end(), newName);
+	if (it!=m_playlists.end() && (*it)!=oldName) {
+		StatusArea::showMessage((boost::format("\"%1%\" playlist already exists!") % newName).str());
+		return;
+	}
+	
+	m_xmmsClient->collection.rename(oldName, newName, Xmms::Collection::PLAYLISTS);
 }

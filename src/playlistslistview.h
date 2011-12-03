@@ -21,6 +21,7 @@
 #include <xmmsclient/xmmsclient++.h>
 
 #include "lib/abstractitemview.h"
+#include "lib/lineedit.h"
 
 namespace ncxmms2
 {
@@ -47,6 +48,9 @@ namespace ncxmms2
 		bool getPlaylists(const Xmms::List<std::string>& playlists);
 		bool getCurrentPlaylist(const std::string& playlist);
 		bool handlePlaylistsChange(const Xmms::Dict& change);
+		
+		void createPlaylist(const std::string& playlist);
+		void renamePlaylist(const std::string& oldName, const std::string& newName);
 	};
 }
 

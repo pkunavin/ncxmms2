@@ -2,9 +2,6 @@
  - Play item on Enter pressed, depends on xmms2 bug 0001404 : http://bugs.xmms2.org/view.php?id=1404
  - Implement searching
 
-- Playlists browser:
- - Creating, renaming playlists
-
 - Medialib browser
 
 - Visualization support

@@ -23,5 +23,9 @@ Hotkeys:
   Next : >
   Prev : <
   Seek forward : f
-  Seek backward ; b
+  Seek backward : b
+  
+ Playlists browser:
+  n - create new playlist
+  r - rename playlist
   
