@@ -6,7 +6,8 @@ set(SOURCES
     abstractitemview.cpp
     timer.cpp
     painter.cpp
-    label.cpp)
+    label.cpp
+    lineedit.cpp)
 
 set(HEADERS
     application.h
@@ -19,7 +20,8 @@ set(HEADERS
     colors.h
     painter.h
     keyevent.h
-    label.h)
+    label.h
+    lineedit.h)
 
 add_library(ncxmms2-lib ${SOURCES})
 
