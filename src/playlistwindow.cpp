@@ -305,13 +305,19 @@ int PlaylistWindow::itemsCount() const
 
 void PlaylistWindow::keyPressedEvent(const KeyEvent& keyEvent)
 {	
-	if (keyEvent.key()==KeyEvent::KeyDelete) {
-		if (m_idList.size() && !isCurrentItemHidden()) {
-			m_xmmsClient->playlist.removeEntry(currentItem(), m_playlist);
-			showCurrentItem();
-		}
-	} else {
-		AbstractItemView::keyPressedEvent(keyEvent);
+	switch (keyEvent.key()) {
+		case KeyEvent::KeyDelete:
+			if (m_idList.size() && !isCurrentItemHidden()) {
+				m_xmmsClient->playlist.removeEntry(currentItem(), m_playlist);
+				showCurrentItem();
+			}
+			break;
+			
+		case 'c':
+			m_xmmsClient->playlist.clear(m_playlist);
+			break;
+			
+		default: AbstractItemView::keyPressedEvent(keyEvent);
 	}
 }
 

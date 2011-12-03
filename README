@@ -26,6 +26,9 @@ Hotkeys:
   Seek backward : b
   
  Playlists browser:
-  n - create new playlist
-  r - rename playlist
+  Create new playlist : n
+  Rename playlist : r
+  
+Playlist window:
+ Clear playlist : c
   
