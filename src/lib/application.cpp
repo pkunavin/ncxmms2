@@ -20,6 +20,7 @@
 #include <sys/ioctl.h>
 
 #include <map>
+#include <algorithm>
 #include <iostream>
 #include <stdexcept>
 
@@ -32,7 +33,7 @@ namespace ncxmms2
 	class ApplicationPrivate
 	{
 	public:
-		ApplicationPrivate() : mainWindow(NULL) {}
+		ApplicationPrivate() : mainWindow(NULL), stealedFocusWindow(NULL) {}
 
 
 		GMainLoop *mainLoop;
@@ -44,12 +45,15 @@ namespace ncxmms2
 		static void resizeSignalHandler(int signal);
 
 		Window *mainWindow;
+		Window *stealedFocusWindow;
 	};
 }
 
 using namespace ncxmms2;
 
 Application *Application::inst=0;
+
+#define CHECK_INST if (!inst) {throw std::logic_error(std::string(__PRETTY_FUNCTION__).append(": There is no instance of application!"));}
 
 void Application::init(bool useColors)
 {
@@ -114,8 +118,7 @@ Application::Application(bool useColors) : d(new ApplicationPrivate())
 
 void Application::run()
 {
-	if (!inst)
-		throw std::logic_error(std::string(__PRETTY_FUNCTION__).append(": There is no instance of application!"));
+	CHECK_INST;
 		
 	if (!inst->d->mainWindow)
 		throw std::logic_error(std::string(__PRETTY_FUNCTION__).append(": There is no instance of main window!"));
@@ -125,11 +128,20 @@ void Application::run()
 
 void Application::setMainWindow(Window* window)
 {
-	if (inst) {
-		inst->d->mainWindow=window;
-	} else {
-		throw std::logic_error(std::string(__PRETTY_FUNCTION__).append(": There is no instance of application!"));
-	}
+	CHECK_INST;
+	inst->d->mainWindow=window;
+}
+
+void Application::stealFocus(Window *window)
+{
+	CHECK_INST;
+	inst->d->stealedFocusWindow=window;
+}
+
+void Application::releaseFocus()
+{
+	CHECK_INST;
+	inst->d->stealedFocusWindow=NULL;
 }
 
 Size Application::terminalSize()
@@ -139,11 +151,18 @@ Size Application::terminalSize()
 
 gboolean ApplicationPrivate::stdinEvent(GIOChannel* iochan, GIOCondition cond, gpointer data)
 {
-	static_assert(sizeof(wint_t)==sizeof(wchar_t), "wchar_t is too small for storing UTF chars!");
+	static_assert(sizeof(wint_t)==sizeof(KeyEvent::key_t), "KeyEvent::key_t is too small for storing UTF chars!");
 	wint_t key;
-	int res=get_wch(&key);
-	if (res!=ERR)
-		Application::inst->d->mainWindow->keyPressedEvent(KeyEvent(key, res==KEY_CODE_YES));
+	const auto res=get_wch(&key);
+	if (res!=ERR) {
+		ApplicationPrivate *p=Application::inst->d.get();
+		Window *win=p->stealedFocusWindow ? p->stealedFocusWindow : p->mainWindow;
+		if (key==127) {// Fix backpspace key
+			win->keyPressedEvent(KeyEvent(KeyEvent::KeyBackspace, true));
+		} else {
+			win->keyPressedEvent(KeyEvent(key, res==KEY_CODE_YES));		
+		}
+	}
 	return TRUE;
 }
 

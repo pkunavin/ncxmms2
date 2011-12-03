@@ -31,7 +31,10 @@ namespace ncxmms2
 		static void init(bool useColors=true);
 		static void run();
 		static void shutdown();
-		static void setMainWindow(Window* window);
+		static void setMainWindow(Window *window);
+		
+		static void stealFocus(Window *window);
+		static void releaseFocus();
 
 		static Size terminalSize();
 				

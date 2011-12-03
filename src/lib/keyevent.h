@@ -28,7 +28,9 @@ namespace ncxmms2
 		
 		KeyEvent(key_t key, bool isFunctionKey) : m_key(key)
 		{
-			m_isFunctionKey=isFunctionKey || key==KeyEnter;
+			m_isFunctionKey=isFunctionKey 
+			                || key==KeyEnter
+			                || key==KeyEscape;
 		}
 
 		key_t key() const          {return m_key;}
@@ -41,8 +43,13 @@ namespace ncxmms2
 			KeyLeft   = KEY_LEFT,
 			KeyRight  = KEY_RIGHT,
 
-			KeyEnter  = '\n',
-			KeyDelete = KEY_DC
+			KeyHome = KEY_HOME,
+			KeyEnd  = KEY_END,
+			
+			KeyEnter     = '\n',
+			KeyEscape    = '\033',
+			KeyDelete    = KEY_DC,
+			KeyBackspace = KEY_BACKSPACE
 		};
 
 	private:
