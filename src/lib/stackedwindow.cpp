@@ -14,61 +14,74 @@
  *  GNU General Public License for more details.
  */
 
+#include <vector>
 #include "stackedwindow.h"
+
+namespace ncxmms2 
+{
+	class StackedWindowPrivate
+	{
+	public:
+		StackedWindowPrivate() : currentIndex(-1) {}
+		
+		std::vector<Window*> windows;
+		int currentIndex;
+	};
+}
 
 using namespace ncxmms2;
 
 StackedWindow::StackedWindow(int lines, int cols, int yPos, int xPos, Window* parent) :
 	Window(lines, cols, yPos, xPos, parent),
-	m_currentIndex(-1)
+	d(new StackedWindowPrivate())
 {
 
 }
 
 void StackedWindow::addWindow(Window *window)
 {
-	if (m_currentIndex!=-1)
-		m_windows[m_currentIndex]->hide();
+	if (d->currentIndex!=-1)
+		d->windows[d->currentIndex]->hide();
 	
-	m_currentIndex=m_windows.size();
-	m_windows.push_back(window);
+	d->currentIndex=d->windows.size();
+	d->windows.push_back(window);
 }
 
 Window *StackedWindow::window(int index) const
 {
-	return m_windows[index];
+	return d->windows[index];
 }
 
 void StackedWindow::setCurrentIndex(int index)
 {
-	if (m_currentIndex!=-1)
-		m_windows[m_currentIndex]->hide();
-	m_currentIndex=index;
-	m_windows[index]->show();
+	if (d->currentIndex!=-1)
+		d->windows[d->currentIndex]->hide();
+	d->currentIndex=index;
+	d->windows[index]->show();
 }
 
 int StackedWindow::size() const
 {
-	return m_windows.size();
+	return d->windows.size();
 }
 
 int StackedWindow::currentIndex() const
 {
-	return m_currentIndex;
+	return d->currentIndex;
 }
 
 void StackedWindow::keyPressedEvent(const KeyEvent& keyEvent)
 {
-	m_windows[m_currentIndex]->keyPressedEvent(keyEvent);
+	d->windows[d->currentIndex]->keyPressedEvent(keyEvent);
 }
 
 void StackedWindow::resizeEvent(const Size& size)
 {
 	Window::resizeEvent(size);
-	for (Window *win : m_windows)
+	for (Window *win : d->windows)
 		win->resizeEvent(size);
 	
-	m_windows[m_currentIndex]->show();
+	d->windows[d->currentIndex]->show();
 }
 
 StackedWindow::~StackedWindow()

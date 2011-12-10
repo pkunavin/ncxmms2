@@ -18,17 +18,16 @@
 #define STACKEDWINDOW_H
 
 #include "window.h"
-#include <vector>
 
 namespace ncxmms2
 {
+	class StackedWindowPrivate;
+	
 	class StackedWindow : public Window
 	{
 	public:
 		StackedWindow(int lines, int cols, int yPos, int xPos, Window *parent);
 		~StackedWindow();
-		
-		
 		
 		void addWindow(ncxmms2::Window *window);
 		Window *window(int index) const;
@@ -41,8 +40,7 @@ namespace ncxmms2
 		virtual void resizeEvent(const Size& size);
 		
 	private:
-		std::vector<Window*> m_windows;
-		int m_currentIndex;
+		std::unique_ptr<StackedWindowPrivate> d;
 	};
 }
 
