@@ -18,9 +18,10 @@
 #define ABSTRACTITEMVIEW_H
 
 #include "window.h"
-#include "timer.h"
 
 namespace ncxmms2 {
+
+class AbstractItemViewPrivate;
 
 class AbstractItemView : public Window
 {
@@ -65,23 +66,8 @@ protected:
     virtual void showEvent();
 
 private:
-    AbstractItemView(const AbstractItemView& other);
-    AbstractItemView& operator=(const AbstractItemView& other);
-
-    int m_currentItem;
-    int m_viewportFirstItem;
-    int m_viewportLastItem;
-
-
-    Timer m_hideSelectionTimer;
-    bool m_currentItemHidden;
-    unsigned int m_hideCurrentItemSelectionInterval;
-
-    CurrentItemChangedCallback m_currentItemChangedCallback;
-    void changeCurrentItem(int item);
-
-    void scrollUp();
-    void scrollDown();
+    friend class AbstractItemViewPrivate;
+    std::unique_ptr<AbstractItemViewPrivate> d;
 };
 } // ncxmms2
 

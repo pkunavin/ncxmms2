@@ -16,24 +16,53 @@
 
 #include <boost/bind.hpp>
 #include "abstractitemview.h"
+#include "timer.h"
 #include "painter.h"
+
+namespace ncxmms2 {
+
+class AbstractItemViewPrivate
+{
+public:
+    AbstractItemViewPrivate(AbstractItemView *_q) :
+        q(_q),
+        currentItem(-1),
+        viewportFirstItem(-1),
+        viewportLastItem(-1),
+        currentItemHidden(false),
+        hideCurrentItemSelectionInterval(0) {}
+
+    AbstractItemView *q;
+
+    int currentItem;
+    int viewportFirstItem;
+    int viewportLastItem;
+
+
+    Timer hideSelectionTimer;
+    bool currentItemHidden;
+    unsigned int hideCurrentItemSelectionInterval;
+
+    AbstractItemView::CurrentItemChangedCallback currentItemChangedCallback;
+    void changeCurrentItem(int item);
+
+    void scrollUp();
+    void scrollDown();
+};
+} // ncxmms2
 
 using namespace ncxmms2;
 
 AbstractItemView::AbstractItemView(int lines, int cols, int yPos, int xPos, Window *parent) :
     Window(lines, cols, yPos, xPos, parent),
-    m_currentItem(-1),
-    m_viewportFirstItem(-1),
-    m_viewportLastItem(-1),
-    m_currentItemHidden(false),
-    m_hideCurrentItemSelectionInterval(0)
+    d(new AbstractItemViewPrivate(this))
 {
-    m_hideSelectionTimer.connectTimeoutSignal(boost::bind(&AbstractItemView::hideCurrentItem, this));
+    d->hideSelectionTimer.connectTimeoutSignal(boost::bind(&AbstractItemView::hideCurrentItem, this));
 }
 
 void AbstractItemView::setCurrentItemChangedCallback(const CurrentItemChangedCallback& callback)
 {
-    m_currentItemChangedCallback = callback;
+    d->currentItemChangedCallback = callback;
 }
 
 void AbstractItemView::reset()
@@ -41,15 +70,15 @@ void AbstractItemView::reset()
     const int itemsNum = itemsCount();
 
     if (itemsNum > 0) {
-        changeCurrentItem(0);
-        m_viewportFirstItem = 0;
-        m_viewportLastItem = itemsNum>lines() ? lines() : itemsNum;
-        if (m_hideCurrentItemSelectionInterval)
-            m_hideSelectionTimer.start(m_hideCurrentItemSelectionInterval);
+        d->changeCurrentItem(0);
+        d->viewportFirstItem = 0;
+        d->viewportLastItem = itemsNum > lines() ? lines() : itemsNum;
+        if (d->hideCurrentItemSelectionInterval)
+            d->hideSelectionTimer.start(d->hideCurrentItemSelectionInterval);
     } else {
-        changeCurrentItem(-1);
-        m_viewportFirstItem = -1;
-        m_viewportLastItem = -1;
+        d->changeCurrentItem(-1);
+        d->viewportFirstItem = -1;
+        d->viewportLastItem = -1;
     }
 
     update();
@@ -60,7 +89,7 @@ void AbstractItemView::redrawItem(int item)
     if (isHidden())
         return;
 
-    if (item >= m_viewportFirstItem && item < m_viewportLastItem)
+    if (item >= d->viewportFirstItem && item < d->viewportLastItem)
         drawItem(item);
     Painter(this).flush();
 }
@@ -70,8 +99,8 @@ void AbstractItemView::redrawItems(int first, int last)
     if (isHidden())
         return;
 
-    const int firstItem = std::max(first, m_viewportFirstItem);
-    const int lastItem = std::min(last, m_viewportLastItem);
+    const int firstItem = std::max(first, d->viewportFirstItem);
+    const int lastItem = std::min(last, d->viewportLastItem);
 
     for (int item = firstItem; item < lastItem; ++item) {
         drawItem(item);
@@ -84,15 +113,15 @@ void AbstractItemView::redrawAll()
     if (isHidden())
         return;
 
-    for (int i = m_viewportFirstItem; i < m_viewportLastItem; ++i) {
+    for (int i = d->viewportFirstItem; i < d->viewportLastItem; ++i) {
         drawItem(i);
     }
 
     Painter painter(this);
-    if (m_viewportFirstItem == -1) {
+    if (d->viewportFirstItem == -1) {
         painter.clearWindow();
     } else {
-        for (int i = m_viewportLastItem; i < lines(); ++i) {
+        for (int i = d->viewportLastItem; i < lines(); ++i) {
             painter.clearLine(i);
         }
     }
@@ -102,24 +131,24 @@ void AbstractItemView::redrawAll()
 
 void AbstractItemView::itemAdded()
 {
-    if (m_currentItem == -1)
+    if (d->currentItem == -1)
         reset();
 
     const int itemsNum = itemsCount();
     if (lines() >= itemsNum) {
-        m_viewportLastItem = itemsNum;
+        d->viewportLastItem = itemsNum;
         redrawItem(itemsNum - 1);
     }
 }
 
 void AbstractItemView::itemInserted(int item)
 {
-    if (m_currentItem == -1)
+    if (d->currentItem == -1)
         reset();
 
     const int itemsNum = itemsCount();
     if (lines() >= itemsNum)
-        m_viewportLastItem = itemsNum;
+        d->viewportLastItem = itemsNum;
 
     redrawItems(item, itemsNum);
 }
@@ -128,27 +157,27 @@ void AbstractItemView::itemRemoved(int item)
 {
     const int itemsNum = itemsCount();
 
-    if (m_currentItem > item || m_currentItem == itemsNum) {
-        changeCurrentItem(m_currentItem - 1);
-    } else if (m_currentItem == item) {
+    if (d->currentItem > item || d->currentItem == itemsNum) {
+        d->changeCurrentItem(d->currentItem - 1);
+    } else if (d->currentItem == item) {
         /* Current item number is not changed, but items are moving,
     so information corresponding to the current item is changed */
-        changeCurrentItem(m_currentItem);
+        d->changeCurrentItem(d->currentItem);
     }
 
     if (lines() > itemsNum) {
-        m_viewportLastItem = itemsNum;
+        d->viewportLastItem = itemsNum;
         redrawAll();
     } else {
-        if (item < m_viewportFirstItem) {
-            --m_viewportFirstItem;
-            --m_viewportLastItem;
-        } else if (item < m_viewportLastItem) {
-            if (itemsNum >= m_viewportLastItem) {
-                redrawItems(item, m_viewportLastItem);
+        if (item < d->viewportFirstItem) {
+            --d->viewportFirstItem;
+            --d->viewportLastItem;
+        } else if (item < d->viewportLastItem) {
+            if (itemsNum >= d->viewportLastItem) {
+                redrawItems(item, d->viewportLastItem);
             } else {
-                --m_viewportFirstItem;
-                --m_viewportLastItem;
+                --d->viewportFirstItem;
+                --d->viewportLastItem;
                 redrawAll();
             }
         }
@@ -167,7 +196,7 @@ void AbstractItemView::itemEntered(int item)
 
 int AbstractItemView::currentItem() const
 {
-    return m_currentItem;
+    return d->currentItem;
 }
 
 void AbstractItemView::setCurrentItem(int item)
@@ -175,46 +204,46 @@ void AbstractItemView::setCurrentItem(int item)
     if (item < 0 || item >= itemsCount())
         return;
 
-    if (!(item >= m_viewportFirstItem && item < m_viewportLastItem))
+    if (!(item >= d->viewportFirstItem && item < d->viewportLastItem))
         setViewportFirstItem(item);
 
-    changeCurrentItem(item);
+    d->changeCurrentItem(item);
     redrawAll();
 }
 
 bool AbstractItemView::isCurrentItemHidden() const
 {
-    return m_currentItemHidden;
+    return d->currentItemHidden;
 }
 
 void AbstractItemView::setHideCurrentItemInterval(unsigned int sec)
 {
-    m_hideCurrentItemSelectionInterval = sec;
-    if (m_hideCurrentItemSelectionInterval) {
-        m_hideSelectionTimer.start(m_hideCurrentItemSelectionInterval);
+    d->hideCurrentItemSelectionInterval = sec;
+    if (d->hideCurrentItemSelectionInterval) {
+        d->hideSelectionTimer.start(d->hideCurrentItemSelectionInterval);
     } else {
-        m_hideSelectionTimer.stop();
-        m_currentItemHidden = false;
-        redrawItem(m_currentItem);
+        d->hideSelectionTimer.stop();
+        d->currentItemHidden = false;
+        redrawItem(d->currentItem);
     }
 }
 
 void AbstractItemView::showCurrentItem()
 {
-    m_currentItemHidden = false;
-    redrawItem(m_currentItem);
-    if (m_hideCurrentItemSelectionInterval)
-        m_hideSelectionTimer.start(m_hideCurrentItemSelectionInterval);
+    d->currentItemHidden = false;
+    redrawItem(d->currentItem);
+    if (d->hideCurrentItemSelectionInterval)
+        d->hideSelectionTimer.start(d->hideCurrentItemSelectionInterval);
 }
 
 int AbstractItemView::itemLine(int item) const
 {
-    return item - m_viewportFirstItem;
+    return item - d->viewportFirstItem;
 }
 
 int AbstractItemView::viewportFirstItem() const
 {
-    return m_viewportFirstItem;
+    return d->viewportFirstItem;
 }
 
 void AbstractItemView::setViewportFirstItem(int item)
@@ -223,13 +252,13 @@ void AbstractItemView::setViewportFirstItem(int item)
         return;
 
     if (item + lines() < itemsCount()) {
-        m_viewportFirstItem = item;
-        m_currentItem = item;
-        m_viewportLastItem = m_viewportFirstItem + lines();
+        d->viewportFirstItem = item;
+        d->currentItem = item;
+        d->viewportLastItem = d->viewportFirstItem + lines();
     } else {
-        m_viewportLastItem = itemsCount();
-        m_viewportFirstItem = m_viewportLastItem - lines();
-        m_currentItem = m_viewportFirstItem;
+        d->viewportLastItem = itemsCount();
+        d->viewportFirstItem = d->viewportLastItem - lines();
+        d->currentItem = d->viewportFirstItem;
     }
     redrawAll();
 }
@@ -243,30 +272,30 @@ void AbstractItemView::keyPressedEvent(const KeyEvent& keyEvent)
 {
     switch (keyEvent.key()) {
         case KeyEvent::KeyUp:
-            if (m_currentItemHidden) {
-                m_currentItemHidden = false;
-                redrawItem(m_currentItem);
+            if (d->currentItemHidden) {
+                d->currentItemHidden = false;
+                redrawItem(d->currentItem);
             } else {
-                scrollUp();
+                d->scrollUp();
             }
-            if (m_hideCurrentItemSelectionInterval)
-                m_hideSelectionTimer.start(m_hideCurrentItemSelectionInterval);
+            if (d->hideCurrentItemSelectionInterval)
+                d->hideSelectionTimer.start(d->hideCurrentItemSelectionInterval);
             break;
 
         case KeyEvent::KeyDown:
-            if (m_currentItemHidden) {
-                m_currentItemHidden = false;
-                redrawItem(m_currentItem);
+            if (d->currentItemHidden) {
+                d->currentItemHidden = false;
+                redrawItem(d->currentItem);
             } else {
-                scrollDown();
+                d->scrollDown();
             }
-            if (m_hideCurrentItemSelectionInterval)
-                m_hideSelectionTimer.start(m_hideCurrentItemSelectionInterval);
+            if (d->hideCurrentItemSelectionInterval)
+                d->hideSelectionTimer.start(d->hideCurrentItemSelectionInterval);
             break;
 
         case KeyEvent::KeyEnter:
-            if (m_currentItem != -1 && !m_currentItemHidden)
-                itemEntered(m_currentItem);
+            if (d->currentItem != -1 && !d->currentItemHidden)
+                itemEntered(d->currentItem);
             break;
 
         default:
@@ -274,48 +303,48 @@ void AbstractItemView::keyPressedEvent(const KeyEvent& keyEvent)
     }
 }
 
-void AbstractItemView::scrollUp()
+void AbstractItemViewPrivate::scrollUp()
 {
-    if (m_currentItem == -1)
+    if (currentItem == -1)
         return;
 
-    if (m_currentItem > 0) {
-        changeCurrentItem(m_currentItem - 1);
+    if (currentItem > 0) {
+        changeCurrentItem(currentItem - 1);
 
-        if (m_currentItem < m_viewportFirstItem) {
-            --m_viewportFirstItem;
-            --m_viewportLastItem;
-            redrawAll();
+        if (currentItem < viewportFirstItem) {
+            --viewportFirstItem;
+            --viewportLastItem;
+            q->redrawAll();
         } else {
-            drawItem(m_currentItem + 1);
-            redrawItem(m_currentItem);
+            q->drawItem(currentItem + 1);
+            q->redrawItem(currentItem);
         }
     }
 }
 
-void AbstractItemView::scrollDown()
+void AbstractItemViewPrivate::scrollDown()
 {
-    if (m_currentItem == -1)
+    if (currentItem == -1)
         return;
 
-    if (m_currentItem < itemsCount() - 1) {
-        changeCurrentItem(m_currentItem + 1);
-        if (m_currentItem >= m_viewportLastItem) {
-            ++m_viewportFirstItem;
-            ++m_viewportLastItem;
-            redrawAll();
+    if (currentItem < q->itemsCount() - 1) {
+        changeCurrentItem(currentItem + 1);
+        if (currentItem >= viewportLastItem) {
+            ++viewportFirstItem;
+            ++viewportLastItem;
+            q->redrawAll();
         } else {
-            drawItem(m_currentItem - 1);
-            redrawItem(m_currentItem);
+            q->drawItem(currentItem - 1);
+            q->redrawItem(currentItem);
         }
     }
 }
 
-void AbstractItemView::changeCurrentItem(int item)
+void AbstractItemViewPrivate::changeCurrentItem(int item)
 {
-    m_currentItem = item;
-    if (!m_currentItemChangedCallback.empty())
-        m_currentItemChangedCallback(m_currentItem);
+    currentItem = item;
+    if (!currentItemChangedCallback.empty())
+        currentItemChangedCallback(currentItem);
 }
 
 void AbstractItemView::resizeEvent(const Size& size)
@@ -323,15 +352,15 @@ void AbstractItemView::resizeEvent(const Size& size)
     if (size.lines() > lines()) {
         int extraSize = size.lines() - lines();
 
-        if (itemsCount() > m_viewportLastItem) {
-            const int min = std::min(itemsCount() - m_viewportLastItem, extraSize);
-            m_viewportLastItem += min;
+        if (itemsCount() > d->viewportLastItem) {
+            const int min = std::min(itemsCount() - d->viewportLastItem, extraSize);
+            d->viewportLastItem += min;
             extraSize -= min;
         }
 
-        if (extraSize > 0 && m_viewportFirstItem > 0) {
-            const int min = std::min(m_viewportFirstItem, extraSize);
-            m_viewportFirstItem -= min;
+        if (extraSize > 0 && d->viewportFirstItem > 0) {
+            const int min = std::min(d->viewportFirstItem, extraSize);
+            d->viewportFirstItem -= min;
             extraSize -= min;
         }
     }
@@ -342,14 +371,14 @@ void AbstractItemView::resizeEvent(const Size& size)
         if (lines() > itemsCount())
             sizeDiff -= std::min(lines() - itemsCount(), sizeDiff);
 
-        if (sizeDiff > 0 && m_currentItem < m_viewportLastItem - 1) {
-            const int min = std::min(m_viewportLastItem - 1 - m_currentItem, sizeDiff);
-            m_viewportLastItem -= min;
+        if (sizeDiff > 0 && d->currentItem < d->viewportLastItem - 1) {
+            const int min = std::min(d->viewportLastItem - 1 - d->currentItem, sizeDiff);
+            d->viewportLastItem -= min;
             sizeDiff -= min;
         }
 
         if (sizeDiff > 0)
-            m_viewportFirstItem += sizeDiff;
+            d->viewportFirstItem += sizeDiff;
     }
 
     Window::resizeEvent(size);
@@ -357,9 +386,9 @@ void AbstractItemView::resizeEvent(const Size& size)
 
 void AbstractItemView::hideCurrentItem()
 {
-    m_hideSelectionTimer.stop();
-    m_currentItemHidden = true;
-    redrawItem(m_currentItem);
+    d->hideSelectionTimer.stop();
+    d->currentItemHidden = true;
+    redrawItem(d->currentItem);
 }
 
 AbstractItemView::~AbstractItemView()
