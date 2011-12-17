@@ -20,27 +20,27 @@
 #include "lib/window.h"
 #include "lib/lineedit.h"
 
-namespace ncxmms2 
+namespace ncxmms2 {
+
+class Label;
+
+class QuestionWindow : public Window
 {
-	class Label;
-	
-	class QuestionWindow : public Window
-	{
-	public:
-		QuestionWindow(int cols, int yPos, int xPos, Window *parent=0);
-		
-		void askQuestion(const std::string& question,
-		                 const LineEdit::ResultCallback& answerCallback,
-		                 const std::string& initialAnswer=std::string());
-		
-		virtual void resizeEvent(const Size &size);
-		
-	private:
-		Label *m_questionLabel;
-		LineEdit *m_answerEdit;
-		
-		void adjustSize();
-	};
-}
+public:
+    QuestionWindow(int cols, int yPos, int xPos, Window *parent = 0);
+
+    void askQuestion(const std::string& question,
+                     const LineEdit::ResultCallback& answerCallback,
+                     const std::string& initialAnswer=std::string());
+
+    virtual void resizeEvent(const Size &size);
+
+private:
+    Label *m_questionLabel;
+    LineEdit *m_answerEdit;
+
+    void adjustSize();
+};
+} // ncxmms2
 
 #endif // QUESTIONWINDOW_H

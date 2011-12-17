@@ -19,26 +19,26 @@
 
 using namespace ncxmms2;
 
-HeaderWindow::HeaderWindow(int lines, int cols, int yPos, int xPos, Window* parent) : 
-	Window(lines, cols, yPos, xPos, parent)
+HeaderWindow::HeaderWindow(int lines, int cols, int yPos, int xPos, Window *parent) :
+    Window(lines, cols, yPos, xPos, parent)
 {
-	
+
 }
 
 void HeaderWindow::setHeaderTitle(const std::string& string)
 {
-	m_headerTitle=string;
-	update();
+    m_headerTitle = string;
+    update();
 }
 
 void HeaderWindow::showEvent()
 {
-	Painter painter(this);
-	painter.clearLine();
-	painter.setBold(true);
-	painter.squeezedPrint(m_headerTitle, cols());
-	painter.drawHLine(0, 1, cols());
-	painter.flush();
+    Painter painter(this);
+    painter.clearLine();
+    painter.setBold(true);
+    painter.squeezedPrint(m_headerTitle, cols());
+    painter.drawHLine(0, 1, cols());
+    painter.flush();
 }
 
 

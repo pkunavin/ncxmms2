@@ -19,30 +19,30 @@
 
 #include "window.h"
 
-namespace ncxmms2
+namespace ncxmms2 {
+
+class StackedWindowPrivate;
+
+class StackedWindow : public Window
 {
-	class StackedWindowPrivate;
-	
-	class StackedWindow : public Window
-	{
-	public:
-		StackedWindow(int lines, int cols, int yPos, int xPos, Window *parent);
-		~StackedWindow();
-		
-		void addWindow(ncxmms2::Window *window);
-		Window *window(int index) const;
-		void setCurrentIndex(int index);
-		
-		int size() const;
-		int currentIndex() const;
-		
-		virtual void keyPressedEvent(const KeyEvent& keyEvent);
-		virtual void resizeEvent(const Size& size);
-		
-	private:
-		std::unique_ptr<StackedWindowPrivate> d;
-	};
-}
+public:
+    StackedWindow(int lines, int cols, int yPos, int xPos, Window *parent = 0);
+    ~StackedWindow();
+
+    void addWindow(Window *window);
+    Window *window(int index) const;
+    void setCurrentIndex(int index);
+
+    int size() const;
+    int currentIndex() const;
+
+    virtual void keyPressedEvent(const KeyEvent& keyEvent);
+    virtual void resizeEvent(const Size& size);
+
+private:
+    std::unique_ptr<StackedWindowPrivate> d;
+};
+} // ncxmms2
 
 
 #endif // STACKEDWINDOW_H

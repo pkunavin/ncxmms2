@@ -4,36 +4,36 @@
 #include <vector>
 #include "window.h"
 
-namespace ncxmms2
+namespace ncxmms2 {
+
+class WindowPrivate
 {
-	class WindowPrivate
-	{
-	public:
-		WindowPrivate(int lines_, int cols_, int yPos_, int xPos_, Window* parent_) :
-			parent(parent_),
-			focusedWindow(NULL),
-			lines(lines_),
-			cols(cols_),
-			yPos(yPos_),
-			xPos(xPos_),
-			isVisible(true) {}
+public:
+    WindowPrivate(int lines_, int cols_, int yPos_, int xPos_, Window *parent_) :
+        parent(parent_),
+        focusedWindow(NULL),
+        lines(lines_),
+        cols(cols_),
+        yPos(yPos_),
+        xPos(xPos_),
+        isVisible(true) {}
 
-		WINDOW *cursesWin;
-		Window *parent;
-		std::vector<Window*> children;
-		Window *focusedWindow;
+    WINDOW *cursesWin;
+    Window *parent;
+    std::vector<Window*> children;
+    Window *focusedWindow;
 
-		int lines;
-		int cols;
+    int lines;
+    int cols;
 
-		int yPos;
-		int xPos;
+    int yPos;
+    int xPos;
 
-		bool isVisible;
+    bool isVisible;
 
-		std::string title;
-		Window::TitleChangedCallback titleChangedCallback;
-	};
-}
+    std::string title;
+    Window::TitleChangedCallback titleChangedCallback;
+};
+} // ncxmms2
 
 #endif // WINDOW_P_H

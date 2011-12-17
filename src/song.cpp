@@ -22,30 +22,30 @@ using namespace ncxmms2;
 
 void Song::loadInfo(const Xmms::PropDict& info)
 {
-	m_id=info.get<int>("id");
-	
-	m_title.clear();
-	if (!info.contains("title")) {
-		std::string url=Xmms::decodeUrl(info.get<std::string>("url"));
-		const std::string::size_type slashPos=url.rfind('/');
-		if (!(slashPos==std::string::npos || slashPos+1>=url.size()))
-			m_title=url.substr(slashPos+1);
-	} else {
-		m_title=info.get<std::string>("title");
-	}
-	
-	if (info.contains("artist")) {
-		m_artist=info.get<std::string>("artist");
-	} else {
-		m_artist.clear();
-	}
-	
-	if (info.contains("duration")) {
-		m_durartion=info.get<int>("duration");
-		m_durationString=Utils::getTimeStringFromInt(m_durartion);
-	} else {
-		m_durartion=0;
-		m_durationString.clear();
-	}
+    m_id = info.get<int>("id");
+
+    m_title.clear();
+    if (!info.contains("title")) {
+        std::string url = Xmms::decodeUrl(info.get<std::string>("url"));
+        const std::string::size_type slashPos = url.rfind('/');
+        if (!(slashPos == std::string::npos || slashPos + 1 >= url.size()))
+            m_title = url.substr(slashPos+1);
+    } else {
+        m_title = info.get<std::string>("title");
+    }
+
+    if (info.contains("artist")) {
+        m_artist = info.get<std::string>("artist");
+    } else {
+        m_artist.clear();
+    }
+
+    if (info.contains("duration")) {
+        m_durartion = info.get<int>("duration");
+        m_durationString = Utils::getTimeStringFromInt(m_durartion);
+    } else {
+        m_durartion = 0;
+        m_durationString.clear();
+    }
 }
 

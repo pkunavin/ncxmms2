@@ -19,24 +19,24 @@
 
 #include "window.h"
 
-namespace ncxmms2
+namespace ncxmms2 {
+
+class LabelPrivate;
+
+class Label : public Window
 {
-	class LabelPrivate;
-	
-	class Label : public Window
-	{
-	public:
-		Label(int lines, int cols, int yPos, int xPos, Window *parent=0);
-		
-		void setText(const std::string& text);
-		const std::string& text() const;
-		
-	protected:
-		void showEvent();
-		
-	private:
-		std::unique_ptr<LabelPrivate> d;
-	};
-}
+public:
+    Label(int lines, int cols, int yPos, int xPos, Window *parent = 0);
+
+    void setText(const std::string& text);
+    const std::string& text() const;
+
+protected:
+    void showEvent();
+
+private:
+    std::unique_ptr<LabelPrivate> d;
+};
+} // ncxmms2
 
 #endif // LABEL_H

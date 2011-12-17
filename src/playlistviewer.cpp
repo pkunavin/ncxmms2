@@ -19,26 +19,26 @@
 
 using namespace ncxmms2;
 
-PlaylistViewer::PlaylistViewer(Xmms::Client* xmmsClient, int lines, int cols, int yPos, int xPos, Window* parent) :
-	PlaylistWindow(std::string(), xmmsClient, lines, cols, yPos, xPos, parent),
-	m_xmmsClient(xmmsClient)
+PlaylistViewer::PlaylistViewer(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent) :
+    PlaylistWindow(std::string(), xmmsClient, lines, cols, yPos, xPos, parent),
+    m_xmmsClient(xmmsClient)
 {
-	setHideCurrentItemInterval(0);
-	
-	m_xmmsClient->playlist.currentActive()(Xmms::bind(&PlaylistViewer::getCurrentPlaylist, this));
-	m_xmmsClient->playlist.broadcastLoaded()(Xmms::bind(&PlaylistViewer::getCurrentPlaylist, this));
+    setHideCurrentItemInterval(0);
+
+    m_xmmsClient->playlist.currentActive()(Xmms::bind(&PlaylistViewer::getCurrentPlaylist, this));
+    m_xmmsClient->playlist.broadcastLoaded()(Xmms::bind(&PlaylistViewer::getCurrentPlaylist, this));
 }
 
 void PlaylistViewer::itemEntered(int item)
 {
-	if (playlist()!=m_currentPlaylist) 
+	if (playlist() != m_currentPlaylist)
 		m_xmmsClient->playlist.load(playlist());
-	
+
 	PlaylistWindow::itemEntered(item);
 }
 
 bool PlaylistViewer::getCurrentPlaylist(const std::string& playlist)
 {
-	m_currentPlaylist=playlist;
+	m_currentPlaylist = playlist;
 	return true;
 }

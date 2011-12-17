@@ -19,21 +19,21 @@
 
 #include "lib/window.h"
 
-namespace ncxmms2
-{
-	class HeaderWindow : public Window
-	{
-	public:
-		HeaderWindow(int lines, int cols, int yPos, int xPos, ncxmms2::Window* parent=0);
-		
-		void setHeaderTitle(const std::string& string);
+namespace ncxmms2 {
 
-	protected:
-		virtual void showEvent();
-		
-	private:
-		std::string m_headerTitle;
-	};
-}
+class HeaderWindow : public Window
+{
+public:
+    HeaderWindow(int lines, int cols, int yPos, int xPos, Window *parent = 0);
+
+    void setHeaderTitle(const std::string& string);
+
+protected:
+    virtual void showEvent();
+
+private:
+    std::string m_headerTitle;
+};
+} // ncxmms2
 
 #endif // HEADERWINDOW_H

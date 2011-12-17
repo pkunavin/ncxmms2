@@ -19,34 +19,34 @@
 
 #include "window.h"
 
-namespace ncxmms2 
+namespace ncxmms2 {
+
+class LineEditPrivate;
+
+class LineEdit : public Window
 {
-	class LineEditPrivate;
-	
-	class LineEdit : public Window
-	{
-	public:
-		LineEdit(int cols, int yPos, int xPos, Window *parent=0);
-		
-		enum ResultCode
-		{
-			Rejected,
-			Accepted
-		};
-		typedef boost::function<void (const std::string&, ResultCode)> ResultCallback;
-				
-		void edit(const ResultCallback& resultCallback, const std::string& text=std::string());
-		void edit(const ResultCallback& resultCallback, const std::wstring& text=std::wstring());
-			
-		virtual void keyPressedEvent(const KeyEvent& keyEvent);
-		virtual void resizeEvent(const Size& size);
-		
-	protected:
-		virtual void showEvent();
-		
-	private:
-		std::unique_ptr<LineEditPrivate> d;
-	};
-}
+public:
+    LineEdit(int cols, int yPos, int xPos, Window *parent = 0);
+
+    enum ResultCode
+    {
+        Rejected,
+        Accepted
+    };
+    typedef boost::function<void (const std::string&, ResultCode)> ResultCallback;
+
+    void edit(const ResultCallback& resultCallback, const std::string& text = std::string());
+    void edit(const ResultCallback& resultCallback, const std::wstring& text = std::wstring());
+
+    virtual void keyPressedEvent(const KeyEvent& keyEvent);
+    virtual void resizeEvent(const Size& size);
+
+protected:
+    virtual void showEvent();
+
+private:
+    std::unique_ptr<LineEditPrivate> d;
+};
+} // ncxmms2
 
 #endif // LINEEDIT_H

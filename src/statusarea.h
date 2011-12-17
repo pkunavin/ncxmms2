@@ -23,47 +23,46 @@
 #include "lib/lineedit.h"
 #include "lib/timer.h"
 
-namespace ncxmms2 
+namespace ncxmms2 {
+
+class PlaybackProgressBar;
+class StackedWindow;
+
+class StatusArea : public Window
 {
-	class PlaybackProgressBar;
-	class StackedWindow;
-	
-	class StatusArea : public Window
-	{
-	public:
-		StatusArea(Xmms::Client *client, int lines, int cols, int yPos, int xPos, Window *parent=0);
-		~StatusArea();
-		
-		static void showMessage(const std::string& message);
-		static void askQuestion(const std::string& question,
-		                        const LineEdit::ResultCallback& answerCallback,
-		                        const std::string& initialAnswer=std::string());
-		
-		Xmms::Playback::Status playbackStatus() const;
-		
-		void resizeEvent(const Size &size);
-	
-	private:
-		static StatusArea *inst;
-		
-		PlaybackProgressBar *m_playbackProgressBar;
-		
-		enum StackedWindows
-		{
-			StackedPlaybackStatusWindow,
-			StackedMessageWindow,
-			StackedQuestionWindow
-		};
-		
-		StackedWindow *m_stackedWindow;
-		Timer m_timer;
-		
-		void _showMessage(const std::string& message);
-		void _askQuestion(const std::string& question,
-		                  const LineEdit::ResultCallback& answerCallback,
-		                  const std::string& initialAnswer=std::string());
-	};
-	
-}
+public:
+    StatusArea(Xmms::Client *client, int lines, int cols, int yPos, int xPos, Window *parent = 0);
+    ~StatusArea();
+
+    static void showMessage(const std::string& message);
+    static void askQuestion(const std::string& question,
+                            const LineEdit::ResultCallback& answerCallback,
+                            const std::string& initialAnswer = std::string());
+
+    Xmms::Playback::Status playbackStatus() const;
+
+    void resizeEvent(const Size& size);
+
+private:
+    static StatusArea *inst;
+
+    PlaybackProgressBar *m_playbackProgressBar;
+
+    enum StackedWindows
+    {
+        StackedPlaybackStatusWindow,
+        StackedMessageWindow,
+        StackedQuestionWindow
+    };
+
+    StackedWindow *m_stackedWindow;
+    Timer m_timer;
+
+    void _showMessage(const std::string& message);
+    void _askQuestion(const std::string& question,
+                      const LineEdit::ResultCallback& answerCallback,
+                      const std::string& initialAnswer = std::string());
+};
+} // ncxmms2
 
 #endif // STATUSAREA_H

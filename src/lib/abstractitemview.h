@@ -20,69 +20,69 @@
 #include "window.h"
 #include "timer.h"
 
-namespace ncxmms2
+namespace ncxmms2 {
+
+class AbstractItemView : public Window
 {
-	class AbstractItemView : public Window
-	{
-	public:
-		AbstractItemView(int lines, int cols, int yPos, int xPos, Window *parent=0);
-		~AbstractItemView();
+public:
+    AbstractItemView(int lines, int cols, int yPos, int xPos, Window *parent = 0);
+    ~AbstractItemView();
 
-		virtual void keyPressedEvent(const KeyEvent& keyEvent);
-		virtual void resizeEvent(const Size& size);
-		
-		int currentItem() const;
-		void setCurrentItem(int item);
-		bool isCurrentItemHidden() const;
-		void setHideCurrentItemInterval(unsigned int sec);
-		void showCurrentItem();
-		void hideCurrentItem();
-		
-		typedef boost::function<void (int)> CurrentItemChangedCallback;
-		void setCurrentItemChangedCallback(const CurrentItemChangedCallback& callback);
-		
-	protected:
-		virtual void drawItem(int item)=0;
-		virtual int itemsCount() const=0;
-		
-		int itemLine(int item) const;
-		
-		int viewportFirstItem() const;
-		void setViewportFirstItem(int item);
-		
-		void redrawItem(int item);
-		void redrawItems(int first, int last);
-		void redrawAll();
-		void reset();
-		
-		void itemAdded();
-		void itemInserted(int item);
-		void itemRemoved(int item);
-		void itemMoved(int from, int to);
-		
-		virtual void itemEntered(int item);
-		
-		virtual void showEvent();
+    virtual void keyPressedEvent(const KeyEvent& keyEvent);
+    virtual void resizeEvent(const Size& size);
 
-	private:
-		AbstractItemView(const AbstractItemView& other);
-		AbstractItemView& operator=(const AbstractItemView& other);
-		
-		int m_currentItem;
-		int m_viewportFirstItem;
-		int m_viewportLastItem;
-		
-		
-		Timer m_hideSelectionTimer;
-		bool m_currentItemHidden;
-		unsigned int m_hideCurrentItemSelectionInterval;
-		
-		CurrentItemChangedCallback m_currentItemChangedCallback;
-		void changeCurrentItem(int item);
-		
-		void scrollUp();
-		void scrollDown();
-	};
-}
+    int currentItem() const;
+    void setCurrentItem(int item);
+    bool isCurrentItemHidden() const;
+    void setHideCurrentItemInterval(unsigned int sec);
+    void showCurrentItem();
+    void hideCurrentItem();
+
+    typedef boost::function<void (int)> CurrentItemChangedCallback;
+    void setCurrentItemChangedCallback(const CurrentItemChangedCallback& callback);
+
+protected:
+    virtual void drawItem(int item) = 0;
+    virtual int itemsCount() const = 0;
+
+    int itemLine(int item) const;
+
+    int viewportFirstItem() const;
+    void setViewportFirstItem(int item);
+
+    void redrawItem(int item);
+    void redrawItems(int first, int last);
+    void redrawAll();
+    void reset();
+
+    void itemAdded();
+    void itemInserted(int item);
+    void itemRemoved(int item);
+    void itemMoved(int from, int to);
+
+    virtual void itemEntered(int item);
+
+    virtual void showEvent();
+
+private:
+    AbstractItemView(const AbstractItemView& other);
+    AbstractItemView& operator=(const AbstractItemView& other);
+
+    int m_currentItem;
+    int m_viewportFirstItem;
+    int m_viewportLastItem;
+
+
+    Timer m_hideSelectionTimer;
+    bool m_currentItemHidden;
+    unsigned int m_hideCurrentItemSelectionInterval;
+
+    CurrentItemChangedCallback m_currentItemChangedCallback;
+    void changeCurrentItem(int item);
+
+    void scrollUp();
+    void scrollDown();
+};
+} // ncxmms2
 
 #endif // ABSTRACTITEMVIEW_H

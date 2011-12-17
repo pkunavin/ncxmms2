@@ -17,27 +17,25 @@
 #ifndef HOTKEYS_H
 #define HOTKEYS_H
 
-namespace ncxmms2
+namespace ncxmms2 {
+namespace Hotkeys {
+enum
 {
-	namespace Hotkeys
-	{	
-		enum 
-		{
-			Quit = 'q',
-			
-			// Screens switching
-			PlaylistScreen               = '2',
-			LocalFileSystemBrowserScreen = '3',
-			PlaylistsBrowserScreen       = '6',
-			
-			// Playback control
-			PlaybackToggle       = 'P',
-			PlaybackStop         = 's',
-			PlaybackNext         = '>',
-			PlaybackPrev         = '<',
-			PlaybackSeekForward  = 'f',
-			PlaybackSeekBackward = 'b'
-		};
-	}
-}
+    Quit = 'q',
+
+    // Screens switching
+    PlaylistScreen               = '2',
+    LocalFileSystemBrowserScreen = '3',
+    PlaylistsBrowserScreen       = '6',
+
+    // Playback control
+    PlaybackToggle       = 'P',
+    PlaybackStop         = 's',
+    PlaybackNext         = '>',
+    PlaybackPrev         = '<',
+    PlaybackSeekForward  = 'f',
+    PlaybackSeekBackward = 'b'
+};
+} // Hotkeys
+} // ncxmms2
 #endif // HOTKEYS_H

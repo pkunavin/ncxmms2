@@ -20,33 +20,33 @@
 #include <memory>
 #include "size.h"
 
-namespace ncxmms2
+namespace ncxmms2 {
+
+class Window;
+class ApplicationPrivate;
+
+class Application
 {
-	class Window;
-	class ApplicationPrivate;
+public:
+    static void init(bool useColors = true);
+    static void run();
+    static void shutdown();
+    static void setMainWindow(Window *window);
 
-	class Application
-	{
-	public:
-		static void init(bool useColors=true);
-		static void run();
-		static void shutdown();
-		static void setMainWindow(Window *window);
-		
-		static void stealFocus(Window *window);
-		static void releaseFocus();
+    static void stealFocus(Window *window);
+    static void releaseFocus();
 
-		static Size terminalSize();
-				
-	private:
-		Application(bool useColors);
-		~Application();
-		Application(const Application& other);
-		Application& operator=(const Application& other);
-		static Application *inst;
-		std::unique_ptr<ApplicationPrivate> d;
-		friend class ApplicationPrivate;
-	};
-}
+    static Size terminalSize();
+
+private:
+    Application(bool useColors);
+    ~Application();
+    Application(const Application& other);
+    Application& operator=(const Application& other);
+    static Application *inst;
+    std::unique_ptr<ApplicationPrivate> d;
+    friend class ApplicationPrivate;
+};
+} // ncxmms2
 
 #endif // APPLICATION_H

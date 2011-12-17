@@ -19,45 +19,44 @@
 
 #include "lib/window.h"
 
-namespace Xmms 
-{
-	class Client;
+namespace Xmms {
+class Client;
 }
 
-namespace ncxmms2
+namespace ncxmms2 {
+
+class HeaderWindow;
+class StackedWindow;
+class StatusArea;
+
+class MainWindow : public Window
 {
-	class HeaderWindow;
-	class StackedWindow;
-	class StatusArea;
-	
-	class MainWindow : public Window
-	{
-	public:
-		MainWindow(Xmms::Client *xmmsClient);
-		~MainWindow();
-		
-		enum StackedWindows
-		{
-			StackedPlaylistWindow,
-			StackedLocalFileBrowserWindow,
-			StackedPlaylistsBrowser
-		};
-		
-		virtual void keyPressedEvent(const KeyEvent& keyEvent);
-		virtual void resizeEvent(const Size& size);
-		
-	private:
-		HeaderWindow *m_headerWindow;
-		StackedWindow *m_stackedWindow;
-		StatusArea *m_statusArea;
-		Xmms::Client *m_xmmsClient;
-		
-		const int m_minimumCols;
-		
-		void setVisibleWindow(StackedWindows win);
-		void handleStackedWindowTitleChanged(StackedWindows win, const std::string& title);
-	};
-}
+public:
+    MainWindow(Xmms::Client *xmmsClient);
+    ~MainWindow();
+
+    enum StackedWindows
+    {
+        StackedPlaylistWindow,
+        StackedLocalFileBrowserWindow,
+        StackedPlaylistsBrowser
+    };
+
+    virtual void keyPressedEvent(const KeyEvent& keyEvent);
+    virtual void resizeEvent(const Size& size);
+
+private:
+    HeaderWindow *m_headerWindow;
+    StackedWindow *m_stackedWindow;
+    StatusArea *m_statusArea;
+    Xmms::Client *m_xmmsClient;
+
+    const int m_minimumCols;
+
+    void setVisibleWindow(StackedWindows win);
+    void handleStackedWindowTitleChanged(StackedWindows win, const std::string& title);
+};
+} // ncxmms2
 
 
 #endif // MAINWINDOW_H

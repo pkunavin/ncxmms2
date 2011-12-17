@@ -20,26 +20,26 @@
 #include <memory>
 #include <boost/function.hpp>
 
-namespace ncxmms2
-{
-	class TimerPrivate;
+namespace ncxmms2 {
 
-	class Timer
-	{
-	public:
-		Timer();
-		~Timer();
-		
-		typedef boost::function<void ()> TimeoutFunction;
-		void connectTimeoutSignal(const TimeoutFunction& function);
-		void start(unsigned int interval);
-		void stop();
-		
-	private:
-		Timer(const Timer& other);
-		Timer& operator=(const Timer& other);
-		std::unique_ptr<TimerPrivate> d;
-	};
-}
+class TimerPrivate;
+
+class Timer
+{
+public:
+    Timer();
+    ~Timer();
+
+    typedef boost::function<void ()> TimeoutFunction;
+    void connectTimeoutSignal(const TimeoutFunction& function);
+    void start(unsigned int interval);
+    void stop();
+
+private:
+    Timer(const Timer& other);
+    Timer& operator=(const Timer& other);
+    std::unique_ptr<TimerPrivate> d;
+};
+} // ncxmms2
 
 #endif // TIMER_H

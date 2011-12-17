@@ -19,34 +19,34 @@
 
 using namespace ncxmms2;
 
-PlaybackProgressBar::PlaybackProgressBar(int lines, int cols, int yPos, int xPos, Window* parent) :
-	Window(lines, cols, yPos, xPos, parent),
-	m_value(0),
-	m_maxValue(0)
+PlaybackProgressBar::PlaybackProgressBar(int lines, int cols, int yPos, int xPos, Window *parent) :
+    Window(lines, cols, yPos, xPos, parent),
+    m_value(0),
+    m_maxValue(0)
 {
-	
+
 }
 
 void PlaybackProgressBar::setValue(int value)
 {
-	m_value=value;
-	update();
+    m_value = value;
+    update();
 }
 
 void PlaybackProgressBar::setMaxValue(int maxValue)
 {
-	m_maxValue=maxValue;
-	update();
+    m_maxValue = maxValue;
+    update();
 }
 
 void PlaybackProgressBar::showEvent()
 {
-	Painter painter(this);
-	painter.drawHLine(0, 0, cols());
-	if (m_maxValue>0) {
-		const int pos=((double)m_value/(double)m_maxValue)*cols();
-		painter.setBold(true);
-		painter.drawHLine(0, 0, pos);
-	}
-	painter.flush();
+    Painter painter(this);
+    painter.drawHLine(0, 0, cols());
+    if (m_maxValue > 0) {
+        const int pos = ((double)m_value / (double)m_maxValue) * cols();
+        painter.setBold(true);
+        painter.drawHLine(0, 0, pos);
+    }
+    painter.flush();
 }

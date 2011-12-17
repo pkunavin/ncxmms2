@@ -21,40 +21,40 @@
 #include "song.h"
 #include "lib/window.h"
 
-namespace ncxmms2
+namespace ncxmms2 {
+
+class PlaybackStatusWindow : public Window
 {
-	class PlaybackStatusWindow : public Window
-	{
-	public:
-		PlaybackStatusWindow(Xmms::Client *client, int lines, int cols, int yPos, int xPos, Window *parent=0);
-	
-		Xmms::Playback::Status playbackStatus() const;
-		
-		typedef boost::function<void (int)> PlaytimeChangedCallback;
-		void setPlaytimeChangedCallback(const PlaytimeChangedCallback& callback);
-		
-		typedef boost::function<void (const Song&)> CurrentSongChangedCallback;
-		void setCurrentSongChangedCallback(const CurrentSongChangedCallback& callback);
-		
-	protected:
-		virtual void showEvent();
-		
-	private:
-		PlaytimeChangedCallback m_playtimeChangedCallback;
-		CurrentSongChangedCallback m_currentSongChangedCallback;
-		
-		Xmms::Client *m_xmmsClient;
-		Xmms::Playback::Status m_playbackStatus;
-		Song m_currentSong;
-		int m_playbackPlaytime;
-		
-		// Callbacks
-		bool getPlaybackStatus(const Xmms::Playback::Status& status);
-		bool getCurrentId(const int& id);
-		bool getCurrentIdInfo(const Xmms::PropDict& info);
-		bool getPlaytime(const int& playtime);
-		bool handleIdInfoChanged(const int& id);
-	};
-}
+public:
+    PlaybackStatusWindow(Xmms::Client *client, int lines, int cols, int yPos, int xPos, Window *parent = 0);
+
+    Xmms::Playback::Status playbackStatus() const;
+
+    typedef boost::function<void (int)> PlaytimeChangedCallback;
+    void setPlaytimeChangedCallback(const PlaytimeChangedCallback& callback);
+
+    typedef boost::function<void (const Song&)> CurrentSongChangedCallback;
+    void setCurrentSongChangedCallback(const CurrentSongChangedCallback& callback);
+
+protected:
+    virtual void showEvent();
+
+private:
+    PlaytimeChangedCallback m_playtimeChangedCallback;
+    CurrentSongChangedCallback m_currentSongChangedCallback;
+
+    Xmms::Client *m_xmmsClient;
+    Xmms::Playback::Status m_playbackStatus;
+    Song m_currentSong;
+    int m_playbackPlaytime;
+
+    // Callbacks
+    bool getPlaybackStatus(const Xmms::Playback::Status& status);
+    bool getCurrentId(const int& id);
+    bool getCurrentIdInfo(const Xmms::PropDict& info);
+    bool getPlaytime(const int& playtime);
+    bool handleIdInfoChanged(const int& id);
+};
+} // ncxmms2
 
 #endif // PLAYBACKSTATUSWINDOW_H

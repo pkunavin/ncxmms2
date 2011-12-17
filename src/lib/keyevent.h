@@ -19,43 +19,43 @@
 
 #include <curses.h>
 
-namespace ncxmms2
+namespace ncxmms2 {
+
+class KeyEvent
 {
-	class KeyEvent
-	{
-	public:
-		typedef wchar_t key_t;
-		
-		KeyEvent(key_t key, bool isFunctionKey) : m_key(key)
-		{
-			m_isFunctionKey=isFunctionKey 
-			                || key==KeyEnter
-			                || key==KeyEscape;
-		}
+public:
+    typedef wchar_t key_t;
 
-		key_t key() const          {return m_key;}
-		bool isFunctionKey() const {return m_isFunctionKey;}
-		
-		enum
-		{
-			KeyDown   = KEY_DOWN,
-			KeyUp     = KEY_UP,
-			KeyLeft   = KEY_LEFT,
-			KeyRight  = KEY_RIGHT,
+    KeyEvent(key_t key, bool isFunctionKey) : m_key(key)
+    {
+        m_isFunctionKey = isFunctionKey
+                          || key==KeyEnter
+                          || key==KeyEscape;
+    }
 
-			KeyHome = KEY_HOME,
-			KeyEnd  = KEY_END,
-			
-			KeyEnter     = '\n',
-			KeyEscape    = '\033',
-			KeyDelete    = KEY_DC,
-			KeyBackspace = KEY_BACKSPACE
-		};
+    key_t key() const          {return m_key;}
+    bool isFunctionKey() const {return m_isFunctionKey;}
 
-	private:
-		key_t m_key;
-		bool m_isFunctionKey;
-	};
-}
+    enum
+    {
+        KeyDown   = KEY_DOWN,
+        KeyUp     = KEY_UP,
+        KeyLeft   = KEY_LEFT,
+        KeyRight  = KEY_RIGHT,
+
+        KeyHome = KEY_HOME,
+        KeyEnd  = KEY_END,
+
+        KeyEnter     = '\n',
+        KeyEscape    = '\033',
+        KeyDelete    = KEY_DC,
+        KeyBackspace = KEY_BACKSPACE
+    };
+
+private:
+    key_t m_key;
+    bool m_isFunctionKey;
+};
+} // ncxmms2
 
 #endif // KEYEVENT_H

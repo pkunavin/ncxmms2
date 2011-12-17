@@ -23,50 +23,50 @@
 #include "keyevent.h"
 #include "size.h"
 
-namespace ncxmms2
-{
-	class WindowPrivate;
+namespace ncxmms2 {
 
-	class Window
-	{
-	public:
-		Window(int lines, int cols, int yPos, int xPos, Window *parent=0);
-		virtual ~Window();
-		
-		virtual void keyPressedEvent(const KeyEvent& keyEvent);
-		virtual void resizeEvent(const Size& size);
-		
-		int lines() const;
-		int cols() const;
-		
-		int xPos() const;
-		int yPos() const;
-		
-		void move(int yPos, int xPos);
-		
-		void hide();
-		void show();
-		bool isHidden() const;
-		
-		void setFocus();
-		bool hasFocus() const;
-		
-		void setTitle(const std::string& title);
-		const std::string& title() const;
-		typedef boost::function<void (const std::string&)> TitleChangedCallback;
-		void setTitleChangedCallback(const TitleChangedCallback& callback);
-			
-	protected:
-		virtual void showEvent();
-		void update();
-						
-	private:
-		Window(const Window& other);
-		Window& operator=(const Window& other);
-		std::unique_ptr<WindowPrivate> d;
-		friend class Painter;
-	};
-}
+class WindowPrivate;
+
+class Window
+{
+public:
+    Window(int lines, int cols, int yPos, int xPos, Window *parent = 0);
+    virtual ~Window();
+
+    virtual void keyPressedEvent(const KeyEvent& keyEvent);
+    virtual void resizeEvent(const Size& size);
+
+    int lines() const;
+    int cols() const;
+
+    int xPos() const;
+    int yPos() const;
+
+    void move(int yPos, int xPos);
+
+    void hide();
+    void show();
+    bool isHidden() const;
+
+    void setFocus();
+    bool hasFocus() const;
+
+    void setTitle(const std::string& title);
+    const std::string& title() const;
+    typedef boost::function<void (const std::string&)> TitleChangedCallback;
+    void setTitleChangedCallback(const TitleChangedCallback& callback);
+
+protected:
+    virtual void showEvent();
+    void update();
+
+private:
+    Window(const Window& other);
+    Window& operator=(const Window& other);
+    std::unique_ptr<WindowPrivate> d;
+    friend class Painter;
+};
+} // ncxmms2
 
 
 #endif // WINDOW_H

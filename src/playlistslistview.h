@@ -23,35 +23,35 @@
 #include "lib/abstractitemview.h"
 #include "lib/lineedit.h"
 
-namespace ncxmms2
+namespace ncxmms2 {
+
+class PlaylistsListView : public AbstractItemView
 {
-	class PlaylistsListView : public AbstractItemView
-	{
-	public:
-		PlaylistsListView(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent=0);
-		
-		virtual void keyPressedEvent(const KeyEvent &keyEvent);
-		
-		std::string playlist(int item) const;
-		
-	protected:
-		virtual void drawItem(int item);
-		virtual int itemsCount() const;
-		virtual void itemEntered(int item);
-		
-	private:
-		Xmms::Client *m_xmmsClient;
-		std::vector<std::string> m_playlists;
-		std::string m_currentPlaylist;
-		
-		// Callbacks
-		bool getPlaylists(const Xmms::List<std::string>& playlists);
-		bool getCurrentPlaylist(const std::string& playlist);
-		bool handlePlaylistsChange(const Xmms::Dict& change);
-		
-		void createPlaylist(const std::string& playlist);
-		void renamePlaylist(const std::string& oldName, const std::string& newName);
-	};
-}
+public:
+    PlaylistsListView(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent = 0);
+
+    virtual void keyPressedEvent(const KeyEvent &keyEvent);
+
+    std::string playlist(int item) const;
+
+protected:
+    virtual void drawItem(int item);
+    virtual int itemsCount() const;
+    virtual void itemEntered(int item);
+
+private:
+    Xmms::Client *m_xmmsClient;
+    std::vector<std::string> m_playlists;
+    std::string m_currentPlaylist;
+
+    // Callbacks
+    bool getPlaylists(const Xmms::List<std::string>& playlists);
+    bool getCurrentPlaylist(const std::string& playlist);
+    bool handlePlaylistsChange(const Xmms::Dict& change);
+
+    void createPlaylist(const std::string& playlist);
+    void renamePlaylist(const std::string& oldName, const std::string& newName);
+};
+} // ncxmms2
 
 #endif // PLAYLISTSLISTVIEW_H

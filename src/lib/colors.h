@@ -17,19 +17,19 @@
 #ifndef COLORS_H
 #define COLORS_H
 
-namespace ncxmms2
+namespace ncxmms2 {
+
+enum Color
 {
-	enum Color
-	{
-		ColorBlack=1,
-		ColorRed,
-		ColorGreen,
-		ColorYellow,
-		ColorBlue,
-		ColorMagenta,
-		ColorCyan,
-		ColorWhite
-	};
-}
+    ColorBlack = 1,
+    ColorRed,
+    ColorGreen,
+    ColorYellow,
+    ColorBlue,
+    ColorMagenta,
+    ColorCyan,
+    ColorWhite
+};
+} // ncxmms2
 
 #endif // COLORS_H

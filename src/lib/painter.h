@@ -21,50 +21,50 @@
 #include <memory>
 #include "colors.h"
 
-namespace ncxmms2
+namespace ncxmms2 {
+
+class Window;
+class PainterPrivate;
+
+// Painter class acts like Qt's QPainter.
+class Painter
 {
-	class Window;
-	class PainterPrivate;
+public:
+    Painter(Window *window);
+    ~Painter();
 
-	// Painter class acts like Qt's QPainter.
-	class Painter
-	{
-	public:
-		Painter(Window *window);
-		~Painter();
+    void move(int x, int y);
+    void clearLine();
+    void clearLine(int line);
+    void fillLine(int line, Color color);
+    void setReverse(bool reverse);
+    void clearWindow();
+    void setBold(bool bold);
+    void setColor(Color color);
 
-		void move(int x, int y);
-		void clearLine();
-		void clearLine(int line);
-		void fillLine(int line, Color color);
-		void setReverse(bool reverse);
-		void clearWindow();
-		void setBold(bool bold);
-		void setColor(Color color);
+    void printChar(char ch);
+    void printChar(wchar_t ch);
 
-		void printChar(char ch);
-		void printChar(wchar_t ch);
-		
-		void printString(const std::string& str);
-		void printString(const std::string& str, std::string::size_type maxLength);
-		void printString(const char *str);
-		void printString(const std::wstring& str);
-		void printString(const wchar_t *str, size_t maxLength);
-		void squeezedPrint(const std::string& str, std::string::size_type maxLength);
+    void printString(const std::string& str);
+    void printString(const std::string& str, std::string::size_type maxLength);
+    void printString(const char *str);
+    void printString(const std::wstring& str);
+    void printString(const wchar_t *str, size_t maxLength);
+    void squeezedPrint(const std::string& str, std::string::size_type maxLength);
 
-		void drawHLine(int startX, int startY, int length, int symbol=0);
-		void drawVLine(int startX, int startY, int length, int symbol=0);
+    void drawHLine(int startX, int startY, int length, int symbol = 0);
+    void drawVLine(int startX, int startY, int length, int symbol = 0);
 
-		void flush();
+    void flush();
 
-		int xPosition() const;
-		int yPosition() const;
+    int xPosition() const;
+    int yPosition() const;
 
-	private:
-		Painter(const Painter&);
-		Painter& operator=(const Painter&);
-		std::unique_ptr<PainterPrivate> d;
-	};
-}
+private:
+    Painter(const Painter&);
+    Painter& operator=(const Painter&);
+    std::unique_ptr<PainterPrivate> d;
+};
+} // ncxmms2
 
 #endif // PAINTER_H

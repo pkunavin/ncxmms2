@@ -22,56 +22,56 @@
 
 using namespace ncxmms2;
 
-PlaylistsBrowser::PlaylistsBrowser(Xmms::Client* xmmsClient, int lines, int cols, int yPos, int xPos, Window* parent) :
-	Window(lines, cols, yPos, xPos, parent)
+PlaylistsBrowser::PlaylistsBrowser(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent) :
+    Window(lines, cols, yPos, xPos, parent)
 {
-	setTitle("Playlists browser");
-	
-	m_plsListView=new PlaylistsListView(xmmsClient, lines, PlaylistsListViewCols, 0, 0, this);
-	m_plsListView->setFocus();
-	
-	m_plsViewer=new PlaylistViewer(xmmsClient, lines, cols-PlaylistsListViewCols-1, 0, PlaylistsListViewCols+1, this);
-	m_plsViewer->hideCurrentItem();
-	
-	m_plsListView->setCurrentItemChangedCallback(boost::bind(&PlaylistsBrowser::setPlsViewerPlaylist, this, _1));
+    setTitle("Playlists browser");
+
+    m_plsListView = new PlaylistsListView(xmmsClient, lines, PlaylistsListViewCols, 0, 0, this);
+    m_plsListView->setFocus();
+
+    m_plsViewer = new PlaylistViewer(xmmsClient, lines, cols - PlaylistsListViewCols - 1, 0, PlaylistsListViewCols + 1, this);
+    m_plsViewer->hideCurrentItem();
+
+    m_plsListView->setCurrentItemChangedCallback(boost::bind(&PlaylistsBrowser::setPlsViewerPlaylist, this, _1));
 }
 
 void PlaylistsBrowser::showEvent()
 {
-	Painter painter(this);
-	painter.drawVLine(PlaylistsListViewCols, 0, lines());	
-	painter.flush();
+    Painter painter(this);
+    painter.drawVLine(PlaylistsListViewCols, 0, lines());
+    painter.flush();
 }
 
 void PlaylistsBrowser::setPlsViewerPlaylist(int item)
 {
-	m_plsViewer->setPlaylist(m_plsListView->playlist(item));
+    m_plsViewer->setPlaylist(m_plsListView->playlist(item));
 }
 
 void PlaylistsBrowser::resizeEvent(const Size& size)
 {
-	Window::resizeEvent(size);
-	m_plsListView->resizeEvent(Size(size.lines(), PlaylistsListViewCols));
-	m_plsViewer->resizeEvent(Size(size.lines(), size.cols()-PlaylistsListViewCols-1));
+    Window::resizeEvent(size);
+    m_plsListView->resizeEvent(Size(size.lines(), PlaylistsListViewCols));
+    m_plsViewer->resizeEvent(Size(size.lines(), size.cols() - PlaylistsListViewCols - 1));
 }
 
 void PlaylistsBrowser::keyPressedEvent(const KeyEvent& keyEvent)
 {
-	switch (keyEvent.key()) {
-		case KeyEvent::KeyRight:
-			if (!m_plsViewer->hasFocus()) {
-				m_plsViewer->setFocus();
-				m_plsViewer->showCurrentItem();
-			}
-			break;
-			
-		case KeyEvent::KeyLeft:
-			if (!m_plsListView->hasFocus()) {
-				m_plsListView->setFocus();
-				m_plsViewer->hideCurrentItem();
-			}
-			break;
-			
-		default: Window::keyPressedEvent(keyEvent);
-	}
+    switch (keyEvent.key()) {
+        case KeyEvent::KeyRight:
+            if (!m_plsViewer->hasFocus()) {
+                m_plsViewer->setFocus();
+                m_plsViewer->showCurrentItem();
+            }
+            break;
+
+        case KeyEvent::KeyLeft:
+            if (!m_plsListView->hasFocus()) {
+                m_plsListView->setFocus();
+                m_plsViewer->hideCurrentItem();
+            }
+            break;
+
+        default: Window::keyPressedEvent(keyEvent);
+    }
 }

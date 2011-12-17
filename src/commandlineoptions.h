@@ -21,27 +21,27 @@
 
 typedef struct _GOptionContext GOptionContext;
 
-namespace ncxmms2
+namespace ncxmms2 {
+
+class CommandLineOptions
 {
-	class CommandLineOptions
-	{
-	public:
-		CommandLineOptions(int argc, char **argv);
-		~CommandLineOptions();
-		
-		bool parsingErrored() const;
-		const std::string& errorString() const;
-		
-		const std::string& ipcPath() const;
-		bool useColors() const;
-		
-	private:
-		GOptionContext *optionContext;
-		std::string m_errorString;
-		
-		std::string m_ipcPath;
-		bool m_useColors;
-	};
-}
+public:
+    CommandLineOptions(int argc, char **argv);
+    ~CommandLineOptions();
+
+    bool parsingErrored() const;
+    const std::string& errorString() const;
+
+    const std::string& ipcPath() const;
+    bool useColors() const;
+
+private:
+    GOptionContext *optionContext;
+    std::string m_errorString;
+
+    std::string m_ipcPath;
+    bool m_useColors;
+};
+} // ncxmms2
 
 #endif // COMMANDLINEOPTIONS_H

@@ -17,19 +17,19 @@
 #include <glib.h>
 #include "timer.h"
 
-namespace ncxmms2
+namespace ncxmms2 {
+
+class TimerPrivate
 {
-	class TimerPrivate
-	{
-	public:
-		TimerPrivate() : id(0) {}
+public:
+    TimerPrivate() : id(0) {}
 
-		Timer::TimeoutFunction timeoutFunction;
-		guint id;
+    Timer::TimeoutFunction timeoutFunction;
+    guint id;
 
-		static gboolean timeoutCallback(gpointer data);
-	};
-}
+    static gboolean timeoutCallback(gpointer data);
+};
+} // ncxmms2
 
 using namespace ncxmms2;
 
@@ -40,35 +40,35 @@ Timer::Timer() : d(new TimerPrivate())
 
 void Timer::connectTimeoutSignal(const Timer::TimeoutFunction& function)
 {
-	d->timeoutFunction=function;
+    d->timeoutFunction=function;
 }
 
 void Timer::start(unsigned int interval)
 {
-	stop();
-	d->id=g_timeout_add_seconds(interval, TimerPrivate::timeoutCallback, d.get());
+    stop();
+    d->id = g_timeout_add_seconds(interval, TimerPrivate::timeoutCallback, d.get());
 }
 
 void Timer::stop()
 {
-	if (d->id) {
-		g_source_remove(d->id);
-		d->id=0;
-	}
+    if (d->id) {
+        g_source_remove(d->id);
+        d->id = 0;
+    }
 }
 
 gboolean TimerPrivate::timeoutCallback(gpointer data)
 {
-	TimerPrivate *d=static_cast<TimerPrivate*>(data);
-	if (!d->timeoutFunction.empty())
-		d->timeoutFunction();
-	
-	return TRUE;
+    TimerPrivate *d = static_cast<TimerPrivate*>(data);
+    if (!d->timeoutFunction.empty())
+        d->timeoutFunction();
+
+    return TRUE;
 }
 
 Timer::~Timer()
 {
-	if (d->id)
-		g_source_remove(d->id);
+    if (d->id)
+        g_source_remove(d->id);
 }
 

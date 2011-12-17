@@ -19,33 +19,32 @@
 
 #include <string>
 
-namespace Xmms
-{
-	class PropDict;
+namespace Xmms {
+class PropDict;
 }
 
-namespace ncxmms2
+namespace ncxmms2 {
+
+class Song
 {
-	class Song
-	{
-	public:
-		Song() : m_id(0), m_durartion(0) {};
-		void loadInfo(const Xmms::PropDict& info);
-		
-		int id() const                            {return m_id;}
-		const std::string& title() const          {return m_title;}
-		const std::string& artist() const         {return m_artist;}
-		const std::string& durationString() const {return m_durationString;}
-		int duration() const                      {return m_durartion;}
-		
-	private:
-		int m_id;
-		std::string m_title;
-		std::string m_artist;
-		std::string m_durationString;
-		int m_durartion;
-		
-	};
-}
+public:
+    Song() : m_id(0), m_durartion(0) {};
+    void loadInfo(const Xmms::PropDict& info);
+
+    int id() const                            {return m_id;}
+    const std::string& title() const          {return m_title;}
+    const std::string& artist() const         {return m_artist;}
+    const std::string& durationString() const {return m_durationString;}
+    int duration() const                      {return m_durartion;}
+
+private:
+    int m_id;
+    std::string m_title;
+    std::string m_artist;
+    std::string m_durationString;
+    int m_durartion;
+
+};
+} // ncxmms2
 
 #endif // SONG_H

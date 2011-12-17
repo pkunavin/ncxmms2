@@ -19,109 +19,109 @@
 
 using namespace ncxmms2;
 
-Window::Window(int lines, int cols, int yPos, int xPos, Window* parent) :
-	d(new WindowPrivate(lines, cols, yPos, xPos, parent))
+Window::Window(int lines, int cols, int yPos, int xPos, Window *parent) :
+    d(new WindowPrivate(lines, cols, yPos, xPos, parent))
 {
-	if (parent)	{
-		d->cursesWin=derwin(parent->d->cursesWin, lines, cols, yPos, xPos);
-		parent->d->children.push_back(this);
-	} else {
-		d->cursesWin=newwin(lines, cols, yPos, xPos);
-	}
+    if (parent) {
+        d->cursesWin = derwin(parent->d->cursesWin, lines, cols, yPos, xPos);
+        parent->d->children.push_back(this);
+    } else {
+        d->cursesWin = newwin(lines, cols, yPos, xPos);
+    }
 }
 
 int Window::lines() const
 {
-	return d->lines;
+    return d->lines;
 }
 
 int Window::cols() const
 {
-	return d->cols;
+    return d->cols;
 }
 
 int Window::xPos() const
 {
-	return d->xPos;
+    return d->xPos;
 }
 
 int Window::yPos() const
 {
-	return d->yPos;
+    return d->yPos;
 }
 
 void Window::move(int yPos, int xPos)
 {
-	d->yPos=yPos;
-	d->xPos=xPos;
-	delwin(d->cursesWin);
-	d->cursesWin=d->parent
-	             ? derwin(d->parent->d->cursesWin, d->lines, d->cols, yPos, xPos)
-	             : newwin(d->lines, d->cols, yPos, xPos);
-	
-	update();
-	
-	for (auto child : d->children)
-		child->move(child->yPos(), child->xPos());
+    d->yPos = yPos;
+    d->xPos = xPos;
+    delwin(d->cursesWin);
+    d->cursesWin = d->parent
+                   ? derwin(d->parent->d->cursesWin, d->lines, d->cols, yPos, xPos)
+                   : newwin(d->lines, d->cols, yPos, xPos);
+
+    update();
+
+    for (auto child : d->children)
+        child->move(child->yPos(), child->xPos());
 }
 
 void Window::hide()
 {
-	d->isVisible=false;
-	for (auto child : d->children)
-		child->hide();
+    d->isVisible = false;
+    for (auto child : d->children)
+        child->hide();
 }
 
 void Window::show()
 {
-	d->isVisible=true;
-	showEvent();
-	for (auto child : d->children)
-		child->show();
+    d->isVisible = true;
+    showEvent();
+    for (auto child : d->children)
+        child->show();
 }
 
 bool Window::isHidden() const
 {
-	return !d->isVisible;
+    return !d->isVisible;
 }
 
 void Window::setFocus()
 {
-	if (!d->parent)
-		return;
-	
-	Window *old=d->parent->d->focusedWindow;
-	d->parent->d->focusedWindow=this;
-	if (old)
-		old->update();
-	update();
+    if (!d->parent)
+        return;
+
+    Window *old = d->parent->d->focusedWindow;
+    d->parent->d->focusedWindow = this;
+    if (old)
+        old->update();
+    update();
 }
 
 bool Window::hasFocus() const
 {
-	if (!d->parent)
-		return true;
-	
-	return d->parent->d->focusedWindow==this;
+    if (!d->parent)
+        return true;
+
+    return d->parent->d->focusedWindow == this;
 }
 
 void Window::keyPressedEvent(const KeyEvent& keyEvent)
 {
-	if (d->focusedWindow)
-		d->focusedWindow->keyPressedEvent(keyEvent);
+    if (d->focusedWindow)
+        d->focusedWindow->keyPressedEvent(keyEvent);
 }
 
 void Window::resizeEvent(const Size& size)
 {
-	d->lines=size.lines();
-	d->cols=size.cols();
+    d->lines = size.lines();
+    d->cols = size.cols();
 
-	delwin(d->cursesWin);
-	d->cursesWin=d->parent
-	             ? derwin(d->parent->d->cursesWin, d->lines, d->cols, d->yPos, d->xPos)
-	             : newwin(d->lines, d->cols, d->yPos, d->xPos);
-	
-	update();
+    delwin(d->cursesWin);
+    d->cursesWin = d->parent
+                   ? derwin(d->parent->d->cursesWin, d->lines, d->cols, d->yPos, d->xPos)
+                   : newwin(d->lines, d->cols, d->yPos, d->xPos);
+
+    update();
 }
 
 void Window::showEvent()
@@ -131,31 +131,31 @@ void Window::showEvent()
 
 void Window::update()
 {
-	if (d->isVisible)
-		showEvent();
+    if (d->isVisible)
+        showEvent();
 }
 
 const std::string& Window::title() const
 {
-	return d->title;
+    return d->title;
 }
 
 void Window::setTitleChangedCallback(const TitleChangedCallback& callback)
 {
-	d->titleChangedCallback=callback;
+    d->titleChangedCallback = callback;
 }
 
 void Window::setTitle(const std::string& title)
 {
-	d->title=title;
-	if (!d->titleChangedCallback.empty())
-		d->titleChangedCallback(title);
+    d->title = title;
+    if (!d->titleChangedCallback.empty())
+        d->titleChangedCallback(title);
 }
 
 Window::~Window()
 {
-	delwin(d->cursesWin);
-	for (auto child : d->children)
-		delete child;
+    delwin(d->cursesWin);
+    for (auto child : d->children)
+        delete child;
 }
 

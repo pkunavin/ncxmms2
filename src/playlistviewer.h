@@ -20,22 +20,22 @@
 
 #include "playlistwindow.h"
 
-namespace ncxmms2
+namespace ncxmms2 {
+
+class PlaylistViewer : public PlaylistWindow
 {
-	class PlaylistViewer : public PlaylistWindow
-	{
-	public:
-		PlaylistViewer(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent=0);
-		
-	protected:
-		virtual void itemEntered(int item);
-		
-	private:
-		Xmms::Client *m_xmmsClient;
-		std::string m_currentPlaylist;
-		bool getCurrentPlaylist(const std::string& playlist);
-		
-	};
-}
+public:
+    PlaylistViewer(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent = 0);
+
+protected:
+    virtual void itemEntered(int item);
+
+private:
+    Xmms::Client *m_xmmsClient;
+    std::string m_currentPlaylist;
+    bool getCurrentPlaylist(const std::string& playlist);
+
+};
+} // ncxmms2
 
 #endif // PLAYLISTVIEWER_H

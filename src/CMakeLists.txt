@@ -39,7 +39,7 @@ set(HEADERS
 
 add_executable(ncxmms2 ${SOURCES})
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall")
 
 find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
@@ -61,5 +61,5 @@ target_link_libraries(ncxmms2 ncxmms2-lib
                               ${GLIB_LIBRARIES}
                               ${XMMS2_CPP_LIBRARIES}
                               ${XMMS2_CPP_GLIB_LIBRARIES})
-                              
+
 install (TARGETS ncxmms2 DESTINATION bin)

@@ -19,23 +19,23 @@
 
 #include "lib/window.h"
 
-namespace ncxmms2 
+namespace ncxmms2 {
+
+class PlaybackProgressBar : public Window
 {
-	class PlaybackProgressBar : public Window
-	{
-	public:
-		PlaybackProgressBar(int lines, int cols, int yPos, int xPos, Window *parent=0);
-		
-		void setValue(int value);
-		void setMaxValue(int maxValue);
-		
-	protected:
-		void showEvent();
-		
-	private:
-		int m_value;
-		int m_maxValue;
-	};
-}
+public:
+    PlaybackProgressBar(int lines, int cols, int yPos, int xPos, Window *parent = 0);
+
+    void setValue(int value);
+    void setMaxValue(int maxValue);
+
+protected:
+    void showEvent();
+
+private:
+    int m_value;
+    int m_maxValue;
+};
+} // ncxmms2
 
 #endif // PLAYBACKPROGRESSBAR_H

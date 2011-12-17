@@ -17,40 +17,40 @@
 #include "label.h"
 #include "painter.h"
 
-namespace ncxmms2 
+namespace ncxmms2 {
+
+class LabelPrivate
 {
-	class LabelPrivate
-	{
-	public:
-		std::string text;
-	};
-}
+public:
+    std::string text;
+};
+} // ncxmms2
 
 using namespace ncxmms2;
 
-Label::Label(int lines, int cols, int yPos, int xPos, Window* parent) :
-	Window(lines, cols, yPos, xPos, parent),
-	d(new LabelPrivate())
+Label::Label(int lines, int cols, int yPos, int xPos, Window *parent) :
+    Window(lines, cols, yPos, xPos, parent),
+    d(new LabelPrivate())
 {
-	
+
 }
 
 void Label::showEvent()
 {
-	Painter painter(this);
-	painter.clearWindow();
-	painter.squeezedPrint(d->text, cols());
-	painter.flush();
+    Painter painter(this);
+    painter.clearWindow();
+    painter.squeezedPrint(d->text, cols());
+    painter.flush();
 }
 
 void Label::setText(const std::string& text)
 {
-	d->text=text;
-	update();
+    d->text = text;
+    update();
 }
 
 const std::string& Label::text() const
 {
-	return d->text;
+    return d->text;
 }
 

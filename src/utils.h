@@ -19,13 +19,12 @@
 
 #include <string>
 
-namespace ncxmms2
-{
-	namespace Utils
-	{
-		std::string getTimeStringFromInt(int msec);
-	}
-	
-}
+namespace ncxmms2 {
+namespace Utils {
+
+std::string getTimeStringFromInt(int msec);
+
+} // Utils
+} // ncxmms2
 
 #endif // UTILS_H

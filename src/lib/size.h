@@ -17,19 +17,19 @@
 #ifndef SIZE_H
 #define SIZE_H
 
-namespace ncxmms2
+namespace ncxmms2 {
+
+class Size
 {
-	class Size
-	{
-	public:
-		Size(int lines, int cols) : m_lines(lines), m_cols(cols){}
-		
-		int lines() const  {return m_lines;}
-		int cols() const   {return m_cols;}
-	private:
-		const int m_lines;
-		const int m_cols;
-	};
-}
+public:
+    Size(int lines, int cols) : m_lines(lines), m_cols(cols){}
+
+    int lines() const  {return m_lines;}
+    int cols() const   {return m_cols;}
+private:
+    const int m_lines;
+    const int m_cols;
+};
+} // ncxmms2
 
 #endif // SIZE_H

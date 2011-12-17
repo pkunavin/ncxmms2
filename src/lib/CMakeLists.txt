@@ -25,7 +25,7 @@ set(HEADERS
 
 add_library(ncxmms2-lib ${SOURCES})
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall")
 
 find_package(Curses REQUIRED)
 

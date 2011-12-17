@@ -19,37 +19,34 @@
 
 #include "lib/window.h"
 
-namespace Xmms
-{
-	class Client;
+namespace Xmms {
+class Client;
 }
 
-namespace ncxmms2
+namespace ncxmms2 {
+
+class PlaylistsListView;
+class PlaylistViewer;
+
+class PlaylistsBrowser : public Window
 {
-	class PlaylistsListView;
-	class PlaylistViewer;
-	
-	class PlaylistsBrowser : public Window
-	{
-	public:
-		PlaylistsBrowser(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent=0);
-		
-		virtual void keyPressedEvent(const KeyEvent &keyEvent);
-		virtual void resizeEvent(const Size &size);
-		
-	protected:
-		virtual void showEvent();
-	
-	private:
-		enum {PlaylistsListViewCols=20};
-		
-		void setPlsViewerPlaylist(int item);
-		
-		PlaylistsListView *m_plsListView;
-		PlaylistViewer *m_plsViewer;
-		
-		
-	};
-}
+public:
+    PlaylistsBrowser(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent = 0);
+
+    virtual void keyPressedEvent(const KeyEvent& keyEvent);
+    virtual void resizeEvent(const Size& size);
+
+protected:
+    virtual void showEvent();
+
+private:
+    enum {PlaylistsListViewCols = 20};
+
+    void setPlsViewerPlaylist(int item);
+
+    PlaylistsListView *m_plsListView;
+    PlaylistViewer *m_plsViewer;
+};
+} // ncxmms2
 
 #endif // PLAYLISTSBROWSER_H

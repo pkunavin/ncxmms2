@@ -19,22 +19,22 @@
 
 #include <xmmsclient/xmmsclient++.h>
 
-namespace ncxmms2
+namespace ncxmms2 {
+
+class Xmms2Client
 {
-	class Xmms2Client
-	{
-	public:
-		Xmms2Client();
-		bool connect(const std::string& ipcPath);
-		Xmms::Client *client();
-	
-	private:
-		void disconnectCallback();
-		Xmms::Client m_xmmsClient;
-		
-		Xmms2Client(const Xmms2Client& other);
-		Xmms2Client& operator=(const Xmms2Client& other);
-	};
-}
+public:
+    Xmms2Client();
+    bool connect(const std::string& ipcPath);
+    Xmms::Client *client();
+
+private:
+    void disconnectCallback();
+    Xmms::Client m_xmmsClient;
+
+    Xmms2Client(const Xmms2Client& other);
+    Xmms2Client& operator=(const Xmms2Client& other);
+};
+} // ncxmms2
 
 #endif // XMMS2CLIENT_H
