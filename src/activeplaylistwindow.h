@@ -14,28 +14,21 @@
  *  GNU General Public License for more details.
  */
 
-
-#ifndef PLAYLISTVIEWER_H
-#define PLAYLISTVIEWER_H
+#ifndef ACTIVEPLAYLISTWINDOW_H
+#define ACTIVEPLAYLISTWINDOW_H
 
 #include "playlistwindow.h"
 
 namespace ncxmms2 {
 
-class PlaylistViewer : public PlaylistWindow
+class ActivePlaylistWindow : public PlaylistWindow
 {
 public:
-    PlaylistViewer(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent = 0);
-
-protected:
-    virtual void itemEntered(int item);
+    ActivePlaylistWindow(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent = 0);
 
 private:
-    Xmms::Client *m_xmmsClient;
-    std::string m_currentPlaylist;
-    bool getCurrentPlaylist(const std::string& playlist);
-
+    bool getActivePlaylist(const std::string& playlist);
 };
 } // ncxmms2
 
-#endif // PLAYLISTVIEWER_H
+#endif // ACTIVEPLAYLISTWINDOW_H

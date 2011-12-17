@@ -13,10 +13,10 @@ set(SOURCES
     song.cpp
     playlistsbrowser.cpp
     playlistslistview.cpp
-    playlistviewer.cpp
     statusarea.cpp
     playbackprogressbar.cpp
-    questionwindow.cpp)
+    questionwindow.cpp
+    activeplaylistwindow.cpp)
 
 set(HEADERS
     mainwindow.h
@@ -32,10 +32,10 @@ set(HEADERS
     song.h
     playlistsbrowser.h
     playlistslistview.h
-    playlistviewer.h
     statusarea.h
     playbackprogressbar.h
-    questionwindow.)
+    questionwindow.h
+    activeplaylistwindow.h)
 
 add_executable(ncxmms2 ${SOURCES})
 

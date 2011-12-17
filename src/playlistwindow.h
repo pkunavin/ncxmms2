@@ -30,8 +30,7 @@ namespace ncxmms2 {
 class PlaylistWindow : public AbstractItemView
 {
 public:
-    PlaylistWindow(const std::string& playlist, Xmms::Client *xmmsClient,
-                   int lines, int cols, int yPos, int xPos, Window *parent = 0);
+    PlaylistWindow(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent = 0);
     ~PlaylistWindow();
 
     void setPlaylist(const std::string& playlist);
@@ -50,6 +49,7 @@ private:
     boost::unordered_map<int, Song> m_songInfos;
     std::vector<int> m_idList;
     std::string m_playlist;
+    std::string m_activePlaylist;
     int m_currentPosition;
     Xmms::Playback::Status m_playbackStatus;
 

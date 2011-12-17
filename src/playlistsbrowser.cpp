@@ -16,7 +16,7 @@
 
 #include "playlistsbrowser.h"
 #include "playlistslistview.h"
-#include "playlistviewer.h"
+#include "playlistwindow.h"
 
 #include "lib/painter.h"
 
@@ -30,7 +30,8 @@ PlaylistsBrowser::PlaylistsBrowser(Xmms::Client *xmmsClient, int lines, int cols
     m_plsListView = new PlaylistsListView(xmmsClient, lines, PlaylistsListViewCols, 0, 0, this);
     m_plsListView->setFocus();
 
-    m_plsViewer = new PlaylistViewer(xmmsClient, lines, cols - PlaylistsListViewCols - 1, 0, PlaylistsListViewCols + 1, this);
+    m_plsViewer = new PlaylistWindow(xmmsClient, lines, cols - PlaylistsListViewCols - 1, 0, PlaylistsListViewCols + 1, this);
+    m_plsViewer->setHideCurrentItemInterval(0);
     m_plsViewer->hideCurrentItem();
 
     m_plsListView->setCurrentItemChangedCallback(boost::bind(&PlaylistsBrowser::setPlsViewerPlaylist, this, _1));

@@ -19,7 +19,7 @@
 
 #include "mainwindow.h"
 #include "statusarea.h"
-#include "playlistwindow.h"
+#include "activeplaylistwindow.h"
 #include "localfilesystembrowser.h"
 #include "playlistsbrowser.h"
 #include "headerwindow.h"
@@ -51,9 +51,9 @@ MainWindow::MainWindow(Xmms::Client *xmmsClient) :
     const int screenCols = m_stackedWindow->cols();
     const std::map<StackedWindows, Window*> stakedWindows =
     {
-        {StackedPlaylistWindow,         new PlaylistWindow("_active", xmmsClient, screenLines, screenCols, 0, 0, m_stackedWindow)},
+        {StackedPlaylistWindow,         new ActivePlaylistWindow  (xmmsClient, screenLines, screenCols, 0, 0, m_stackedWindow)},
         {StackedLocalFileBrowserWindow, new LocalFileSystemBrowser(xmmsClient, screenLines, screenCols, 0, 0, m_stackedWindow)},
-        {StackedPlaylistsBrowser,       new PlaylistsBrowser(xmmsClient, screenLines, screenCols, 0, 0, m_stackedWindow)}
+        {StackedPlaylistsBrowser,       new PlaylistsBrowser      (xmmsClient, screenLines, screenCols, 0, 0, m_stackedWindow)}
     };
 
     for (auto it = stakedWindows.begin(), it_end = stakedWindows.end(); it != it_end; ++it) {
