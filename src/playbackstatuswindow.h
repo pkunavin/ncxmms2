@@ -30,19 +30,14 @@ public:
 
     Xmms::Playback::Status playbackStatus() const;
 
-    typedef boost::function<void (int)> PlaytimeChangedCallback;
-    void setPlaytimeChangedCallback(const PlaytimeChangedCallback& callback);
-
-    typedef boost::function<void (const Song&)> CurrentSongChangedCallback;
-    void setCurrentSongChangedCallback(const CurrentSongChangedCallback& callback);
+    // Signals
+    NCXMMS2_SIGNAL(playtimeChanged, int)
+    NCXMMS2_SIGNAL(currentSongChanged, const Song&)
 
 protected:
     virtual void showEvent();
 
 private:
-    PlaytimeChangedCallback m_playtimeChangedCallback;
-    CurrentSongChangedCallback m_currentSongChangedCallback;
-
     Xmms::Client *m_xmmsClient;
     Xmms::Playback::Status m_playbackStatus;
     Song m_currentSong;

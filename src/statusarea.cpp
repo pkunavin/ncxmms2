@@ -58,13 +58,13 @@ StatusArea::StatusArea(Xmms::Client *client, int lines, int cols, int yPos, int 
 
     m_playbackProgressBar = new PlaybackProgressBar(stackedWindowLines, cols, 0, 0, this);
     auto *playbackStatusWin = static_cast<PlaybackStatusWindow*>(m_stackedWindow->window(StackedPlaybackStatusWindow));
-    playbackStatusWin->setPlaytimeChangedCallback(boost::bind(&PlaybackProgressBar::setValue, m_playbackProgressBar, _1));
-    playbackStatusWin->setCurrentSongChangedCallback([this](const Song& song)
+    playbackStatusWin->playtimeChanged_Connect(boost::bind(&PlaybackProgressBar::setValue, m_playbackProgressBar, _1));
+    playbackStatusWin->currentSongChanged_Connect([this](const Song& song)
     {
         m_playbackProgressBar->setMaxValue(song.duration());
     });
 
-    m_timer.connectTimeoutSignal([this]()
+    m_timer.timeout_Connect([this]()
     {
         m_timer.stop();
         m_stackedWindow->setCurrentIndex(StackedPlaybackStatusWindow);

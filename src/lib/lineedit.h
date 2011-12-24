@@ -17,6 +17,7 @@
 #ifndef LINEEDIT_H
 #define LINEEDIT_H
 
+#include <boost/function.hpp>
 #include "window.h"
 
 namespace ncxmms2 {

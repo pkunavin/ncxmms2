@@ -140,16 +140,10 @@ const std::string& Window::title() const
     return d->title;
 }
 
-void Window::setTitleChangedCallback(const TitleChangedCallback& callback)
-{
-    d->titleChangedCallback = callback;
-}
-
 void Window::setTitle(const std::string& title)
 {
     d->title = title;
-    if (!d->titleChangedCallback.empty())
-        d->titleChangedCallback(title);
+    titleChanged(title);
 }
 
 Window::~Window()

@@ -23,10 +23,7 @@ class TimerPrivate
 {
 public:
     TimerPrivate() : id(0) {}
-
-    Timer::TimeoutFunction timeoutFunction;
     guint id;
-
     static gboolean timeoutCallback(gpointer data);
 };
 } // ncxmms2
@@ -38,15 +35,10 @@ Timer::Timer() : d(new TimerPrivate())
 
 }
 
-void Timer::connectTimeoutSignal(const Timer::TimeoutFunction& function)
-{
-    d->timeoutFunction=function;
-}
-
 void Timer::start(unsigned int interval)
 {
     stop();
-    d->id = g_timeout_add_seconds(interval, TimerPrivate::timeoutCallback, d.get());
+    d->id = g_timeout_add_seconds(interval, TimerPrivate::timeoutCallback, this);
 }
 
 void Timer::stop()
@@ -59,10 +51,8 @@ void Timer::stop()
 
 gboolean TimerPrivate::timeoutCallback(gpointer data)
 {
-    TimerPrivate *d = static_cast<TimerPrivate*>(data);
-    if (!d->timeoutFunction.empty())
-        d->timeoutFunction();
-
+    Timer *q = static_cast<Timer*>(data);
+    q->timeout();
     return TRUE;
 }
 

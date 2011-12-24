@@ -10,6 +10,7 @@ set(SOURCES
     lineedit.cpp)
 
 set(HEADERS
+    signals.h
     application.h
     window.h
     window_p.h

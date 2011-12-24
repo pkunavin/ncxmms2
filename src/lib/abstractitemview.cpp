@@ -43,7 +43,6 @@ public:
     bool currentItemHidden;
     unsigned int hideCurrentItemSelectionInterval;
 
-    AbstractItemView::CurrentItemChangedCallback currentItemChangedCallback;
     void changeCurrentItem(int item);
 
     void scrollUp();
@@ -57,12 +56,7 @@ AbstractItemView::AbstractItemView(int lines, int cols, int yPos, int xPos, Wind
     Window(lines, cols, yPos, xPos, parent),
     d(new AbstractItemViewPrivate(this))
 {
-    d->hideSelectionTimer.connectTimeoutSignal(boost::bind(&AbstractItemView::hideCurrentItem, this));
-}
-
-void AbstractItemView::setCurrentItemChangedCallback(const CurrentItemChangedCallback& callback)
-{
-    d->currentItemChangedCallback = callback;
+    d->hideSelectionTimer.timeout_Connect(boost::bind(&AbstractItemView::hideCurrentItem, this));
 }
 
 void AbstractItemView::reset()
@@ -343,8 +337,7 @@ void AbstractItemViewPrivate::scrollDown()
 void AbstractItemViewPrivate::changeCurrentItem(int item)
 {
     currentItem = item;
-    if (!currentItemChangedCallback.empty())
-        currentItemChangedCallback(currentItem);
+    q->currentItemChanged(item);
 }
 
 void AbstractItemView::resizeEvent(const Size& size)

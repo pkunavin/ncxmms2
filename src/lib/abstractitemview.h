@@ -39,8 +39,8 @@ public:
     void showCurrentItem();
     void hideCurrentItem();
 
-    typedef boost::function<void (int)> CurrentItemChangedCallback;
-    void setCurrentItemChangedCallback(const CurrentItemChangedCallback& callback);
+    // Signals
+    NCXMMS2_SIGNAL(currentItemChanged, int)
 
 protected:
     virtual void drawItem(int item) = 0;

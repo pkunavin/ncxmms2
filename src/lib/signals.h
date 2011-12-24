@@ -14,34 +14,20 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef TIMER_H
-#define TIMER_H
+#ifndef SIGNALS_H
+#define SIGNALS_H
 
-#include <memory>
-#include "signals.h"
+#include <boost/signals2.hpp>
 
 namespace ncxmms2 {
+namespace Signals = boost::signals2;
+}
 
-class TimerPrivate;
+#define NCXMMS2_SIGNAL(NAME, ...) \
+            protected: \
+                ncxmms2::Signals::signal<void (__VA_ARGS__)> NAME; \
+            public: \
+                ncxmms2::Signals::connection NAME ## _Connect(const ncxmms2::Signals::signal<void (__VA_ARGS__)>::slot_type& slot) { \
+                    return NAME.connect(slot);}
 
-class Timer
-{
-public:
-    Timer();
-    ~Timer();
-
-    void start(unsigned int interval);
-    void stop();
-
-    // Signals
-    NCXMMS2_SIGNAL(timeout)
-
-private:
-    Timer(const Timer& other);
-    Timer& operator=(const Timer& other);
-    friend class TimerPrivate;
-    std::unique_ptr<TimerPrivate> d;
-};
-} // ncxmms2
-
-#endif // TIMER_H
+#endif // SIGNALS_H

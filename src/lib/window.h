@@ -19,7 +19,7 @@
 
 #include <string>
 #include <memory>
-#include <boost/function.hpp>
+#include "signals.h"
 #include "keyevent.h"
 #include "size.h"
 
@@ -53,8 +53,9 @@ public:
 
     void setTitle(const std::string& title);
     const std::string& title() const;
-    typedef boost::function<void (const std::string&)> TitleChangedCallback;
-    void setTitleChangedCallback(const TitleChangedCallback& callback);
+
+    // Signals
+    NCXMMS2_SIGNAL(titleChanged, const std::string&)
 
 protected:
     virtual void showEvent();

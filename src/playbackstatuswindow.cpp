@@ -38,16 +38,6 @@ PlaybackStatusWindow::PlaybackStatusWindow(Xmms::Client *client, int lines, int 
     m_xmmsClient->playback.signalPlaytime()(Xmms::bind(&PlaybackStatusWindow::getPlaytime, this));
 }
 
-void PlaybackStatusWindow::setPlaytimeChangedCallback(const PlaytimeChangedCallback& callback)
-{
-    m_playtimeChangedCallback = callback;
-}
-
-void PlaybackStatusWindow::setCurrentSongChangedCallback(const CurrentSongChangedCallback& callback)
-{
-    m_currentSongChangedCallback = callback;
-}
-
 bool PlaybackStatusWindow::getPlaybackStatus(const Xmms::Playback::Status& status)
 {
     m_playbackStatus = status;
@@ -64,9 +54,7 @@ bool PlaybackStatusWindow::getCurrentId(const int& id)
 bool PlaybackStatusWindow::getCurrentIdInfo(const Xmms::PropDict& info)
 {
     m_currentSong.loadInfo(info);
-    if (!m_currentSongChangedCallback.empty())
-        m_currentSongChangedCallback(m_currentSong);
-
+    currentSongChanged(m_currentSong);
     update();
     return true;
 }
@@ -74,9 +62,7 @@ bool PlaybackStatusWindow::getCurrentIdInfo(const Xmms::PropDict& info)
 bool PlaybackStatusWindow::getPlaytime(const int& playtime)
 {
     m_playbackPlaytime = playtime;
-    if (!m_playtimeChangedCallback.empty())
-        m_playtimeChangedCallback(playtime);
-
+    playtimeChanged(playtime);
     update();
     return true;
 }

@@ -32,7 +32,6 @@ public:
     bool isVisible;
 
     std::string title;
-    Window::TitleChangedCallback titleChangedCallback;
 };
 } // ncxmms2
 

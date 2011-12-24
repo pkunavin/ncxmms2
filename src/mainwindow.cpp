@@ -60,7 +60,7 @@ MainWindow::MainWindow(Xmms::Client *xmmsClient) :
         StackedWindows stackedWindow = (*it).first;
         Window *window = (*it).second;
         m_stackedWindow->addWindow(window);
-        window->setTitleChangedCallback(boost::bind(&MainWindow::handleStackedWindowTitleChanged, this, stackedWindow, _1));
+        window->titleChanged_Connect(boost::bind(&MainWindow::handleStackedWindowTitleChanged, this, stackedWindow, _1));
     }
     setVisibleWindow(StackedPlaylistWindow);
 }
