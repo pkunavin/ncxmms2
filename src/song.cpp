@@ -26,10 +26,14 @@ void Song::loadInfo(const Xmms::PropDict& info)
 
     m_title.clear();
     if (!info.contains("title")) {
-        std::string url = Xmms::decodeUrl(info.get<std::string>("url"));
-        const std::string::size_type slashPos = url.rfind('/');
-        if (!(slashPos == std::string::npos || slashPos + 1 >= url.size()))
-            m_title = url.substr(slashPos+1);
+        if (info.contains("url")) {
+            std::string url = Xmms::decodeUrl(info.get<std::string>("url"));
+            const std::string::size_type slashPos = url.rfind('/');
+            if (!(slashPos == std::string::npos || slashPos + 1 >= url.size()))
+                m_title = url.substr(slashPos+1);
+        } else {
+            m_title = "No url: it is strange!";
+        }
     } else {
         m_title = info.get<std::string>("title");
     }
