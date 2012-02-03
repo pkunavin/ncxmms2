@@ -39,6 +39,8 @@ public:
     void showCurrentItem();
     void hideCurrentItem();
 
+    void scrollToItem(int item);
+
     // Signals
     NCXMMS2_SIGNAL(currentItemChanged, int)
 

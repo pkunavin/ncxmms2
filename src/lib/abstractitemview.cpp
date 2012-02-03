@@ -230,6 +230,15 @@ void AbstractItemView::showCurrentItem()
         d->hideSelectionTimer.start(d->hideCurrentItemSelectionInterval);
 }
 
+void AbstractItemView::scrollToItem(int item)
+{
+    if (item < 0 || item >= itemsCount())
+        return;
+
+    if (!(item >= d->viewportFirstItem && item < d->viewportLastItem))
+        setViewportFirstItem(item);
+}
+
 int AbstractItemView::itemLine(int item) const
 {
     return item - d->viewportFirstItem;
