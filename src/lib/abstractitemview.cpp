@@ -266,13 +266,12 @@ void AbstractItemView::setViewportFirstItem(int item)
 
     if (item + lines() < itemsCount()) {
         d->viewportFirstItem = item;
-        d->currentItem = item;
         d->viewportLastItem = d->viewportFirstItem + lines();
     } else {
         d->viewportLastItem = itemsCount();
         d->viewportFirstItem = d->viewportLastItem - lines();
-        d->currentItem = d->viewportFirstItem;
     }
+    d->changeCurrentItem(d->viewportFirstItem);
     redrawAll();
 }
 
