@@ -1,0 +1,14 @@
+.kdev4
+*.kdev4
+.directory
+*.a
+*.o
+*.so
+*.dylib
+*.bundle
+*.swp
+*.obj
+*~
+.gdb*
+Makefile
+*.user
