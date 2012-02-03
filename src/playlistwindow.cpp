@@ -320,6 +320,10 @@ void PlaylistWindow::keyPressedEvent(const KeyEvent& keyEvent)
             m_xmmsClient->playlist.clear(m_playlist);
             break;
 
+        case 'o':
+            setCurrentItem(m_currentPosition);
+            break;
+
         default: AbstractItemView::keyPressedEvent(keyEvent);
     }
 }
