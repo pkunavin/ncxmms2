@@ -27,7 +27,11 @@ public:
     ActivePlaylistWindow(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent = 0);
 
 private:
+    // Settings
+    bool m_autoScrollToActiveSong;
+
     bool getActivePlaylist(const std::string& playlist);
+    void scrollToActiveSong(int item);
 };
 } // ncxmms2
 

@@ -15,18 +15,31 @@
  */
 
 #include "activeplaylistwindow.h"
+#include "settings.h"
 
 using namespace ncxmms2;
 
 ActivePlaylistWindow::ActivePlaylistWindow(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent) :
-    PlaylistWindow(xmmsClient, lines, cols, yPos, xPos, parent)
+    PlaylistWindow(xmmsClient, lines, cols, yPos, xPos, parent),
+    m_autoScrollToActiveSong(true)
 {
     xmmsClient->playlist.currentActive()(Xmms::bind(&ActivePlaylistWindow::getActivePlaylist, this));
     xmmsClient->playlist.broadcastLoaded()(Xmms::bind(&ActivePlaylistWindow::getActivePlaylist, this));
+
+    activeSongPositionChanged_Connect(boost::bind(&ActivePlaylistWindow::scrollToActiveSong, this, _1));
+
+    //Settings
+    m_autoScrollToActiveSong = Settings::value("ActivePlaylistScreen", "autoScrollToActiveSong", true);
 }
 
 bool ActivePlaylistWindow::getActivePlaylist(const std::string& playlist)
 {
     setPlaylist(playlist);
     return true;
+}
+
+void ActivePlaylistWindow::scrollToActiveSong(int item)
+{
+    if (m_autoScrollToActiveSong && isCurrentItemHidden())
+        scrollToItem(item);
 }

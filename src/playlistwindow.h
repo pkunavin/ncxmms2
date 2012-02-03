@@ -38,6 +38,9 @@ public:
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
 
+    // Signals
+    NCXMMS2_SIGNAL(activeSongPositionChanged, int)
+
 protected:
     virtual void drawItem(int item);
     virtual int itemsCount() const;

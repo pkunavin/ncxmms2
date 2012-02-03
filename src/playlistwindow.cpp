@@ -201,7 +201,7 @@ bool PlaylistWindow::processPlaylistChange(const Xmms::Dict& change)
         case XMMS_PLAYLIST_CHANGED_SORT:
             m_xmmsClient->playlist.listEntries(m_playlist)(Xmms::bind(&PlaylistWindow::getEntries, this));
             break;
-            
+
         case XMMS_PLAYLIST_CHANGED_UPDATE: // Don't know how I should handle it, just ignore
             break;
     }
@@ -219,6 +219,8 @@ bool PlaylistWindow::getCurrentPosition(const Xmms::Dict& position)
         m_currentPosition = position.get<int>("position");
         redrawItem(oldPosition);
         redrawItem(m_currentPosition);
+        if (oldPosition != -1)
+            activeSongPositionChanged(m_currentPosition);
     }
     return true;
 }
