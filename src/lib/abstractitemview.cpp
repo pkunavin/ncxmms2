@@ -235,8 +235,18 @@ void AbstractItemView::scrollToItem(int item)
     if (item < 0 || item >= itemsCount())
         return;
 
-    if (!(item >= d->viewportFirstItem && item < d->viewportLastItem))
-        setViewportFirstItem(item);
+    if (item < d->viewportFirstItem) {
+        d->viewportFirstItem = item;
+        d->viewportLastItem = d->viewportFirstItem + lines();
+        if (!(d->currentItem >= d->viewportFirstItem && d->currentItem < d->viewportLastItem))
+            d->changeCurrentItem(d->viewportLastItem - 1);
+    } else if (item >= d->viewportLastItem) {
+        d->viewportLastItem = item + 1;
+        d->viewportFirstItem = d->viewportLastItem - lines();
+        if (!(d->currentItem >= d->viewportFirstItem && d->currentItem < d->viewportLastItem))
+             d->changeCurrentItem(d->viewportFirstItem);
+    }
+    redrawAll();
 }
 
 int AbstractItemView::itemLine(int item) const
