@@ -203,6 +203,7 @@ void AbstractItemView::setCurrentItem(int item)
 
     d->changeCurrentItem(item);
     redrawAll();
+    showCurrentItem();
 }
 
 bool AbstractItemView::isCurrentItemHidden() const
