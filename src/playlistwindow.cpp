@@ -270,7 +270,7 @@ void PlaylistWindow::drawItem(int item)
     auto it = m_songInfos.find(id);
     if (it == m_songInfos.end()) {
         song = &m_songInfos[id];
-        m_xmmsClient->medialib.getInfo(id)(boost::bind(&PlaylistWindow::getSongInfo, this, item, _1));
+        m_xmmsClient->medialib.getInfo(id)(boost::bind(&PlaylistWindow::getSongInfo, this, -1, _1));
     } else {
         song = &(*it).second;
     }
