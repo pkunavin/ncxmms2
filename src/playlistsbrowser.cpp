@@ -34,7 +34,7 @@ PlaylistsBrowser::PlaylistsBrowser(Xmms::Client *xmmsClient, int lines, int cols
     m_plsViewer->setHideCurrentItemInterval(0);
     m_plsViewer->hideCurrentItem();
 
-    m_plsListView->currentItemChanged_Connect(boost::bind(&PlaylistsBrowser::setPlsViewerPlaylist, this, _1));
+    m_plsListView->currentItemChanged_Connect(&PlaylistsBrowser::setPlsViewerPlaylist, this);
 }
 
 void PlaylistsBrowser::showEvent()

@@ -18,8 +18,7 @@
 #define WINDOW_H
 
 #include <string>
-#include <memory>
-#include "signals.h"
+#include "object.h"
 #include "keyevent.h"
 #include "size.h"
 
@@ -27,7 +26,7 @@ namespace ncxmms2 {
 
 class WindowPrivate;
 
-class Window
+class Window : public Object
 {
 public:
     Window(int lines, int cols, int yPos, int xPos, Window *parent = nullptr);

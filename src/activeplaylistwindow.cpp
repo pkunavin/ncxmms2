@@ -26,7 +26,7 @@ ActivePlaylistWindow::ActivePlaylistWindow(Xmms::Client *xmmsClient, int lines, 
     xmmsClient->playlist.currentActive()(Xmms::bind(&ActivePlaylistWindow::getActivePlaylist, this));
     xmmsClient->playlist.broadcastLoaded()(Xmms::bind(&ActivePlaylistWindow::getActivePlaylist, this));
 
-    activeSongPositionChanged_Connect(boost::bind(&ActivePlaylistWindow::scrollToActiveSong, this, _1));
+    activeSongPositionChanged_Connect(&ActivePlaylistWindow::scrollToActiveSong, this, _1);
 
     //Settings
     m_autoScrollToActiveSong = Settings::value("ActivePlaylistScreen", "autoScrollToActiveSong", true);

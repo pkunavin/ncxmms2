@@ -1,6 +1,7 @@
 
 set(SOURCES
     application.cpp
+    object.cpp
     window.cpp
     stackedwindow.cpp
     abstractitemview.cpp
@@ -11,6 +12,7 @@ set(SOURCES
 
 set(HEADERS
     signals.h
+    object.h
     application.h
     window.h
     window_p.h

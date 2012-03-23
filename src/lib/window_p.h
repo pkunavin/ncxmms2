@@ -20,7 +20,7 @@ public:
 
     WINDOW *cursesWin;
     Window *parent;
-    std::vector<Window*> children;
+    std::vector<Window*> childrenWins;
     Window *focusedWindow;
 
     int lines;

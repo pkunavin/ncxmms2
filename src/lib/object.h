@@ -14,31 +14,31 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef TIMER_H
-#define TIMER_H
+#ifndef OBJECT_H
+#define OBJECT_H
 
-#include "object.h"
+#include <memory>
+#include "signals.h"
 
 namespace ncxmms2 {
 
-class TimerPrivate;
+class ObjectPrivate;
 
-class Timer : public Object
+class Object
 {
 public:
-    Timer(Object *parent = nullptr);
-    ~Timer();
+    Object(Object *parent = nullptr);
+    virtual ~Object();
 
-    void start(unsigned int interval);
-    void stop();
+    Object *parent() const;
 
-    // Signals
-    NCXMMS2_SIGNAL(timeout)
+    void registerConnection(const Signals::connection& connection);
 
 private:
-    friend class TimerPrivate;
-    std::unique_ptr<TimerPrivate> d;
+    Object(const Object& other);
+    Object& operator=(const Object& other);
+    std::unique_ptr<ObjectPrivate> d;
 };
 } // ncxmms2
 
-#endif // TIMER_H
+#endif // OBJECT_H

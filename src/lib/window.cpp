@@ -20,11 +20,12 @@
 using namespace ncxmms2;
 
 Window::Window(int lines, int cols, int yPos, int xPos, Window *parent) :
+    Object(parent),
     d(new WindowPrivate(lines, cols, yPos, xPos, parent))
 {
     if (parent) {
         d->cursesWin = derwin(parent->d->cursesWin, lines, cols, yPos, xPos);
-        parent->d->children.push_back(this);
+        parent->d->childrenWins.push_back(this);
     } else {
         d->cursesWin = newwin(lines, cols, yPos, xPos);
     }
@@ -61,14 +62,14 @@ void Window::move(int yPos, int xPos)
 
     update();
 
-    for (auto child : d->children)
+    for (auto child : d->childrenWins)
         child->move(child->yPos(), child->xPos());
 }
 
 void Window::hide()
 {
     d->isVisible = false;
-    for (auto child : d->children)
+    for (auto child : d->childrenWins)
         child->hide();
 }
 
@@ -76,7 +77,7 @@ void Window::show()
 {
     d->isVisible = true;
     showEvent();
-    for (auto child : d->children)
+    for (auto child : d->childrenWins)
         child->show();
 }
 
@@ -149,7 +150,5 @@ void Window::setTitle(const std::string& title)
 Window::~Window()
 {
     delwin(d->cursesWin);
-    for (auto child : d->children)
-        delete child;
 }
 

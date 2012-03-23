@@ -56,7 +56,7 @@ AbstractItemView::AbstractItemView(int lines, int cols, int yPos, int xPos, Wind
     Window(lines, cols, yPos, xPos, parent),
     d(new AbstractItemViewPrivate(this))
 {
-    d->hideSelectionTimer.timeout_Connect(boost::bind(&AbstractItemView::hideCurrentItem, this));
+    d->hideSelectionTimer.timeout_Connect(&AbstractItemView::hideCurrentItem, this);
 }
 
 void AbstractItemView::reset()

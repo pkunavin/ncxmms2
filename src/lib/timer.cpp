@@ -30,7 +30,9 @@ public:
 
 using namespace ncxmms2;
 
-Timer::Timer() : d(new TimerPrivate())
+Timer::Timer(Object *parent) :
+    Object(parent),
+    d(new TimerPrivate())
 {
 
 }
