@@ -24,7 +24,7 @@ namespace ncxmms2 {
 class ActivePlaylistWindow : public PlaylistWindow
 {
 public:
-    ActivePlaylistWindow(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent = 0);
+    ActivePlaylistWindow(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent = nullptr);
 
 private:
     // Settings

@@ -26,7 +26,7 @@ class AbstractItemViewPrivate;
 class AbstractItemView : public Window
 {
 public:
-    AbstractItemView(int lines, int cols, int yPos, int xPos, Window *parent = 0);
+    AbstractItemView(int lines, int cols, int yPos, int xPos, Window *parent = nullptr);
     ~AbstractItemView();
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);

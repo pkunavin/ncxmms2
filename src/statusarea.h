@@ -31,7 +31,7 @@ class StackedWindow;
 class StatusArea : public Window
 {
 public:
-    StatusArea(Xmms::Client *client, int lines, int cols, int yPos, int xPos, Window *parent = 0);
+    StatusArea(Xmms::Client *client, int lines, int cols, int yPos, int xPos, Window *parent = nullptr);
     ~StatusArea();
 
     static void showMessage(const std::string& message);

@@ -265,7 +265,7 @@ void PlaylistWindow::drawItem(int item)
         painter.clearLine(itemLine(item));
     }
 
-    Song *song = 0;
+    Song *song = nullptr;
     const int id = m_idList[item];
     auto it = m_songInfos.find(id);
     if (it == m_songInfos.end()) {

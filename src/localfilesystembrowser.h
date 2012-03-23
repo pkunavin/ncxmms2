@@ -32,7 +32,7 @@ namespace ncxmms2 {
 class LocalFileSystemBrowser : public AbstractItemView
 {
 public:
-    LocalFileSystemBrowser(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent = 0);
+    LocalFileSystemBrowser(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent = nullptr);
     ~LocalFileSystemBrowser();
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);

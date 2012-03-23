@@ -27,7 +27,7 @@ class Label;
 class QuestionWindow : public Window
 {
 public:
-    QuestionWindow(int cols, int yPos, int xPos, Window *parent = 0);
+    QuestionWindow(int cols, int yPos, int xPos, Window *parent = nullptr);
 
     void askQuestion(const std::string& question,
                      const LineEdit::ResultCallback& answerCallback,

@@ -28,7 +28,7 @@
 
 using namespace ncxmms2;
 
-StatusArea *StatusArea::inst = 0;
+StatusArea *StatusArea::inst = nullptr;
 
 StatusArea::StatusArea(Xmms::Client *client, int lines, int cols, int yPos, int xPos, Window *parent) :
     Window(lines, cols, yPos, xPos, parent)

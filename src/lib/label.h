@@ -26,7 +26,7 @@ class LabelPrivate;
 class Label : public Window
 {
 public:
-    Label(int lines, int cols, int yPos, int xPos, Window *parent = 0);
+    Label(int lines, int cols, int yPos, int xPos, Window *parent = nullptr);
 
     void setText(const std::string& text);
     const std::string& text() const;

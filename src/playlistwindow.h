@@ -30,7 +30,7 @@ namespace ncxmms2 {
 class PlaylistWindow : public AbstractItemView
 {
 public:
-    PlaylistWindow(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent = 0);
+    PlaylistWindow(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent = nullptr);
     ~PlaylistWindow();
 
     void setPlaylist(const std::string& playlist);

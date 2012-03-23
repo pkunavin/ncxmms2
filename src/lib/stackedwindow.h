@@ -26,7 +26,7 @@ class StackedWindowPrivate;
 class StackedWindow : public Window
 {
 public:
-    StackedWindow(int lines, int cols, int yPos, int xPos, Window *parent = 0);
+    StackedWindow(int lines, int cols, int yPos, int xPos, Window *parent = nullptr);
     ~StackedWindow();
 
     void addWindow(Window *window);

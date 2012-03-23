@@ -33,7 +33,7 @@ namespace ncxmms2 {
 class ApplicationPrivate
 {
 public:
-    ApplicationPrivate() : mainWindow(NULL), stealedFocusWindow(NULL) {}
+    ApplicationPrivate() : mainWindow(nullptr), stealedFocusWindow(nullptr) {}
 
 
     GMainLoop *mainLoop;
@@ -51,7 +51,7 @@ public:
 
 using namespace ncxmms2;
 
-Application *Application::inst = 0;
+Application *Application::inst = nullptr;
 
 #define CHECK_INST if (!inst) {throw std::logic_error(std::string(__PRETTY_FUNCTION__).append(": There is no instance of application!"));}
 
@@ -64,7 +64,7 @@ void Application::init(bool useColors)
 void Application::shutdown()
 {
     delete inst;
-    inst = 0;
+    inst = nullptr;
 }
 
 Application::Application(bool useColors) : d(new ApplicationPrivate())
@@ -141,7 +141,7 @@ void Application::stealFocus(Window *window)
 void Application::releaseFocus()
 {
     CHECK_INST;
-    inst->d->stealedFocusWindow = NULL;
+    inst->d->stealedFocusWindow = nullptr;
 }
 
 Size Application::terminalSize()

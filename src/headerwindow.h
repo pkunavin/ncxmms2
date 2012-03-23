@@ -24,7 +24,7 @@ namespace ncxmms2 {
 class HeaderWindow : public Window
 {
 public:
-    HeaderWindow(int lines, int cols, int yPos, int xPos, Window *parent = 0);
+    HeaderWindow(int lines, int cols, int yPos, int xPos, Window *parent = nullptr);
 
     void setHeaderTitle(const std::string& string);
 
