@@ -16,9 +16,12 @@
 
 #include <algorithm>
 #include <boost/format.hpp>
+
 #include "playlistslistview.h"
 #include "statusarea.h"
+
 #include "lib/painter.h"
+#include "lib/keyevent.h"
 
 using namespace ncxmms2;
 

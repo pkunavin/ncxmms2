@@ -19,6 +19,8 @@
 #include "playlistwindow.h"
 
 #include "lib/painter.h"
+#include "lib/keyevent.h"
+#include "lib/size.h"
 
 using namespace ncxmms2;
 

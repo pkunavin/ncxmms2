@@ -20,6 +20,8 @@
 #include "lineedit.h"
 #include "painter.h"
 #include "application.h"
+#include "keyevent.h"
+#include "size.h"
 
 namespace ncxmms2 {
 

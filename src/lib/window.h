@@ -19,11 +19,11 @@
 
 #include <string>
 #include "object.h"
-#include "keyevent.h"
-#include "size.h"
 
 namespace ncxmms2 {
 
+class KeyEvent;
+class Size;
 class WindowPrivate;
 
 class Window : public Object

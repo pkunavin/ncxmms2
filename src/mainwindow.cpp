@@ -26,6 +26,7 @@
 #include "hotkeys.h"
 
 #include "lib/application.h"
+#include "lib/keyevent.h"
 #include "lib/stackedwindow.h"
 
 using namespace ncxmms2;

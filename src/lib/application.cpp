@@ -26,6 +26,7 @@
 
 #include "application.h"
 #include "window.h"
+#include "keyevent.h"
 #include "colors.h"
 
 namespace ncxmms2 {

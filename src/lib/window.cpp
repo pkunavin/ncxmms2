@@ -14,8 +14,9 @@
  *  GNU General Public License for more details.
  */
 
-#include "curses.h"
+#include <curses.h>
 #include "window_p.h"
+#include "size.h"
 
 using namespace ncxmms2;
 

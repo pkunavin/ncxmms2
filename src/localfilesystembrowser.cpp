@@ -28,6 +28,7 @@
 #include "settings.h"
 
 #include "lib/painter.h"
+#include "lib/keyevent.h"
 
 using namespace ncxmms2;
 

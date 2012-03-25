@@ -14,10 +14,11 @@
  *  GNU General Public License for more details.
  */
 
-#include <boost/bind.hpp>
 #include "abstractitemview.h"
 #include "timer.h"
 #include "painter.h"
+#include "keyevent.h"
+#include "size.h"
 
 namespace ncxmms2 {
 

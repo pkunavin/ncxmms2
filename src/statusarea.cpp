@@ -25,6 +25,7 @@
 
 #include "lib/label.h"
 #include "lib/stackedwindow.h"
+#include "lib/size.h"
 
 using namespace ncxmms2;
 

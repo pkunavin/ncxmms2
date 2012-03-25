@@ -15,8 +15,11 @@
  */
 
 #include <stdexcept>
+
 #include "questionwindow.h"
+
 #include "lib/label.h"
+#include "lib/size.h"
 
 using namespace ncxmms2;
 
