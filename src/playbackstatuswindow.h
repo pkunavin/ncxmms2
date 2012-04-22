@@ -35,7 +35,7 @@ public:
     NCXMMS2_SIGNAL(currentSongChanged, const Song&)
 
 protected:
-    virtual void showEvent();
+    virtual void paint(const Rectangle& rect);
 
 private:
     Xmms::Client *m_xmmsClient;

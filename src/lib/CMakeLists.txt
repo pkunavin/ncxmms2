@@ -24,7 +24,8 @@ set(HEADERS
     painter.h
     keyevent.h
     label.h
-    lineedit.h)
+    lineedit.h
+    rectangle.h)
 
 add_library(ncxmms2-lib ${SOURCES})
 

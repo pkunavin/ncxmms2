@@ -226,7 +226,7 @@ void LineEdit::resizeEvent(const Size &size)
     Window::resizeEvent(size);
 }
 
-void LineEdit::showEvent()
+void LineEdit::paint(const Rectangle& rect)
 {
     Painter painter(this);
     painter.clearLine();

@@ -25,6 +25,7 @@ namespace ncxmms2 {
 class KeyEvent;
 class Size;
 class WindowPrivate;
+class Rectangle;
 
 class Window : public Object
 {
@@ -57,8 +58,10 @@ public:
     NCXMMS2_SIGNAL(titleChanged, const std::string&)
 
 protected:
-    virtual void showEvent();
+    virtual void paint(const Rectangle& rect);
+
     void update();
+    void update(const Rectangle& rect);
 
 private:
     Window(const Window& other);

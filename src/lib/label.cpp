@@ -35,7 +35,7 @@ Label::Label(int lines, int cols, int yPos, int xPos, Window *parent) :
 
 }
 
-void Label::showEvent()
+void Label::paint(const Rectangle& rect)
 {
     Painter painter(this);
     painter.clearWindow();

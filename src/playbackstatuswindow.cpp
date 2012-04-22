@@ -74,7 +74,7 @@ bool PlaybackStatusWindow::handleIdInfoChanged(const int& id)
     return true;
 }
 
-void PlaybackStatusWindow::showEvent()
+void PlaybackStatusWindow::paint(const Rectangle& rect)
 {
     Painter painter(this);
     painter.clearLine(0);

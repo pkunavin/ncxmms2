@@ -31,7 +31,7 @@ void HeaderWindow::setHeaderTitle(const std::string& string)
     update();
 }
 
-void HeaderWindow::showEvent()
+void HeaderWindow::paint(const Rectangle& rect)
 {
     Painter painter(this);
     painter.clearLine();

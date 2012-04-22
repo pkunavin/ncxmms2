@@ -17,6 +17,7 @@
 #include <curses.h>
 #include "window_p.h"
 #include "size.h"
+#include "rectangle.h"
 
 using namespace ncxmms2;
 
@@ -77,7 +78,7 @@ void Window::hide()
 void Window::show()
 {
     d->isVisible = true;
-    showEvent();
+    paint(Rectangle(0, 0, cols(), lines()));
     for (auto child : d->childrenWins)
         child->show();
 }
@@ -126,15 +127,20 @@ void Window::resizeEvent(const Size& size)
     update();
 }
 
-void Window::showEvent()
+void Window::paint(const Rectangle& rect)
 {
 
 }
 
 void Window::update()
 {
+    update(Rectangle(0, 0, cols(), lines()));
+}
+
+void Window::update(const Rectangle& rect)
+{
     if (d->isVisible)
-        showEvent();
+        paint(rect);
 }
 
 const std::string& Window::title() const

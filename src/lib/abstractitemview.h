@@ -65,7 +65,7 @@ protected:
 
     virtual void itemEntered(int item);
 
-    virtual void showEvent();
+    virtual void paint(const Rectangle& rect);
 
 private:
     friend class AbstractItemViewPrivate;

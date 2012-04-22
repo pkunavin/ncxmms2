@@ -29,7 +29,7 @@ public:
     void setHeaderTitle(const std::string& string);
 
 protected:
-    virtual void showEvent();
+    virtual void paint(const Rectangle& rect);
 
 private:
     std::string m_headerTitle;

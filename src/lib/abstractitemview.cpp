@@ -277,7 +277,7 @@ void AbstractItemView::setViewportFirstItem(int item)
     redrawAll();
 }
 
-void AbstractItemView::showEvent()
+void AbstractItemView::paint(const Rectangle& rect)
 {
     redrawAll();
 }

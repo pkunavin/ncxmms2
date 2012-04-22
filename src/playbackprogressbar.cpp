@@ -39,7 +39,7 @@ void PlaybackProgressBar::setMaxValue(int maxValue)
     update();
 }
 
-void PlaybackProgressBar::showEvent()
+void PlaybackProgressBar::paint(const Rectangle& rect)
 {
     Painter painter(this);
     painter.drawHLine(0, 0, cols());

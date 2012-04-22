@@ -30,7 +30,7 @@ public:
     void setMaxValue(int maxValue);
 
 protected:
-    void showEvent();
+    void paint(const Rectangle& rect);
 
 private:
     int m_value;

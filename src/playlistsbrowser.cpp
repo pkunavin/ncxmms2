@@ -39,7 +39,7 @@ PlaylistsBrowser::PlaylistsBrowser(Xmms::Client *xmmsClient, int lines, int cols
     m_plsListView->currentItemChanged_Connect(&PlaylistsBrowser::setPlsViewerPlaylist, this);
 }
 
-void PlaylistsBrowser::showEvent()
+void PlaylistsBrowser::paint(const Rectangle& rect)
 {
     Painter painter(this);
     painter.drawVLine(PlaylistsListViewCols, 0, lines());

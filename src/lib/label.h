@@ -32,7 +32,7 @@ public:
     const std::string& text() const;
 
 protected:
-    void showEvent();
+    void paint(const Rectangle& rect);
 
 private:
     std::unique_ptr<LabelPrivate> d;

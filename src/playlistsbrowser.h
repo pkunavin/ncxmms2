@@ -37,7 +37,7 @@ public:
     virtual void resizeEvent(const Size& size);
 
 protected:
-    virtual void showEvent();
+    virtual void paint(const Rectangle& rect);
 
 private:
     enum {PlaylistsListViewCols = 20};
