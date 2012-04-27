@@ -5,7 +5,6 @@ set(SOURCES
     playbackstatuswindow.cpp
     utils.cpp
     xmms2client.cpp
-    playlistwindow.cpp
     localfilesystembrowser.cpp
     headerwindow.cpp
     settings.cpp
@@ -16,14 +15,16 @@ set(SOURCES
     statusarea.cpp
     playbackprogressbar.cpp
     questionwindow.cpp
-    activeplaylistwindow.cpp)
+    activeplaylistwindow.cpp
+    playlistview.cpp
+    playlistmodel.cpp
+    playlistitemdelegate.cpp)
 
 set(HEADERS
     mainwindow.h
     utils.h
     playbackstatuswindow.h
     xmms2client.h
-    playlistwindow.h
     localfilesystembrowser.h
     headerwindow.h
     hotkeys.h
@@ -35,7 +36,10 @@ set(HEADERS
     statusarea.h
     playbackprogressbar.h
     questionwindow.h
-    activeplaylistwindow.h)
+    activeplaylistwindow.h
+    playlistview.h
+    playlistmodel.h
+    playlistitemdelegate.h)
 
 add_executable(ncxmms2 ${SOURCES})
 

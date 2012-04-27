@@ -17,11 +17,11 @@
 #ifndef ACTIVEPLAYLISTWINDOW_H
 #define ACTIVEPLAYLISTWINDOW_H
 
-#include "playlistwindow.h"
+#include "playlistview.h"
 
 namespace ncxmms2 {
 
-class ActivePlaylistWindow : public PlaylistWindow
+class ActivePlaylistWindow : public PlaylistView
 {
 public:
     ActivePlaylistWindow(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent = nullptr);
@@ -30,6 +30,7 @@ private:
     // Settings
     bool m_autoScrollToActiveSong;
 
+    void updateWindowTitle();
     bool getActivePlaylist(const std::string& playlist);
     void scrollToActiveSong(int item);
 };

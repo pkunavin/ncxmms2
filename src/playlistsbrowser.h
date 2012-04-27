@@ -26,7 +26,7 @@ class Client;
 namespace ncxmms2 {
 
 class PlaylistsListView;
-class PlaylistWindow;
+class PlaylistView;
 
 class PlaylistsBrowser : public Window
 {
@@ -45,7 +45,7 @@ private:
     void setPlsViewerPlaylist(int item);
 
     PlaylistsListView *m_plsListView;
-    PlaylistWindow *m_plsViewer;
+    PlaylistView *m_plsViewer;
 };
 } // ncxmms2
 

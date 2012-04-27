@@ -14,37 +14,45 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef PLAYLISTWINDOW_H
-#define PLAYLISTWINDOW_H
+#ifndef PLAYLISTMODEL_H
+#define PLAYLISTMODEL_H
 
 #include <vector>
 #include <string>
 #include <boost/unordered_map.hpp>
-#include <xmmsclient/xmmsclient++.h>
 
 #include "song.h"
-#include "lib/abstractitemview.h"
+#include "lib/listmodel.h"
+
+namespace Xmms {
+class Client;
+class Dict;
+class PropDict;
+template <class T> class List;
+}
 
 namespace ncxmms2 {
 
-class PlaylistWindow : public AbstractItemView
+class PlaylistModel : public ListModel
 {
 public:
-    PlaylistWindow(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent = nullptr);
-    ~PlaylistWindow();
+    PlaylistModel(Xmms::Client *xmmsClient, Object *parent = nullptr);
 
     void setPlaylist(const std::string& playlist);
     const std::string& playlist() const;
 
-    virtual void keyPressedEvent(const KeyEvent& keyEvent);
+    virtual int itemsCount() const;
+    virtual void data(int item, ListModelItemData *itemData) const;
+
+    const Song& song(int item) const;
+    int currentSongItem() const;
+
+    int totalDuration() const;
 
     // Signals
+    NCXMMS2_SIGNAL(playlistRenamed)
     NCXMMS2_SIGNAL(activeSongPositionChanged, int)
-
-protected:
-    virtual void drawItem(int item);
-    virtual int itemsCount() const;
-    virtual void itemEntered(int item);
+    NCXMMS2_SIGNAL(totalDurationChanged)
 
 private:
     Xmms::Client *m_xmmsClient;
@@ -52,23 +60,18 @@ private:
     boost::unordered_map<int, Song> m_songInfos;
     std::vector<int> m_idList;
     std::string m_playlist;
-    std::string m_activePlaylist;
     int m_currentPosition;
-    Xmms::Playback::Status m_playbackStatus;
 
-    void updateWindowTitle();
     int m_totalDuration;
 
     // Callbacks
-    bool getActivePlaylist(const std::string& playlist);
     bool getEntries(const Xmms::List<int>& list);
     bool getSongInfo(int position, const Xmms::PropDict& info);
     bool processPlaylistChange(const Xmms::Dict& change);
     bool getCurrentPosition(const Xmms::Dict& position);
     bool handlePlaylistRename(const Xmms::Dict& change);
     bool handleSongInfoUpdate(const int& id);
-    bool getPlaybackStatus(const Xmms::Playback::Status& status);
 };
 } // ncxmms2
 
-#endif // PLAYLISTWINDOW_H
+#endif // PLAYLISTMODEL_H
