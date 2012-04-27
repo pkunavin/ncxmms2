@@ -8,7 +8,10 @@ set(SOURCES
     timer.cpp
     painter.cpp
     label.cpp
-    lineedit.cpp)
+    lineedit.cpp
+    listmodel.cpp
+    listview.cpp
+    listmodelitemdelegate.cpp)
 
 set(HEADERS
     signals.h
@@ -25,7 +28,11 @@ set(HEADERS
     keyevent.h
     label.h
     lineedit.h
-    rectangle.h)
+    rectangle.h
+    listmodel.h
+    listview.h
+    listmodelitemdelegate.h
+    listitempaintoptions.h)
 
 add_library(ncxmms2-lib ${SOURCES})
 
