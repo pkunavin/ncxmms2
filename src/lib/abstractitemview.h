@@ -19,6 +19,8 @@
 
 #include "window.h"
 
+// AbstractItemView is DEPRECATED, use ListModel + ListView instead
+
 namespace ncxmms2 {
 
 class AbstractItemViewPrivate;
