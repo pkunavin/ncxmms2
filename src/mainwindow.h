@@ -43,7 +43,7 @@ public:
     };
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
-    virtual void resizeEvent(const Size& size);
+    virtual void resize(const Size& size);
 
 private:
     HeaderWindow *m_headerWindow;

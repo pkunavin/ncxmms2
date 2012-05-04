@@ -300,7 +300,7 @@ void ListView::keyPressedEvent(const KeyEvent& keyEvent)
     }
 }
 
-void ListView::resizeEvent(const Size& size)
+void ListView::resize(const Size& size)
 {
     const int itemsCount = d->model->itemsCount();
 
@@ -336,7 +336,7 @@ void ListView::resizeEvent(const Size& size)
             d->viewportBeginItem += sizeDiff;
     }
 
-    Window::resizeEvent(size);
+    Window::resize(size);
 }
 
 void ListViewPrivate::reset()

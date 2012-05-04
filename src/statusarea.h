@@ -41,7 +41,7 @@ public:
 
     Xmms::Playback::Status playbackStatus() const;
 
-    void resizeEvent(const Size& size);
+    void resize(const Size& size);
 
 private:
     static StatusArea *inst;

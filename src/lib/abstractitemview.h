@@ -32,7 +32,7 @@ public:
     ~AbstractItemView();
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
-    virtual void resizeEvent(const Size& size);
+    virtual void resize(const Size& size);
 
     int currentItem() const;
     void setCurrentItem(int item);

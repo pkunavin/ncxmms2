@@ -33,7 +33,7 @@ public:
                      const LineEdit::ResultCallback& answerCallback,
                      const std::string& initialAnswer=std::string());
 
-    virtual void resizeEvent(const Size &size);
+    virtual void resize(const Size &size);
 
 private:
     Label *m_questionLabel;

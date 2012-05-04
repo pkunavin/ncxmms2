@@ -49,13 +49,13 @@ void QuestionWindow::adjustSize()
     if ((std::string::size_type)cols() < textSize)
         throw std::runtime_error("QuestionWindow: terminal too small!");
 
-    m_questionLabel->resizeEvent(Size(lines(), textSize));
-    m_answerEdit->resizeEvent(Size(lines(), cols() - textSize));
+    m_questionLabel->resize(Size(lines(), textSize));
+    m_answerEdit->resize(Size(lines(), cols() - textSize));
     m_answerEdit->move(0, textSize);
 }
 
-void QuestionWindow::resizeEvent(const Size &size)
+void QuestionWindow::resize(const Size &size)
 {
-    Window::resizeEvent(size);
+    Window::resize(size);
     adjustSize();
 }

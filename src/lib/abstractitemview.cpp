@@ -360,7 +360,7 @@ void AbstractItemViewPrivate::changeCurrentItem(int item)
     q->currentItemChanged(item);
 }
 
-void AbstractItemView::resizeEvent(const Size& size)
+void AbstractItemView::resize(const Size& size)
 {
     if (size.lines() > lines()) {
         int extraSize = size.lines() - lines();
@@ -394,7 +394,7 @@ void AbstractItemView::resizeEvent(const Size& size)
             d->viewportFirstItem += sizeDiff;
     }
 
-    Window::resizeEvent(size);
+    Window::resize(size);
 }
 
 void AbstractItemView::hideCurrentItem()

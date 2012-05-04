@@ -47,7 +47,7 @@ public:
     void scrollToItem(int item);
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
-    virtual void resizeEvent(const Size& size);
+    virtual void resize(const Size& size);
 
     // Signals
     NCXMMS2_SIGNAL(currentItemChanged, int)

@@ -51,11 +51,11 @@ void PlaylistsBrowser::setPlsViewerPlaylist(int item)
     m_plsViewer->setPlaylist(m_plsListView->playlist(item));
 }
 
-void PlaylistsBrowser::resizeEvent(const Size& size)
+void PlaylistsBrowser::resize(const Size& size)
 {
-    Window::resizeEvent(size);
-    m_plsListView->resizeEvent(Size(size.lines(), PlaylistsListViewCols));
-    m_plsViewer->resizeEvent(Size(size.lines(), size.cols() - PlaylistsListViewCols - 1));
+    Window::resize(size);
+    m_plsListView->resize(Size(size.lines(), PlaylistsListViewCols));
+    m_plsViewer->resize(Size(size.lines(), size.cols() - PlaylistsListViewCols - 1));
 }
 
 void PlaylistsBrowser::keyPressedEvent(const KeyEvent& keyEvent)

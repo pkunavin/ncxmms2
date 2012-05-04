@@ -34,7 +34,6 @@ public:
     virtual ~Window();
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
-    virtual void resizeEvent(const Size& size);
 
     int lines() const;
     int cols() const;
@@ -43,6 +42,7 @@ public:
     int yPos() const;
 
     void move(int yPos, int xPos);
+    virtual void resize(const Size& size);
 
     void hide();
     void show();

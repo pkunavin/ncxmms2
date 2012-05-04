@@ -40,7 +40,7 @@ public:
     void edit(const ResultCallback& resultCallback, const std::wstring& text = std::wstring());
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
-    virtual void resizeEvent(const Size& size);
+    virtual void resize(const Size& size);
 
 protected:
     virtual void paint(const Rectangle& rect);

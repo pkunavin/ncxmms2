@@ -37,7 +37,7 @@ public:
     int currentIndex() const;
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
-    virtual void resizeEvent(const Size& size);
+    virtual void resize(const Size& size);
 
 private:
     std::unique_ptr<StackedWindowPrivate> d;

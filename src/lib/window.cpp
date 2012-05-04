@@ -116,7 +116,7 @@ void Window::keyPressedEvent(const KeyEvent& keyEvent)
         d->focusedWindow->keyPressedEvent(keyEvent);
 }
 
-void Window::resizeEvent(const Size& size)
+void Window::resize(const Size& size)
 {
     d->lines = size.lines();
     d->cols = size.cols();

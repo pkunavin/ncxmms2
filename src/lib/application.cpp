@@ -195,7 +195,7 @@ void ApplicationPrivate::resizeSignalHandler(int signal)
     refresh();
 
     if (Application::inst && Application::inst->d->mainWindow)
-        Application::inst->d->mainWindow->resizeEvent(Size(size.ws_row, size.ws_col));
+        Application::inst->d->mainWindow->resize(Size(size.ws_row, size.ws_col));
 }
 
 Application::~Application()

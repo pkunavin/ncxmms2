@@ -203,7 +203,7 @@ void LineEdit::keyPressedEvent(const KeyEvent& keyEvent)
     update();
 }
 
-void LineEdit::resizeEvent(const Size &size)
+void LineEdit::resize(const Size &size)
 {
     if (size.cols() > cols()) {
         int extraSize = size.cols() - cols();
@@ -223,7 +223,7 @@ void LineEdit::resizeEvent(const Size &size)
             d->viewportBegin += sizeDiff;
     }
 
-    Window::resizeEvent(size);
+    Window::resize(size);
 }
 
 void LineEdit::paint(const Rectangle& rect)

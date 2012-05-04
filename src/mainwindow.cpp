@@ -119,16 +119,16 @@ void MainWindow::keyPressedEvent(const KeyEvent& keyEvent)
     }
 }
 
-void MainWindow::resizeEvent(const Size& size)
+void MainWindow::resize(const Size& size)
 {
     if (size.lines() < m_statusArea->lines() + 1 + m_headerWindow->lines() || size.cols() < m_minimumCols)
         throw std::runtime_error("Terminal too small!");
 
-    Window::resizeEvent(size);
-    m_headerWindow->resizeEvent(Size(m_headerWindow->lines(), size.cols()));
-    m_stackedWindow->resizeEvent(Size(size.lines() - m_statusArea->lines() - m_headerWindow->lines(), size.cols()));
+    Window::resize(size);
+    m_headerWindow->resize(Size(m_headerWindow->lines(), size.cols()));
+    m_stackedWindow->resize(Size(size.lines() - m_statusArea->lines() - m_headerWindow->lines(), size.cols()));
     m_statusArea->move(size.lines() - m_statusArea->lines(), 0);
-    m_statusArea->resizeEvent(Size(m_statusArea->lines(), size.cols()));
+    m_statusArea->resize(Size(m_statusArea->lines(), size.cols()));
 }
 
 void MainWindow::setVisibleWindow(StackedWindows win)
