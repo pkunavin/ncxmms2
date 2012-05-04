@@ -18,7 +18,6 @@
 #define PAINTER_H
 
 #include <string>
-#include <memory>
 #include "colors.h"
 
 namespace ncxmms2 {
@@ -63,7 +62,7 @@ public:
 private:
     Painter(const Painter&);
     Painter& operator=(const Painter&);
-    std::unique_ptr<PainterPrivate> d;
+    PainterPrivate *d;
 };
 } // ncxmms2
 

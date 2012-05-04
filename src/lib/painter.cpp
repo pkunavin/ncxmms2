@@ -16,26 +16,26 @@
 
 #include <curses.h>
 #include <glib.h>
+#include <stdexcept>
+
 #include "painter.h"
+#include "painter_p.h"
+#include "window.h"
 #include "window_p.h"
-
-namespace ncxmms2 {
-
-class PainterPrivate
-{
-public:
-    PainterPrivate(Window *window_, WINDOW *cursesWin_) :
-        window(window_), cursesWin(cursesWin_) {}
-
-    Window *window;
-    WINDOW *cursesWin;
-};
-} // ncxmss2
 
 using namespace ncxmms2;
 
-Painter::Painter(Window *window) : d(new PainterPrivate(window, window->d->cursesWin))
+Painter::Painter(Window *window)
 {
+    WindowPrivate *p = window->d.get();
+    if (G_UNLIKELY(p->isPainterPrivateAlreadyInUse))
+        throw std::logic_error("You are trying to create more than one copy of"
+                               "Painter in a one scope, it is not possible!");
+
+    p->isPainterPrivateAlreadyInUse = true;
+    new (&p->painterPrivate) PainterPrivate(window, p->cursesWin);
+    d = &p->painterPrivate;
+
     wmove(d->cursesWin, 0, 0);
     wbkgdset(d->cursesWin, A_NORMAL);
     wattrset(d->cursesWin, A_NORMAL);
@@ -43,7 +43,8 @@ Painter::Painter(Window *window) : d(new PainterPrivate(window, window->d->curse
 
 Painter::~Painter()
 {
-
+    d->window->d->isPainterPrivateAlreadyInUse = false;
+    d->~PainterPrivate();
 }
 
 void Painter::move(int x, int y)

@@ -15,6 +15,8 @@
  */
 
 #include <curses.h>
+
+#include "window.h"
 #include "window_p.h"
 #include "size.h"
 #include "rectangle.h"

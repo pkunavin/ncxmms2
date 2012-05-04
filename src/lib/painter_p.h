@@ -14,50 +14,25 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef WINDOW_P_H
-#define WINDOW_P_H
+#ifndef PAINTER_P_H
+#define PAINTER_P_H
 
 #include <curses.h>
-#include <vector>
-
-#include "painter_p.h"
 
 namespace ncxmms2 {
 
 class Window;
 
-class WindowPrivate
+class PainterPrivate
 {
 public:
-    WindowPrivate(int lines_, int cols_, int yPos_, int xPos_, Window *parent_) :
-        parent(parent_),
-        focusedWindow(NULL),
-        lines(lines_),
-        cols(cols_),
-        yPos(yPos_),
-        xPos(xPos_),
-        isVisible(true),
-        painterPrivate(nullptr, nullptr),
-        isPainterPrivateAlreadyInUse(false){}
+    PainterPrivate(Window *window_, WINDOW *cursesWin_) :
+        window(window_),
+        cursesWin(cursesWin_) {}
 
+    Window *window;
     WINDOW *cursesWin;
-    Window *parent;
-    std::vector<Window*> childrenWins;
-    Window *focusedWindow;
-
-    int lines;
-    int cols;
-
-    int yPos;
-    int xPos;
-
-    bool isVisible;
-
-    std::string title;
-
-    PainterPrivate painterPrivate;
-    bool isPainterPrivateAlreadyInUse;
 };
-} // ncxmms2
+} // ncxmss2
 
-#endif // WINDOW_P_H
+#endif // PAINTER_P_H
