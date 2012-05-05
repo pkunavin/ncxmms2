@@ -18,17 +18,17 @@
 #include <stdexcept>
 
 #include "mainwindow.h"
-#include "statusarea.h"
-#include "activeplaylistwindow.h"
-#include "localfilesystembrowser.h"
-#include "playlistsbrowser.h"
-#include "headerwindow.h"
-#include "hotkeys.h"
+#include "../statusarea/statusarea.h"
+#include "../activeplaylistwindow/activeplaylistwindow.h"
+#include "../localfilesystembrowser/localfilesystembrowser.h"
+#include "../playlistsbrowser/playlistsbrowser.h"
+#include "../headerwindow/headerwindow.h"
+#include "../hotkeys.h"
 
-#include "lib/application.h"
-#include "lib/rectangle.h"
-#include "lib/keyevent.h"
-#include "lib/stackedwindow.h"
+#include "../lib/application.h"
+#include "../lib/rectangle.h"
+#include "../lib/keyevent.h"
+#include "../lib/stackedwindow.h"
 
 using namespace ncxmms2;
 

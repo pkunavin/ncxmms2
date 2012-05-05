@@ -18,7 +18,7 @@
 #define LOCALFILESYSTEMBROWSER_H
 
 #include <stack>
-#include "lib/abstractitemview.h"
+#include "../lib/abstractitemview.h"
 
 namespace Xmms {
 class Client;

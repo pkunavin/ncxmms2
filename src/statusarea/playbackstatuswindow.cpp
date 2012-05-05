@@ -17,10 +17,10 @@
 #include <boost/format.hpp>
 
 #include "playbackstatuswindow.h"
-#include "utils.h"
+#include "../utils.h"
 
-#include "lib/painter.h"
-#include "lib/rectangle.h"
+#include "../lib/painter.h"
+#include "../lib/rectangle.h"
 
 using namespace ncxmms2;
 

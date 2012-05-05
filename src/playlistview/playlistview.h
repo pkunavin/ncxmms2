@@ -3,7 +3,7 @@
 
 #include <xmmsclient/xmmsclient++.h>
 
-#include "lib/listview.h"
+#include "../lib/listview.h"
 
 namespace ncxmms2 {
 

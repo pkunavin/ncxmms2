@@ -2,7 +2,7 @@
 #include "playlistmodel.h"
 #include "playlistitemdelegate.h"
 
-#include "lib/keyevent.h"
+#include "../lib/keyevent.h"
 
 using namespace ncxmms2;
 

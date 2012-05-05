@@ -14,10 +14,10 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef PLAYLISTSBROWSER_H
-#define PLAYLISTSBROWSER_H
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
-#include "lib/window.h"
+#include "../lib/window.h"
 
 namespace Xmms {
 class Client;
@@ -25,28 +25,38 @@ class Client;
 
 namespace ncxmms2 {
 
-class PlaylistsListView;
-class PlaylistView;
+class HeaderWindow;
+class StackedWindow;
+class StatusArea;
 
-class PlaylistsBrowser : public Window
+class MainWindow : public Window
 {
 public:
-    PlaylistsBrowser(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
+    MainWindow(Xmms::Client *xmmsClient);
+    ~MainWindow();
+
+    enum StackedWindows
+    {
+        StackedPlaylistWindow,
+        StackedLocalFileBrowserWindow,
+        StackedPlaylistsBrowser
+    };
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
     virtual void resize(const Size& size);
 
-protected:
-    virtual void paint(const Rectangle& rect);
-
 private:
-    enum {PlaylistsListViewCols = 20};
+    HeaderWindow *m_headerWindow;
+    StackedWindow *m_stackedWindow;
+    StatusArea *m_statusArea;
+    Xmms::Client *m_xmmsClient;
 
-    void setPlsViewerPlaylist(int item);
+    const int m_minimumCols;
 
-    PlaylistsListView *m_plsListView;
-    PlaylistView *m_plsViewer;
+    void setVisibleWindow(StackedWindows win);
+    void handleStackedWindowTitleChanged(StackedWindows win, const std::string& title);
 };
 } // ncxmms2
 
-#endif // PLAYLISTSBROWSER_H
+
+#endif // MAINWINDOW_H

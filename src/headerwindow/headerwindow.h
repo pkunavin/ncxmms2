@@ -14,34 +14,34 @@
  *  GNU General Public License for more details.
  */
 
-#include "headerwindow.h"
+#ifndef HEADERWINDOW_H
+#define HEADERWINDOW_H
 
-#include "lib/painter.h"
-#include "lib/rectangle.h"
+#include "../lib/window.h"
 
-using namespace ncxmms2;
+namespace ncxmms2 {
 
-HeaderWindow::HeaderWindow(int xPos, int yPos, int cols, Window *parent) :
-    Window(Rectangle(xPos, yPos, cols, LinesNumber), parent)
+class HeaderWindow : public Window
 {
+public:
+    HeaderWindow(int xPos, int yPos, int cols, Window *parent = nullptr);
 
-}
+    void setHeaderTitle(const std::string& string);
 
-void HeaderWindow::setHeaderTitle(const std::string& string)
-{
-    m_headerTitle = string;
-    update();
-}
+    enum
+    {
+        TitleLine,
+        SplitterLine,
 
-void HeaderWindow::paint(const Rectangle& rect)
-{
-    Painter painter(this);
-    painter.clearLine();
-    painter.setBold(true);
-    painter.squeezedPrint(m_headerTitle, cols());
-    painter.drawHLine(0, SplitterLine, cols());
-    painter.flush();
-}
+        LinesNumber
+    };
 
+protected:
+    virtual void paint(const Rectangle& rect);
 
+private:
+    std::string m_headerTitle;
+};
+} // ncxmms2
 
+#endif // HEADERWINDOW_H

@@ -18,9 +18,9 @@
 
 #include "questionwindow.h"
 
-#include "lib/label.h"
-#include "lib/size.h"
-#include "lib/rectangle.h"
+#include "../lib/label.h"
+#include "../lib/size.h"
+#include "../lib/rectangle.h"
 
 using namespace ncxmms2;
 

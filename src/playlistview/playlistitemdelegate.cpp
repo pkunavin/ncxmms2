@@ -4,8 +4,8 @@
 #include "playlistitemdelegate.h"
 #include "playlistmodel.h"
 
-#include "lib/painter.h"
-#include "lib/listitempaintoptions.h"
+#include "../lib/painter.h"
+#include "../lib/listitempaintoptions.h"
 
 using namespace ncxmms2;
 

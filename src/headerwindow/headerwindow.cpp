@@ -14,28 +14,34 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef PLAYBACKPROGRESSBAR_H
-#define PLAYBACKPROGRESSBAR_H
+#include "headerwindow.h"
 
-#include "lib/window.h"
+#include "../lib/painter.h"
+#include "../lib/rectangle.h"
 
-namespace ncxmms2 {
+using namespace ncxmms2;
 
-class PlaybackProgressBar : public Window
+HeaderWindow::HeaderWindow(int xPos, int yPos, int cols, Window *parent) :
+    Window(Rectangle(xPos, yPos, cols, LinesNumber), parent)
 {
-public:
-    PlaybackProgressBar(int xPos, int yPos, int cols, Window *parent);
 
-    void setValue(int value);
-    void setMaxValue(int maxValue);
+}
 
-protected:
-    void paint(const Rectangle& rect);
+void HeaderWindow::setHeaderTitle(const std::string& string)
+{
+    m_headerTitle = string;
+    update();
+}
 
-private:
-    int m_value;
-    int m_maxValue;
-};
-} // ncxmms2
+void HeaderWindow::paint(const Rectangle& rect)
+{
+    Painter painter(this);
+    painter.clearLine();
+    painter.setBold(true);
+    painter.squeezedPrint(m_headerTitle, cols());
+    painter.drawHLine(0, SplitterLine, cols());
+    painter.flush();
+}
 
-#endif // PLAYBACKPROGRESSBAR_H
+
+

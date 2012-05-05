@@ -20,8 +20,8 @@
 #include <vector>
 #include <xmmsclient/xmmsclient++.h>
 
-#include "lib/abstractitemview.h"
-#include "lib/lineedit.h"
+#include "../lib/abstractitemview.h"
+#include "../lib/lineedit.h"
 
 namespace ncxmms2 {
 

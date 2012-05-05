@@ -14,33 +14,28 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef QUESTIONWINDOW_H
-#define QUESTIONWINDOW_H
+#ifndef PLAYBACKPROGRESSBAR_H
+#define PLAYBACKPROGRESSBAR_H
 
-#include "lib/window.h"
-#include "lib/lineedit.h"
+#include "../lib/window.h"
 
 namespace ncxmms2 {
 
-class Label;
-
-class QuestionWindow : public Window
+class PlaybackProgressBar : public Window
 {
 public:
-    QuestionWindow(int xPos, int yPos, int cols, Window *parent = nullptr);
+    PlaybackProgressBar(int xPos, int yPos, int cols, Window *parent);
 
-    void askQuestion(const std::string& question,
-                     const LineEdit::ResultCallback& answerCallback,
-                     const std::string& initialAnswer=std::string());
+    void setValue(int value);
+    void setMaxValue(int maxValue);
 
-    virtual void resize(const Size &size);
+protected:
+    void paint(const Rectangle& rect);
 
 private:
-    Label *m_questionLabel;
-    LineEdit *m_answerEdit;
-
-    void adjustSize();
+    int m_value;
+    int m_maxValue;
 };
 } // ncxmms2
 
-#endif // QUESTIONWINDOW_H
+#endif // PLAYBACKPROGRESSBAR_H

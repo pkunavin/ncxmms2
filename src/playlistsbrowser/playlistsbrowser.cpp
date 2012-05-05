@@ -16,12 +16,12 @@
 
 #include "playlistsbrowser.h"
 #include "playlistslistview.h"
-#include "playlistview.h"
+#include "../playlistview/playlistview.h"
 
-#include "lib/painter.h"
-#include "lib/keyevent.h"
-#include "lib/size.h"
-#include "lib/rectangle.h"
+#include "../lib/painter.h"
+#include "../lib/keyevent.h"
+#include "../lib/size.h"
+#include "../lib/rectangle.h"
 
 using namespace ncxmms2;
 

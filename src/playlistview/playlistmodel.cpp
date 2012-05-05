@@ -16,7 +16,7 @@
 
 #include <xmmsclient/xmmsclient++.h>
 #include "playlistmodel.h"
-#include "lib/listmodelitemdata.h"
+#include "../lib/listmodelitemdata.h"
 
 using namespace ncxmms2;
 

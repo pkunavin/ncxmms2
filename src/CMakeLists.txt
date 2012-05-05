@@ -1,45 +1,60 @@
+add_subdirectory(lib)
 
 set(SOURCES
     main.cpp
-    mainwindow.cpp
-    playbackstatuswindow.cpp
     utils.cpp
     xmms2client.cpp
-    localfilesystembrowser.cpp
-    headerwindow.cpp
     settings.cpp
     commandlineoptions.cpp
     song.cpp
-    playlistsbrowser.cpp
-    playlistslistview.cpp
-    statusarea.cpp
-    playbackprogressbar.cpp
-    questionwindow.cpp
-    activeplaylistwindow.cpp
-    playlistview.cpp
-    playlistmodel.cpp
-    playlistitemdelegate.cpp)
+    
+    mainwindow/mainwindow.cpp
+    
+    statusarea/playbackstatuswindow.cpp
+    statusarea/statusarea.cpp
+    statusarea/playbackprogressbar.cpp
+    statusarea/questionwindow.cpp
+    
+    localfilesystembrowser/localfilesystembrowser.cpp
+    
+    headerwindow/headerwindow.cpp
+    
+    playlistsbrowser/playlistsbrowser.cpp
+    playlistsbrowser/playlistslistview.cpp
+    
+    activeplaylistwindow/activeplaylistwindow.cpp
+    
+    playlistview/playlistview.cpp
+    playlistview/playlistmodel.cpp
+    playlistview/playlistitemdelegate.cpp)
 
 set(HEADERS
-    mainwindow.h
     utils.h
-    playbackstatuswindow.h
     xmms2client.h
-    localfilesystembrowser.h
-    headerwindow.h
-    hotkeys.h
     settings.h
     commandlineoptions.h
     song.h
-    playlistsbrowser.h
-    playlistslistview.h
-    statusarea.h
-    playbackprogressbar.h
-    questionwindow.h
-    activeplaylistwindow.h
-    playlistview.h
-    playlistmodel.h
-    playlistitemdelegate.h)
+    hotkeys.h
+    
+    mainwindow/mainwindow.h
+   
+    statusarea/playbackstatuswindow.h
+    statusarea/statusarea.h
+    statusarea/playbackprogressbar.h
+    statusarea/questionwindow.h
+        
+    localfilesystembrowser/localfilesystembrowser.h
+    
+    headerwindow/headerwindow.h
+        
+    playlistsbrowser/playlistsbrowser.h
+    playlistsbrowser/playlistslistview.h
+    
+    activeplaylistwindow/activeplaylistwindow.h
+    
+    playlistview/playlistview.h
+    playlistview/playlistmodel.h
+    playlistview/playlistitemdelegate.h)
 
 add_executable(ncxmms2 ${SOURCES})
 
@@ -58,8 +73,6 @@ include_directories(${XMMS2_CPP_INCLUDE_DIRS})
 
 pkg_check_modules(XMMS2_CPP_GLIB xmms2-client-cpp-glib REQUIRED)
 include_directories(${XMMS2_CPP_GLIB_INCLUDE_DIRS})
-
-add_subdirectory(lib)
 
 target_link_libraries(ncxmms2 ncxmms2-lib
                               ${GLIB_LIBRARIES}

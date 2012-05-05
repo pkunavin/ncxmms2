@@ -18,10 +18,12 @@
 #define STATUSAREA_H
 
 #include <xmmsclient/xmmsclient++/playback.h>
-#include "song.h"
-#include "lib/window.h"
-#include "lib/lineedit.h"
-#include "lib/timer.h"
+
+#include "../song.h"
+
+#include "../lib/window.h"
+#include "../lib/lineedit.h"
+#include "../lib/timer.h"
 
 namespace ncxmms2 {
 

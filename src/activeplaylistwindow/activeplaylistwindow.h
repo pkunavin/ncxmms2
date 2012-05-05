@@ -17,7 +17,7 @@
 #ifndef ACTIVEPLAYLISTWINDOW_H
 #define ACTIVEPLAYLISTWINDOW_H
 
-#include "playlistview.h"
+#include "../playlistview/playlistview.h"
 
 namespace ncxmms2 {
 

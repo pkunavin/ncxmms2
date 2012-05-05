@@ -1,7 +1,7 @@
 #ifndef PLAYLISTITEMDELEGATE_H
 #define PLAYLISTITEMDELEGATE_H
 
-#include "lib/listmodelitemdelegate.h"
+#include "../lib/listmodelitemdelegate.h"
 
 namespace ncxmms2 {
 

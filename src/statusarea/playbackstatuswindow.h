@@ -18,8 +18,8 @@
 #define PLAYBACKSTATUSWINDOW_H
 
 #include <xmmsclient/xmmsclient++.h>
-#include "song.h"
-#include "lib/window.h"
+#include "../song.h"
+#include "../lib/window.h"
 
 namespace ncxmms2 {
 

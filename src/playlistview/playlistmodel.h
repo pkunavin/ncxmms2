@@ -21,8 +21,8 @@
 #include <string>
 #include <boost/unordered_map.hpp>
 
-#include "song.h"
-#include "lib/listmodel.h"
+#include "../song.h"
+#include "../lib/listmodel.h"
 
 namespace Xmms {
 class Client;

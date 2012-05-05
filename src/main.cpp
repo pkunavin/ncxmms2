@@ -15,11 +15,13 @@
  */
 
 #include <xmmsclient/xmmsclient++.h>
-#include "lib/application.h"
-#include "mainwindow.h"
+
 #include "xmms2client.h"
 #include "settings.h"
 #include "commandlineoptions.h"
+#include "mainwindow/mainwindow.h"
+
+#include "lib/application.h"
 
 int main(int argc, char **argv)
 {

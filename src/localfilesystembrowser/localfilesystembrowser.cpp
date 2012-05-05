@@ -24,11 +24,11 @@
 #include <xmmsclient/xmmsclient++.h>
 
 #include "localfilesystembrowser.h"
-#include "statusarea.h"
-#include "settings.h"
+#include "../statusarea/statusarea.h"
+#include "../settings.h"
 
-#include "lib/painter.h"
-#include "lib/keyevent.h"
+#include "../lib/painter.h"
+#include "../lib/keyevent.h"
 
 using namespace ncxmms2;
 

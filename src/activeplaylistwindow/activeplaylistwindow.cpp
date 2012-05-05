@@ -17,9 +17,9 @@
 #include <boost/lexical_cast.hpp>
 
 #include "activeplaylistwindow.h"
-#include "playlistmodel.h"
-#include "settings.h"
-#include "utils.h"
+#include "../playlistview/playlistmodel.h"
+#include "../settings.h"
+#include "../utils.h"
 
 using namespace ncxmms2;
 

@@ -14,34 +14,33 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef HEADERWINDOW_H
-#define HEADERWINDOW_H
+#ifndef QUESTIONWINDOW_H
+#define QUESTIONWINDOW_H
 
-#include "lib/window.h"
+#include "../lib/window.h"
+#include "../lib/lineedit.h"
 
 namespace ncxmms2 {
 
-class HeaderWindow : public Window
+class Label;
+
+class QuestionWindow : public Window
 {
 public:
-    HeaderWindow(int xPos, int yPos, int cols, Window *parent = nullptr);
+    QuestionWindow(int xPos, int yPos, int cols, Window *parent = nullptr);
 
-    void setHeaderTitle(const std::string& string);
+    void askQuestion(const std::string& question,
+                     const LineEdit::ResultCallback& answerCallback,
+                     const std::string& initialAnswer=std::string());
 
-    enum
-    {
-        TitleLine,
-        SplitterLine,
-
-        LinesNumber
-    };
-
-protected:
-    virtual void paint(const Rectangle& rect);
+    virtual void resize(const Size &size);
 
 private:
-    std::string m_headerTitle;
+    Label *m_questionLabel;
+    LineEdit *m_answerEdit;
+
+    void adjustSize();
 };
 } // ncxmms2
 
-#endif // HEADERWINDOW_H
+#endif // QUESTIONWINDOW_H

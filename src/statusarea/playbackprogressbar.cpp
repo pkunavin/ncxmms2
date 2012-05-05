@@ -16,8 +16,8 @@
 
 #include "playbackprogressbar.h"
 
-#include "lib/painter.h"
-#include "lib/rectangle.h"
+#include "../lib/painter.h"
+#include "../lib/rectangle.h"
 
 using namespace ncxmms2;
 
