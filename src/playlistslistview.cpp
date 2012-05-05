@@ -25,8 +25,8 @@
 
 using namespace ncxmms2;
 
-PlaylistsListView::PlaylistsListView(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent) :
-    AbstractItemView(lines, cols, yPos, xPos, parent),
+PlaylistsListView::PlaylistsListView(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent) :
+    AbstractItemView(rect, parent),
     m_xmmsClient(xmmsClient)
 {
     m_xmmsClient->playlist.list()(Xmms::bind(&PlaylistsListView::getPlaylists, this));

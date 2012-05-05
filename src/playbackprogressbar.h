@@ -24,7 +24,7 @@ namespace ncxmms2 {
 class PlaybackProgressBar : public Window
 {
 public:
-    PlaybackProgressBar(int lines, int cols, int yPos, int xPos, Window *parent = nullptr);
+    PlaybackProgressBar(int xPos, int yPos, int cols, Window *parent);
 
     void setValue(int value);
     void setMaxValue(int maxValue);

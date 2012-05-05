@@ -31,7 +31,7 @@ class PlaylistView;
 class PlaylistsBrowser : public Window
 {
 public:
-    PlaylistsBrowser(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent = nullptr);
+    PlaylistsBrowser(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
     virtual void resize(const Size& size);

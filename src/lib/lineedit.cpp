@@ -22,6 +22,7 @@
 #include "application.h"
 #include "keyevent.h"
 #include "size.h"
+#include "rectangle.h"
 
 namespace ncxmms2 {
 
@@ -163,8 +164,8 @@ void LineEditPrivate::addChar(wchar_t ch)
     ++cursorPosition;
 }
 
-LineEdit::LineEdit(int cols, int yPos, int xPos, Window *parent) :
-    Window(1, cols, yPos, xPos, parent),
+LineEdit::LineEdit(int xPos, int yPos, int cols, Window *parent) :
+    Window(Rectangle(xPos, yPos, cols, 1), parent),
     d(new LineEditPrivate(this))
 {
 

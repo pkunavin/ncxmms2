@@ -15,14 +15,17 @@
  */
 
 #include <boost/format.hpp>
+
 #include "playbackstatuswindow.h"
 #include "utils.h"
+
 #include "lib/painter.h"
+#include "lib/rectangle.h"
 
 using namespace ncxmms2;
 
-PlaybackStatusWindow::PlaybackStatusWindow(Xmms::Client *client, int lines, int cols, int yPos, int xPos, Window *parent) :
-    Window(lines, cols, yPos, xPos, parent),
+PlaybackStatusWindow::PlaybackStatusWindow(Xmms::Client *client, int xPos, int yPos, int cols, Window *parent) :
+    Window(Rectangle(xPos, yPos, cols, 1), parent),
     m_xmmsClient(client),
     m_playbackStatus(Xmms::Playback::STOPPED),
     m_playbackPlaytime(0)

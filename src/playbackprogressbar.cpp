@@ -15,12 +15,14 @@
  */
 
 #include "playbackprogressbar.h"
+
 #include "lib/painter.h"
+#include "lib/rectangle.h"
 
 using namespace ncxmms2;
 
-PlaybackProgressBar::PlaybackProgressBar(int lines, int cols, int yPos, int xPos, Window *parent) :
-    Window(lines, cols, yPos, xPos, parent),
+PlaybackProgressBar::PlaybackProgressBar(int xPos, int yPos, int cols, Window *parent) :
+    Window(Rectangle(xPos, yPos, cols, 1), parent),
     m_value(0),
     m_maxValue(0)
 {

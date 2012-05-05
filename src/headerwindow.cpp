@@ -15,12 +15,14 @@
  */
 
 #include "headerwindow.h"
+
 #include "lib/painter.h"
+#include "lib/rectangle.h"
 
 using namespace ncxmms2;
 
-HeaderWindow::HeaderWindow(int lines, int cols, int yPos, int xPos, Window *parent) :
-    Window(lines, cols, yPos, xPos, parent)
+HeaderWindow::HeaderWindow(int xPos, int yPos, int cols, Window *parent) :
+    Window(Rectangle(xPos, yPos, cols, LinesNumber), parent)
 {
 
 }
@@ -37,7 +39,7 @@ void HeaderWindow::paint(const Rectangle& rect)
     painter.clearLine();
     painter.setBold(true);
     painter.squeezedPrint(m_headerTitle, cols());
-    painter.drawHLine(0, 1, cols());
+    painter.drawHLine(0, SplitterLine, cols());
     painter.flush();
 }
 

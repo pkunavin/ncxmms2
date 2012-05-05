@@ -27,7 +27,7 @@ class LineEditPrivate;
 class LineEdit : public Window
 {
 public:
-    LineEdit(int cols, int yPos, int xPos, Window *parent = nullptr);
+    LineEdit(int xPos, int yPos, int cols, Window *parent = nullptr);
 
     enum ResultCode
     {

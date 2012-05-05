@@ -21,18 +21,22 @@
 #include "lib/painter.h"
 #include "lib/keyevent.h"
 #include "lib/size.h"
+#include "lib/rectangle.h"
 
 using namespace ncxmms2;
 
-PlaylistsBrowser::PlaylistsBrowser(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent) :
-    Window(lines, cols, yPos, xPos, parent)
+PlaylistsBrowser::PlaylistsBrowser(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent) :
+    Window(rect, parent)
 {
     setTitle("Playlists browser");
 
-    m_plsListView = new PlaylistsListView(xmmsClient, lines, PlaylistsListViewCols, 0, 0, this);
+    const Rectangle plsListViewRect(0, 0, PlaylistsListViewCols, rect.lines());
+    m_plsListView = new PlaylistsListView(xmmsClient, plsListViewRect, this);
     m_plsListView->setFocus();
 
-    m_plsViewer = new PlaylistView(xmmsClient, lines, cols - PlaylistsListViewCols - 1, 0, PlaylistsListViewCols + 1, this);
+    const Rectangle plsViewerRect(PlaylistsListViewCols + 1, 0,
+                                  rect.cols() - PlaylistsListViewCols - 1, rect.lines());
+    m_plsViewer = new PlaylistView(xmmsClient, plsViewerRect, this);
     m_plsViewer->setHideCurrentItemInterval(0);
     m_plsViewer->hideCurrentItem();
 

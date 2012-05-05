@@ -26,7 +26,7 @@ namespace ncxmms2 {
 class PlaybackStatusWindow : public Window
 {
 public:
-    PlaybackStatusWindow(Xmms::Client *client, int lines, int cols, int yPos, int xPos, Window *parent = nullptr);
+    PlaybackStatusWindow(Xmms::Client *client, int xPos, int yPos, int cols, Window *parent = nullptr);
 
     Xmms::Playback::Status playbackStatus() const;
 

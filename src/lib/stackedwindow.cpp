@@ -31,8 +31,8 @@ public:
 
 using namespace ncxmms2;
 
-StackedWindow::StackedWindow(int lines, int cols, int yPos, int xPos, Window *parent) :
-    Window(lines, cols, yPos, xPos, parent),
+StackedWindow::StackedWindow(const Rectangle& rect, Window *parent) :
+    Window(rect, parent),
     d(new StackedWindowPrivate())
 {
 

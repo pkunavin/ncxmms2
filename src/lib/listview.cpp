@@ -75,8 +75,8 @@ public:
 
 using namespace ncxmms2;
 
-ListView::ListView(int lines, int cols, int yPos, int xPos, Window *parent) :
-    Window(lines, cols, yPos, xPos, parent),
+ListView::ListView(const Rectangle& rect, Window *parent) :
+    Window(rect, parent),
     d(new ListViewPrivate(this))
 {
     d->hideSelectionTimer.timeout_Connect(&ListView::hideCurrentItem, this);

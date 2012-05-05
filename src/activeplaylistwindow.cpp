@@ -23,8 +23,8 @@
 
 using namespace ncxmms2;
 
-ActivePlaylistWindow::ActivePlaylistWindow(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent) :
-    PlaylistView(xmmsClient, lines, cols, yPos, xPos, parent),
+ActivePlaylistWindow::ActivePlaylistWindow(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent) :
+    PlaylistView(xmmsClient, rect, parent),
     m_autoScrollToActiveSong(true)
 {
     xmmsClient->playlist.currentActive()(

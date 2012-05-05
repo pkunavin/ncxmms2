@@ -26,35 +26,37 @@
 #include "hotkeys.h"
 
 #include "lib/application.h"
+#include "lib/rectangle.h"
 #include "lib/keyevent.h"
 #include "lib/stackedwindow.h"
 
 using namespace ncxmms2;
 
 MainWindow::MainWindow(Xmms::Client *xmmsClient) :
-    Window(Application::terminalSize().lines(), Application::terminalSize().cols(), 0, 0),
+    Window(Rectangle(0, 0, Application::terminalSize().cols(), Application::terminalSize().lines())),
     m_xmmsClient(xmmsClient),
     m_minimumCols(std::string("[Stopped] ...[xx::xx::xx/xx::xx::xx]").size())
 {
-    const int statusAreaLines = 2;
-    const int headerWindowLines = 2;
-
-    if (lines() < statusAreaLines + 1 + headerWindowLines || cols() < m_minimumCols)
+    if (lines() < StatusArea::LinesNumber + 1 + HeaderWindow::LinesNumber || cols() < m_minimumCols)
         throw std::runtime_error("Terminal too small!");
 
-    m_headerWindow = new HeaderWindow(headerWindowLines, cols(), 0, 0, this);
-    m_stackedWindow = new StackedWindow(lines() - statusAreaLines-headerWindowLines, cols(), headerWindowLines, 0, this);
-    m_statusArea = new StatusArea(m_xmmsClient, statusAreaLines, cols(), lines() - statusAreaLines, 0, this);
+    m_headerWindow = new HeaderWindow(0, 0, cols(), this);
+    m_statusArea = new StatusArea(m_xmmsClient,
+                                  0, lines() - StatusArea::LinesNumber, cols(), this);
 
+    const Rectangle stackedWindowRect(0,
+                                      HeaderWindow::LinesNumber,
+                                      cols(),
+                                      lines() - StatusArea::LinesNumber - HeaderWindow::LinesNumber);
+    m_stackedWindow = new StackedWindow(stackedWindowRect, this);
     m_stackedWindow->setFocus();
 
-    const int screenLines = m_stackedWindow->lines();
-    const int screenCols = m_stackedWindow->cols();
+    const Rectangle stackedSubWinRect(0, 0, stackedWindowRect.cols(), stackedWindowRect.lines());
     const std::map<StackedWindows, Window*> stakedWindows =
     {
-        {StackedPlaylistWindow,         new ActivePlaylistWindow  (xmmsClient, screenLines, screenCols, 0, 0, m_stackedWindow)},
-        {StackedLocalFileBrowserWindow, new LocalFileSystemBrowser(xmmsClient, screenLines, screenCols, 0, 0, m_stackedWindow)},
-        {StackedPlaylistsBrowser,       new PlaylistsBrowser      (xmmsClient, screenLines, screenCols, 0, 0, m_stackedWindow)}
+        {StackedPlaylistWindow,         new ActivePlaylistWindow  (xmmsClient, stackedSubWinRect, m_stackedWindow)},
+        {StackedLocalFileBrowserWindow, new LocalFileSystemBrowser(xmmsClient, stackedSubWinRect, m_stackedWindow)},
+        {StackedPlaylistsBrowser,       new PlaylistsBrowser      (xmmsClient, stackedSubWinRect, m_stackedWindow)}
     };
 
     for (auto it = stakedWindows.begin(), it_end = stakedWindows.end(); it != it_end; ++it) {

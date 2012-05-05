@@ -23,15 +23,16 @@
 
 using namespace ncxmms2;
 
-Window::Window(int lines, int cols, int yPos, int xPos, Window *parent) :
+Window::Window(const Rectangle& rect, Window *parent) :
     Object(parent),
-    d(new WindowPrivate(lines, cols, yPos, xPos, parent))
+    d(new WindowPrivate(rect.lines(), rect.cols(), rect.yPos(), rect.xPos(), parent))
 {
     if (parent) {
-        d->cursesWin = derwin(parent->d->cursesWin, lines, cols, yPos, xPos);
+        d->cursesWin = derwin(parent->d->cursesWin,
+                              rect.lines(), rect.cols(), rect.yPos(), rect.xPos());
         parent->d->childrenWins.push_back(this);
     } else {
-        d->cursesWin = newwin(lines, cols, yPos, xPos);
+        d->cursesWin = newwin(rect.lines(), rect.cols(), rect.yPos(), rect.xPos());
     }
 }
 

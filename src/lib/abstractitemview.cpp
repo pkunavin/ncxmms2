@@ -53,8 +53,8 @@ public:
 
 using namespace ncxmms2;
 
-AbstractItemView::AbstractItemView(int lines, int cols, int yPos, int xPos, Window *parent) :
-    Window(lines, cols, yPos, xPos, parent),
+AbstractItemView::AbstractItemView(const Rectangle& rect, Window *parent) :
+    Window(rect, parent),
     d(new AbstractItemViewPrivate(this))
 {
     d->hideSelectionTimer.timeout_Connect(&AbstractItemView::hideCurrentItem, this);

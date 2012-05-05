@@ -26,13 +26,14 @@
 #include "lib/label.h"
 #include "lib/stackedwindow.h"
 #include "lib/size.h"
+#include "lib/rectangle.h"
 
 using namespace ncxmms2;
 
 StatusArea *StatusArea::inst = nullptr;
 
-StatusArea::StatusArea(Xmms::Client *client, int lines, int cols, int yPos, int xPos, Window *parent) :
-    Window(lines, cols, yPos, xPos, parent)
+StatusArea::StatusArea(Xmms::Client *client, int xPos, int yPos, int cols, Window *parent) :
+    Window(Rectangle(xPos, yPos, cols, LinesNumber), parent)
 {
     if (inst) {
         throw std::logic_error(std::string(__PRETTY_FUNCTION__).append("; instance of StatusArea already exists!"));
@@ -40,14 +41,13 @@ StatusArea::StatusArea(Xmms::Client *client, int lines, int cols, int yPos, int 
         inst = this;
     }
 
-    const int stackedWindowLines = 1;
-    m_stackedWindow = new StackedWindow(stackedWindowLines, cols, 1, 0, this);
+    m_stackedWindow = new StackedWindow(Rectangle(0, InformationLine, cols, 1), this);
 
-    const std::map <StackedWindows, Window*> stackedWins =
+    const std::map<StackedWindows, Window*> stackedWins =
     {
-        {StackedPlaybackStatusWindow, new PlaybackStatusWindow(client, stackedWindowLines, cols, 0, 0, m_stackedWindow)},
-        {StackedMessageWindow,        new Label(stackedWindowLines, cols, 0, 0, m_stackedWindow)},
-        {StackedQuestionWindow,       new QuestionWindow(cols, 0, 0, m_stackedWindow)}
+        {StackedPlaybackStatusWindow, new PlaybackStatusWindow(client, 0, 0, cols, m_stackedWindow)},
+        {StackedMessageWindow,        new Label(0, 0, cols, m_stackedWindow)},
+        {StackedQuestionWindow,       new QuestionWindow(0, 0, cols, m_stackedWindow)}
     };
 
     std::for_each(stackedWins.begin(), stackedWins.end(), [this](const std::pair<StackedWindows, Window*>& value)
@@ -57,7 +57,7 @@ StatusArea::StatusArea(Xmms::Client *client, int lines, int cols, int yPos, int 
     m_stackedWindow->setFocus();
     m_stackedWindow->setCurrentIndex(StackedPlaybackStatusWindow);
 
-    m_playbackProgressBar = new PlaybackProgressBar(stackedWindowLines, cols, 0, 0, this);
+    m_playbackProgressBar = new PlaybackProgressBar(0, 0, cols, this);
     auto *playbackStatusWin = static_cast<PlaybackStatusWindow*>(m_stackedWindow->window(StackedPlaybackStatusWindow));
     playbackStatusWin->playtimeChanged_Connect(&PlaybackProgressBar::setValue, m_playbackProgressBar);
     playbackStatusWin->currentSongChanged_Connect([this](const Song& song)

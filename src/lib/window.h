@@ -30,7 +30,7 @@ class Rectangle;
 class Window : public Object
 {
 public:
-    Window(int lines, int cols, int yPos, int xPos, Window *parent = nullptr);
+    Window(const Rectangle& rect, Window *parent = nullptr);
     virtual ~Window();
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);

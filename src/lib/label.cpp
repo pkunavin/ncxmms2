@@ -16,6 +16,7 @@
 
 #include "label.h"
 #include "painter.h"
+#include "rectangle.h"
 
 namespace ncxmms2 {
 
@@ -28,8 +29,8 @@ public:
 
 using namespace ncxmms2;
 
-Label::Label(int lines, int cols, int yPos, int xPos, Window *parent) :
-    Window(lines, cols, yPos, xPos, parent),
+Label::Label(int xPos, int yPos, int cols, Window *parent) :
+    Window(Rectangle(xPos, yPos, cols, 1), parent),
     d(new LabelPrivate())
 {
 

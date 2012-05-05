@@ -28,7 +28,7 @@ class ListViewPrivate;
 class ListView : public Window
 {
 public:
-    ListView(int lines, int cols, int yPos, int xPos, Window *parent = nullptr);
+    ListView(const Rectangle& rect, Window *parent = nullptr);
     ~ListView();
 
     void setModel(ListModel *model);

@@ -62,8 +62,8 @@ std::string LocalFileSystemBrowser::Dir::name() const
     return m_path.substr(slashPos + 1);
 }
 
-LocalFileSystemBrowser::LocalFileSystemBrowser(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent) :
-    AbstractItemView(lines, cols, yPos, xPos, parent),
+LocalFileSystemBrowser::LocalFileSystemBrowser(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent) :
+    AbstractItemView(rect, parent),
     m_xmmsClient(xmmsClient),
     m_currentDir("/")
 {

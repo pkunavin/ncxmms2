@@ -28,7 +28,7 @@ namespace ncxmms2 {
 class PlaylistsListView : public AbstractItemView
 {
 public:
-    PlaylistsListView(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent = nullptr);
+    PlaylistsListView(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
 
     virtual void keyPressedEvent(const KeyEvent &keyEvent);
 

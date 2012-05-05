@@ -6,8 +6,8 @@
 
 using namespace ncxmms2;
 
-PlaylistView::PlaylistView(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent) :
-    ListView(lines, cols, yPos, xPos, parent),
+PlaylistView::PlaylistView(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent) :
+    ListView(rect, parent),
     m_xmmsClient(xmmsClient),
     m_playbackStatus(Xmms::Playback::STOPPED)
 {

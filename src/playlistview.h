@@ -12,7 +12,7 @@ class PlaylistModel;
 class PlaylistView : public ListView
 {
 public:
-    PlaylistView(Xmms::Client *xmmsClient, int lines, int cols, int yPos, int xPos, Window *parent = nullptr);
+    PlaylistView(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
 
     void setPlaylist(const std::string& playlist);
 

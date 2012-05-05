@@ -20,17 +20,16 @@
 
 #include "lib/label.h"
 #include "lib/size.h"
+#include "lib/rectangle.h"
 
 using namespace ncxmms2;
 
-QuestionWindow::QuestionWindow(int cols, int yPos, int xPos, Window *parent) :
-    Window(1, cols, yPos, xPos, parent)
+QuestionWindow::QuestionWindow(int xPos, int yPos, int cols, Window *parent) :
+    Window(Rectangle(xPos, yPos, cols, 1), parent)
 {
-    const int initialQuestionLabelSize = 1;
-    m_questionLabel = new Label(initialQuestionLabelSize, cols, 0, 0, this);
-    m_questionLabel->setText("Some text");
-
-    m_answerEdit = new LineEdit(cols - initialQuestionLabelSize, 0, initialQuestionLabelSize, this);
+    const int initialQuestionLabelCols = 1;
+    m_questionLabel = new Label(0, 0, initialQuestionLabelCols, this);
+    m_answerEdit = new LineEdit(initialQuestionLabelCols, 0, cols - initialQuestionLabelCols, this);
 }
 
 void QuestionWindow::askQuestion(const std::string &question,
