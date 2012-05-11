@@ -102,9 +102,9 @@ void PlaybackStatusWindow::paint(const Rectangle& rect)
 
     if (!m_currentSong.artist().empty()) {
         painter.squeezedPrint((boost::format("%1% - %2%") % m_currentSong.artist() % m_currentSong.title()).str(),
-                              cols() - painter.xPosition() - timeString.size() - 1);
+                              cols() - painter.x() - timeString.size() - 1);
     } else {
-        painter.squeezedPrint(m_currentSong.title(), cols() - painter.xPosition() - timeString.size() - 1);
+        painter.squeezedPrint(m_currentSong.title(), cols() - painter.x() - timeString.size() - 1);
     }
 
     painter.move(cols() - timeString.size(), 0);

@@ -56,8 +56,8 @@ public:
 
     void flush();
 
-    int xPosition() const;
-    int yPosition() const;
+    int x() const;
+    int y() const;
 
 private:
     Painter(const Painter&);

@@ -182,12 +182,12 @@ void Painter::flush()
     wrefresh(d->cursesWin);
 }
 
-int Painter::xPosition() const
+int Painter::x() const
 {
     return getcurx(d->cursesWin);
 }
 
-int Painter::yPosition() const
+int Painter::y() const
 {
     return getcury(d->cursesWin);
 }
