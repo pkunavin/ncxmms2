@@ -50,7 +50,7 @@ void QuestionWindow::adjustSize()
 
     m_questionLabel->resize(Size(textSize, lines()));
     m_answerEdit->resize(Size(cols() - textSize, lines()));
-    m_answerEdit->move(0, textSize);
+    m_answerEdit->move(textSize, 0);
 }
 
 void QuestionWindow::resize(const Size &size)

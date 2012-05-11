@@ -56,19 +56,19 @@ int Window::yPos() const
     return d->yPos;
 }
 
-void Window::move(int yPos, int xPos)
+void Window::move(int x, int y)
 {
-    d->yPos = yPos;
-    d->xPos = xPos;
+    d->yPos = y;
+    d->xPos = x;
     delwin(d->cursesWin);
     d->cursesWin = d->parent
-                   ? derwin(d->parent->d->cursesWin, d->lines, d->cols, yPos, xPos)
-                   : newwin(d->lines, d->cols, yPos, xPos);
+                   ? derwin(d->parent->d->cursesWin, d->lines, d->cols, y, x)
+                   : newwin(d->lines, d->cols, y, x);
 
     update();
 
     for (auto child : d->childrenWins)
-        child->move(child->yPos(), child->xPos());
+        child->move(child->xPos(), child->yPos());
 }
 
 void Window::hide()

@@ -41,7 +41,7 @@ public:
     int xPos() const;
     int yPos() const;
 
-    void move(int yPos, int xPos);
+    void move(int x, int y);
     virtual void resize(const Size& size);
 
     void hide();
