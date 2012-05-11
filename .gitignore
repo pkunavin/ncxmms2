@@ -12,3 +12,4 @@
 .gdb*
 Makefile
 *.user
+CMakeLists.txt.user.*
