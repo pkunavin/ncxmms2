@@ -124,8 +124,8 @@ void StatusArea::_askQuestion(const std::string& question,
 void StatusArea::resize(const Size &size)
 {
     Window::resize(size);
-    m_playbackProgressBar->resize(Size(m_playbackProgressBar->lines(), size.cols()));
-    m_stackedWindow->resize(Size(m_stackedWindow->lines(), size.cols()));
+    m_playbackProgressBar->resize(Size(size.cols(), m_playbackProgressBar->lines()));
+    m_stackedWindow->resize(Size(size.cols(), m_stackedWindow->lines()));
 }
 
 Xmms::Playback::Status StatusArea::playbackStatus() const

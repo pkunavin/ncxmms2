@@ -22,13 +22,17 @@ namespace ncxmms2 {
 class Size
 {
 public:
-    Size(int lines, int cols) : m_lines(lines), m_cols(cols){}
+    Size(int cols, int lines) : m_cols(cols), m_lines(lines) {}
 
-    int lines() const  {return m_lines;}
+    void setCols(int cols)   {m_cols = cols;}
+    void setLines(int lines) {m_lines = lines;}
+
     int cols() const   {return m_cols;}
+    int lines() const  {return m_lines;}
+
 private:
-    const int m_lines;
-    const int m_cols;
+    int m_cols;
+    int m_lines;
 };
 } // ncxmms2
 

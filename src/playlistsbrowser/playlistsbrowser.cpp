@@ -58,8 +58,8 @@ void PlaylistsBrowser::setPlsViewerPlaylist(int item)
 void PlaylistsBrowser::resize(const Size& size)
 {
     Window::resize(size);
-    m_plsListView->resize(Size(size.lines(), PlaylistsListViewCols));
-    m_plsViewer->resize(Size(size.lines(), size.cols() - PlaylistsListViewCols - 1));
+    m_plsListView->resize(Size(PlaylistsListViewCols, size.lines()));
+    m_plsViewer->resize(Size(size.cols() - PlaylistsListViewCols - 1, size.lines()));
 }
 
 void PlaylistsBrowser::keyPressedEvent(const KeyEvent& keyEvent)

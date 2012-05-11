@@ -147,7 +147,7 @@ void Application::releaseFocus()
 
 Size Application::terminalSize()
 {
-    return Size(LINES, COLS);
+    return Size(COLS, LINES);
 }
 
 gboolean ApplicationPrivate::stdinEvent(GIOChannel* iochan, GIOCondition cond, gpointer data)
@@ -195,7 +195,7 @@ void ApplicationPrivate::resizeSignalHandler(int signal)
     refresh();
 
     if (Application::inst && Application::inst->d->mainWindow)
-        Application::inst->d->mainWindow->resize(Size(size.ws_row, size.ws_col));
+        Application::inst->d->mainWindow->resize(Size(size.ws_col, size.ws_row));
 }
 
 Application::~Application()

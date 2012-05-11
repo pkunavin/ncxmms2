@@ -127,10 +127,10 @@ void MainWindow::resize(const Size& size)
         throw std::runtime_error("Terminal too small!");
 
     Window::resize(size);
-    m_headerWindow->resize(Size(m_headerWindow->lines(), size.cols()));
-    m_stackedWindow->resize(Size(size.lines() - m_statusArea->lines() - m_headerWindow->lines(), size.cols()));
+    m_headerWindow->resize(Size(size.cols(), m_headerWindow->lines()));
+    m_stackedWindow->resize(Size(size.cols(), size.lines() - m_statusArea->lines() - m_headerWindow->lines()));
     m_statusArea->move(size.lines() - m_statusArea->lines(), 0);
-    m_statusArea->resize(Size(m_statusArea->lines(), size.cols()));
+    m_statusArea->resize(Size(size.cols(), m_statusArea->lines()));
 }
 
 void MainWindow::setVisibleWindow(StackedWindows win)
