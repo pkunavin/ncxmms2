@@ -234,7 +234,7 @@ void ListViewPrivate::disconnectModel()
 void ListView::paint(const Rectangle &rect)
 {
     if (G_LIKELY(d->model)) {
-        int item = rect.yPos() + d->viewportBeginItem;
+        int item = rect.y() + d->viewportBeginItem;
         const int lastItem = std::min(item + rect.lines(), d->viewportEndItem);
 
         for (; item < lastItem; ++item) {
