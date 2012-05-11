@@ -19,6 +19,7 @@ set(HEADERS
     application.h
     window.h
     window_p.h
+    point.h
     size.h
     stackedwindow.h
     abstractitemview.h
