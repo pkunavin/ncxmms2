@@ -38,8 +38,8 @@ public:
     int lines() const;
     int cols() const;
 
-    int xPos() const;
-    int yPos() const;
+    int x() const;
+    int y() const;
 
     void move(int x, int y);
     virtual void resize(const Size& size);
