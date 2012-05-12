@@ -23,6 +23,7 @@
 namespace ncxmms2 {
 
 class KeyEvent;
+class Point;
 class Size;
 class WindowPrivate;
 class Rectangle;
@@ -35,13 +36,17 @@ public:
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
 
-    int lines() const;
     int cols() const;
+    int lines() const;
+    Size size() const;
 
     int x() const;
     int y() const;
+    Point position() const;
 
     void move(int x, int y);
+    void move(const Point& position);
+
     virtual void resize(const Size& size);
 
     void hide();

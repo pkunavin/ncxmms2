@@ -20,6 +20,8 @@
 #include <curses.h>
 #include <vector>
 
+#include "point.h"
+#include "size.h"
 #include "painter_p.h"
 
 namespace ncxmms2 {
@@ -29,13 +31,11 @@ class Window;
 class WindowPrivate
 {
 public:
-    WindowPrivate(int lines_, int cols_, int yPos_, int xPos_, Window *parent_) :
+    WindowPrivate(const Point& position_, const Size& size_, Window *parent_) :
         parent(parent_),
         focusedWindow(NULL),
-        lines(lines_),
-        cols(cols_),
-        yPos(yPos_),
-        xPos(xPos_),
+        position(position_),
+        size(size_),
         isVisible(true),
         painterPrivate(nullptr, nullptr),
         isPainterPrivateAlreadyInUse(false){}
@@ -45,11 +45,8 @@ public:
     std::vector<Window*> childrenWins;
     Window *focusedWindow;
 
-    int lines;
-    int cols;
-
-    int yPos;
-    int xPos;
+    Point position;
+    Size size;
 
     bool isVisible;
 

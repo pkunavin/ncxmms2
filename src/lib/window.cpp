@@ -25,7 +25,7 @@ using namespace ncxmms2;
 
 Window::Window(const Rectangle& rect, Window *parent) :
     Object(parent),
-    d(new WindowPrivate(rect.lines(), rect.cols(), rect.y(), rect.x(), parent))
+    d(new WindowPrivate(rect.position(), rect.size(), parent))
 {
     if (parent) {
         d->cursesWin = derwin(parent->d->cursesWin,
@@ -36,39 +36,54 @@ Window::Window(const Rectangle& rect, Window *parent) :
     }
 }
 
-int Window::lines() const
-{
-    return d->lines;
-}
-
 int Window::cols() const
 {
-    return d->cols;
+    return d->size.cols();
+}
+
+int Window::lines() const
+{
+    return d->size.lines();
+}
+
+Size Window::size() const
+{
+    return d->size;
 }
 
 int Window::x() const
 {
-    return d->xPos;
+    return d->position.x();
 }
 
 int Window::y() const
 {
-    return d->yPos;
+    return d->position.y();
+}
+
+Point Window::position() const
+{
+    return d->position;
 }
 
 void Window::move(int x, int y)
 {
-    d->yPos = y;
-    d->xPos = x;
+    d->position.setX(x);
+    d->position.setY(y);
     delwin(d->cursesWin);
     d->cursesWin = d->parent
-                   ? derwin(d->parent->d->cursesWin, d->lines, d->cols, y, x)
-                   : newwin(d->lines, d->cols, y, x);
+                   ? derwin(d->parent->d->cursesWin, lines(), cols(), y, x)
+                   : newwin(lines(), cols(), y, x);
 
     update();
 
     for (auto child : d->childrenWins)
         child->move(child->x(), child->y());
+}
+
+void Window::move(const Point& position)
+{
+    move(position.x(), position.y());
 }
 
 void Window::hide()
@@ -119,13 +134,12 @@ void Window::keyPressedEvent(const KeyEvent& keyEvent)
 
 void Window::resize(const Size& size)
 {
-    d->lines = size.lines();
-    d->cols = size.cols();
+    d->size = size;
 
     delwin(d->cursesWin);
     d->cursesWin = d->parent
-                   ? derwin(d->parent->d->cursesWin, d->lines, d->cols, d->yPos, d->xPos)
-                   : newwin(d->lines, d->cols, d->yPos, d->xPos);
+                   ? derwin(d->parent->d->cursesWin, lines(), cols(), y(), x())
+                   : newwin(lines(), cols(), y(), x());
 
     update();
 }
