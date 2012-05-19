@@ -51,8 +51,6 @@ private:
     StatusArea *m_statusArea;
     Xmms::Client *m_xmmsClient;
 
-    const int m_minimumCols;
-
     void setVisibleWindow(StackedWindows win);
     void handleStackedWindowTitleChanged(StackedWindows win, const std::string& title);
 };

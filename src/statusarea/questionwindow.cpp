@@ -27,6 +27,10 @@ using namespace ncxmms2;
 QuestionWindow::QuestionWindow(int xPos, int yPos, int cols, Window *parent) :
     Window(Rectangle(xPos, yPos, cols, 1), parent)
 {
+    setMinumumLines(1);
+    setMaximumLines(1);
+    //TODO: What about minimum cols?
+
     const int initialQuestionLabelCols = 1;
     m_questionLabel = new Label(0, 0, initialQuestionLabelCols, this);
     m_answerEdit = new LineEdit(initialQuestionLabelCols, 0, cols - initialQuestionLabelCols, this);

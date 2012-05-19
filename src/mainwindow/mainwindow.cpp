@@ -34,12 +34,8 @@ using namespace ncxmms2;
 
 MainWindow::MainWindow(Xmms::Client *xmmsClient) :
     Window(Rectangle(0, 0, Application::terminalSize().cols(), Application::terminalSize().lines())),
-    m_xmmsClient(xmmsClient),
-    m_minimumCols(std::string("[Stopped] ...[xx::xx::xx/xx::xx::xx]").size())
+    m_xmmsClient(xmmsClient)
 {
-    if (lines() < StatusArea::LinesNumber + 1 + HeaderWindow::LinesNumber || cols() < m_minimumCols)
-        throw std::runtime_error("Terminal too small!");
-
     m_headerWindow = new HeaderWindow(0, 0, cols(), this);
     m_statusArea = new StatusArea(m_xmmsClient,
                                   0, lines() - StatusArea::LinesNumber, cols(), this);
@@ -123,9 +119,6 @@ void MainWindow::keyPressedEvent(const KeyEvent& keyEvent)
 
 void MainWindow::resize(const Size& size)
 {
-    if (size.lines() < m_statusArea->lines() + 1 + m_headerWindow->lines() || size.cols() < m_minimumCols)
-        throw std::runtime_error("Terminal too small!");
-
     Window::resize(size);
     m_headerWindow->resize(Size(size.cols(), m_headerWindow->lines()));
     m_stackedWindow->resize(Size(size.cols(), size.lines() - m_statusArea->lines() - m_headerWindow->lines()));

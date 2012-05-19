@@ -26,7 +26,8 @@ PlaybackProgressBar::PlaybackProgressBar(int xPos, int yPos, int cols, Window *p
     m_value(0),
     m_maxValue(0)
 {
-
+    setMinumumLines(1);
+    setMaximumLines(1);
 }
 
 void PlaybackProgressBar::setValue(int value)

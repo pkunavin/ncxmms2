@@ -24,7 +24,8 @@ using namespace ncxmms2;
 HeaderWindow::HeaderWindow(int xPos, int yPos, int cols, Window *parent) :
     Window(Rectangle(xPos, yPos, cols, LinesNumber), parent)
 {
-
+    setMinumumLines(LinesNumber);
+    setMaximumLines(LinesNumber);
 }
 
 void HeaderWindow::setHeaderTitle(const std::string& string)

@@ -41,6 +41,9 @@ StatusArea::StatusArea(Xmms::Client *client, int xPos, int yPos, int cols, Windo
         inst = this;
     }
 
+    setMaximumLines(LinesNumber);
+    setMaximumLines(LinesNumber);
+
     m_stackedWindow = new StackedWindow(Rectangle(0, InformationLine, cols, 1), this);
 
     const std::map<StackedWindows, Window*> stackedWins =

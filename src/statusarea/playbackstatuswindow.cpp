@@ -30,6 +30,10 @@ PlaybackStatusWindow::PlaybackStatusWindow(Xmms::Client *client, int xPos, int y
     m_playbackStatus(Xmms::Playback::STOPPED),
     m_playbackPlaytime(0)
 {
+    setMinumumLines(1);
+    setMaximumLines(1);
+    setMinumumCols(strlen("[Stopped] ...[xx::xx::xx/xx::xx::xx]"));
+
     m_xmmsClient->playback.getStatus()(Xmms::bind(&PlaybackStatusWindow::getPlaybackStatus, this));
     m_xmmsClient->playback.broadcastStatus()(Xmms::bind(&PlaybackStatusWindow::getPlaybackStatus, this));
 

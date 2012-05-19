@@ -32,6 +32,8 @@ PlaylistsBrowser::PlaylistsBrowser(Xmms::Client *xmmsClient, const Rectangle& re
 
     const Rectangle plsListViewRect(0, 0, PlaylistsListViewCols, rect.lines());
     m_plsListView = new PlaylistsListView(xmmsClient, plsListViewRect, this);
+    m_plsListView->setMinumumCols(PlaylistsListViewCols);
+    m_plsListView->setMaximumCols(PlaylistsListViewCols);
     m_plsListView->setFocus();
 
     const Rectangle plsViewerRect(PlaylistsListViewCols + 1, 0,

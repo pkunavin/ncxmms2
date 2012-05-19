@@ -22,6 +22,7 @@
 #include "mainwindow/mainwindow.h"
 
 #include "lib/application.h"
+#include "lib/exceptions.h"
 
 int main(int argc, char **argv)
 {
@@ -52,10 +53,10 @@ int main(int argc, char **argv)
         std::cerr << "Connection failed: " << error.what() << std::endl;
         return EXIT_FAILURE;
     }
-    catch (std::runtime_error& error)
+    catch (ncxmms2::DesiredWindowSizeTooSmall& error)
     {
         ncxmms2::Application::shutdown();
-        std::cerr << "Runtime error: " << error.what() << std::endl;
+        std::cerr << "Terminal too small!" << std::endl;
         return EXIT_FAILURE;
     }
 
