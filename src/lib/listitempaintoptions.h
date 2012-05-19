@@ -27,8 +27,9 @@ enum ListItemState
     ListItemStateCurrent
 };
 
-struct ListItemPaintOptions
+class ListItemPaintOptions
 {
+public:
     ListItemPaintOptions(const Rectangle& _rect, ListItemState _state) :
         rect(_rect), state(_state){}
 
