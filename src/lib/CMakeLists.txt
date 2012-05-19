@@ -19,6 +19,7 @@ set(HEADERS
     application.h
     window.h
     window_p.h
+    exceptions.h
     point.h
     size.h
     stackedwindow.h

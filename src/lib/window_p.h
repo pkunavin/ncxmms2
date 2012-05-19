@@ -19,6 +19,7 @@
 
 #include <curses.h>
 #include <vector>
+#include <limits>
 
 #include "point.h"
 #include "size.h"
@@ -32,10 +33,13 @@ class WindowPrivate
 {
 public:
     WindowPrivate(const Point& position_, const Size& size_, Window *parent_) :
+        cursesWin(nullptr),
         parent(parent_),
-        focusedWindow(NULL),
+        focusedWindow(nullptr),
         position(position_),
         size(size_),
+        minimumSize(1, 1),
+        maximumSize(std::numeric_limits<int>::max(), std::numeric_limits<int>::max()),
         isVisible(true),
         painterPrivate(nullptr, nullptr),
         isPainterPrivateAlreadyInUse(false){}
@@ -48,12 +52,17 @@ public:
     Point position;
     Size size;
 
+    Size minimumSize;
+    Size maximumSize;
+
     bool isVisible;
 
     std::string title;
 
     PainterPrivate painterPrivate;
     bool isPainterPrivateAlreadyInUse;
+
+    void checkSize(const Size& size);
 };
 } // ncxmms2
 

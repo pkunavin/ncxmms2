@@ -20,6 +20,7 @@
 #include "window_p.h"
 #include "size.h"
 #include "rectangle.h"
+#include "exceptions.h"
 
 using namespace ncxmms2;
 
@@ -27,6 +28,8 @@ Window::Window(const Rectangle& rect, Window *parent) :
     Object(parent),
     d(new WindowPrivate(rect.position(), rect.size(), parent))
 {
+    d->checkSize(rect.size());
+
     if (parent) {
         d->cursesWin = derwin(parent->d->cursesWin,
                               rect.lines(), rect.cols(), rect.y(), rect.x());
@@ -49,6 +52,68 @@ int Window::lines() const
 Size Window::size() const
 {
     return d->size;
+}
+
+void Window::setMinumumCols(int cols)
+{
+    setMinimumSize(Size(cols, minimumLines()));
+}
+
+void Window::setMinumumLines(int lines)
+{
+    setMinimumSize(Size(minimumCols(), lines));
+}
+
+void Window::setMinimumSize(const Size& size)
+{
+    d->checkSize(size);
+    d->minimumSize = size;
+}
+
+int Window::minimumCols() const
+{
+    return d->minimumSize.cols();
+}
+
+int Window::minimumLines() const
+{
+    return d->minimumSize.lines();
+}
+
+Size Window::minimumSize() const
+{
+    return d->minimumSize;
+}
+
+void Window::setMaximumCols(int cols)
+{
+    setMaximumSize(Size(cols, maximumLines()));
+}
+
+void Window::setMaximumLines(int lines)
+{
+    setMaximumSize(Size(maximumCols(), lines));
+}
+
+void Window::setMaximumSize(const Size& size)
+{
+    d->checkSize(size);
+    d->maximumSize = size;
+}
+
+int Window::maximumCols() const
+{
+    return d->maximumSize.cols();
+}
+
+int Window::maximumLines() const
+{
+    return d->maximumSize.lines();
+}
+
+Size Window::maximumSize() const
+{
+    return d->maximumSize;
 }
 
 int Window::x() const
@@ -134,6 +199,7 @@ void Window::keyPressedEvent(const KeyEvent& keyEvent)
 
 void Window::resize(const Size& size)
 {
+    d->checkSize(size);
     d->size = size;
 
     delwin(d->cursesWin);
@@ -173,6 +239,23 @@ void Window::setTitle(const std::string& title)
 
 Window::~Window()
 {
-    delwin(d->cursesWin);
+    if (d->cursesWin)
+        delwin(d->cursesWin);
 }
 
+void WindowPrivate::checkSize(const Size& size)
+{
+    /* We can't forbid resizing window, as we can't stop resizing terminal,
+     * so throw an exception here
+    */
+
+    if (size.cols() < minimumSize.cols()
+        || size.lines() < minimumSize.lines()) {
+        throw DesiredWindowSizeTooSmall();
+    }
+
+    if (size.cols() > maximumSize.cols()
+        || size.lines() > maximumSize.lines()) {
+        throw DesiredWindowSizeTooBig();
+    }
+}

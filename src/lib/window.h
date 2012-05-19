@@ -40,6 +40,22 @@ public:
     int lines() const;
     Size size() const;
 
+    void setMinumumCols(int cols);
+    void setMinumumLines(int lines);
+    void setMinimumSize(const Size& size);
+
+    int minimumCols() const;
+    int minimumLines() const;
+    Size minimumSize() const;
+
+    void setMaximumCols(int cols);
+    void setMaximumLines(int lines);
+    void setMaximumSize(const Size& size);
+
+    int maximumCols() const;
+    int maximumLines() const;
+    Size maximumSize() const;
+
     int x() const;
     int y() const;
     Point position() const;
