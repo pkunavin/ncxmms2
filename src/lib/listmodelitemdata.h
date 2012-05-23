@@ -24,7 +24,7 @@ namespace ncxmms2 {
 struct ListModelItemData
 {
     std::string text;
-    std::string *textPtr;
+    const std::string *textPtr;
 
     // TODO: Add more data fields: font settings, etc...
 
