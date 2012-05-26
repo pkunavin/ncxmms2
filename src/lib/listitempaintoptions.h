@@ -30,11 +30,14 @@ enum ListItemState
 class ListItemPaintOptions
 {
 public:
-    ListItemPaintOptions(const Rectangle& _rect, ListItemState _state) :
-        rect(_rect), state(_state){}
+    ListItemPaintOptions(const Rectangle& _rect, ListItemState _state, bool _hasFocus) :
+        rect(_rect),
+        state(_state),
+        hasFocus(_hasFocus){}
 
     Rectangle rect;
     ListItemState state;
+    bool hasFocus;
 };
 } // ncxmms2
 

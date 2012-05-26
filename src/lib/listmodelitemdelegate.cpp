@@ -37,8 +37,9 @@ void ListModelItemDelegate::paint(Painter *painter, const ListItemPaintOptions& 
 {
     // TODO: use colors from color scheme
     if (options.state == ListItemStateCurrent) {
-        painter->fillLine(options.rect.y(), ColorYellow);
-        painter->setColor(ColorYellow);
+        const Color backgroungColor = options.hasFocus ? ColorYellow : ColorWhite ;
+        painter->fillLine(options.rect.y(), backgroungColor);
+        painter->setColor(backgroungColor);
         painter->setReverse(true);
     } else {
         painter->setColor(ColorYellow );

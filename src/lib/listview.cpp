@@ -236,6 +236,7 @@ void ListView::paint(const Rectangle &rect)
     if (G_LIKELY(d->model)) {
         int item = rect.y() + d->viewportBeginItem;
         const int lastItem = std::min(item + rect.lines(), d->viewportEndItem);
+        const bool focused = hasFocus();
 
         for (; item < lastItem; ++item) {
             const ListItemState state = item == d->currentItem && !d->currentItemHidden
@@ -243,7 +244,8 @@ void ListView::paint(const Rectangle &rect)
                                         : ListItemStateRegular;
 
             const ListItemPaintOptions options(Rectangle(0, d->itemLine(item), cols(), 1),
-                                               state);
+                                               state,
+                                               focused);
 
             Painter painter(this);
             d->delegate->paint(&painter, options, item);
