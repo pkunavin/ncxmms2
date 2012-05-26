@@ -26,6 +26,7 @@ enum
     // Screens switching
     PlaylistScreen               = '2',
     LocalFileSystemBrowserScreen = '3',
+    MedialibBrowserScreen        = '5',
     PlaylistsBrowserScreen       = '6',
 
     // Playback control

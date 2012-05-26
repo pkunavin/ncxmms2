@@ -14,48 +14,48 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef MEDIALIBBROWSER_H
+#define MEDIALIBBROWSER_H
 
 #include "../lib/window.h"
 
 namespace Xmms {
 class Client;
+class Dict;
+template <class T> class List;
 }
 
 namespace ncxmms2 {
 
-class HeaderWindow;
-class StackedWindow;
-class StatusArea;
+class ListView;
 
-class MainWindow : public Window
+class MedialibBrowser : public Window
 {
 public:
-    MainWindow(Xmms::Client *xmmsClient);
-    ~MainWindow();
-
-    enum StackedWindows
-    {
-        StackedPlaylistWindow,
-        StackedLocalFileBrowserWindow,
-        StackedMedialibBrowser,
-        StackedPlaylistsBrowser
-    };
+    MedialibBrowser(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
     virtual void resize(const Size& size);
 
+protected:
+    virtual void paint(const Rectangle& rect);
+
 private:
-    HeaderWindow *m_headerWindow;
-    StackedWindow *m_stackedWindow;
-    StatusArea *m_statusArea;
     Xmms::Client *m_xmmsClient;
 
-    void setVisibleWindow(StackedWindows win);
-    void handleStackedWindowTitleChanged(StackedWindows win, const std::string& title);
+    ListView *m_artistsListView;
+    ListView *m_albumsListView;
+    ListView *m_songsListView;
+    ListView *m_activeListView;
+
+    void setAlbumsListViewArtist(int item);
+    void setSongsListViewAlbum(int item);
+
+    void activePlaylistAddSong(int item);
+    void activePlaylistAddAlbum(int item);
+    void activePlaylistAddArtist(int item);
+    bool activePlaylistAddAlbums(const std::string& artist, const Xmms::List<Xmms::Dict>& list);
 };
 } // ncxmms2
 
-
-#endif // MAINWINDOW_H
+#endif // MEDIALIBBROWSER_H

@@ -14,48 +14,35 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef ARTISTSLISTMODEL_H
+#define ARTISTSLISTMODEL_H
 
-#include "../lib/window.h"
+#include <vector>
+#include "../lib/listmodel.h"
 
 namespace Xmms {
 class Client;
+class Dict;
+template <class T> class List;
 }
 
 namespace ncxmms2 {
 
-class HeaderWindow;
-class StackedWindow;
-class StatusArea;
-
-class MainWindow : public Window
+class ArtistsListModel : public ListModel
 {
 public:
-    MainWindow(Xmms::Client *xmmsClient);
-    ~MainWindow();
+    ArtistsListModel(Xmms::Client *xmmsClient, Object *parent = nullptr);
 
-    enum StackedWindows
-    {
-        StackedPlaylistWindow,
-        StackedLocalFileBrowserWindow,
-        StackedMedialibBrowser,
-        StackedPlaylistsBrowser
-    };
+    const std::string& artist(int item) const;
 
-    virtual void keyPressedEvent(const KeyEvent& keyEvent);
-    virtual void resize(const Size& size);
+    virtual void data(int item, ListModelItemData *itemData) const;
+    virtual int itemsCount() const;
 
 private:
-    HeaderWindow *m_headerWindow;
-    StackedWindow *m_stackedWindow;
-    StatusArea *m_statusArea;
     Xmms::Client *m_xmmsClient;
-
-    void setVisibleWindow(StackedWindows win);
-    void handleStackedWindowTitleChanged(StackedWindows win, const std::string& title);
+    std::vector<std::string> m_artists;
+    bool getArtistsList(const Xmms::List<Xmms::Dict>& list);
 };
 } // ncxmms2
 
-
-#endif // MAINWINDOW_H
+#endif // ARTISTSLISTMODEL_H

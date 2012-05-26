@@ -21,6 +21,7 @@
 #include "../statusarea/statusarea.h"
 #include "../activeplaylistwindow/activeplaylistwindow.h"
 #include "../localfilesystembrowser/localfilesystembrowser.h"
+#include "../medialibbrowser/medialibbrowser.h"
 #include "../playlistsbrowser/playlistsbrowser.h"
 #include "../headerwindow/headerwindow.h"
 #include "../hotkeys.h"
@@ -52,6 +53,7 @@ MainWindow::MainWindow(Xmms::Client *xmmsClient) :
     {
         {StackedPlaylistWindow,         new ActivePlaylistWindow  (xmmsClient, stackedSubWinRect, m_stackedWindow)},
         {StackedLocalFileBrowserWindow, new LocalFileSystemBrowser(xmmsClient, stackedSubWinRect, m_stackedWindow)},
+        {StackedMedialibBrowser,        new MedialibBrowser       (xmmsClient, stackedSubWinRect, m_stackedWindow)},
         {StackedPlaylistsBrowser,       new PlaylistsBrowser      (xmmsClient, stackedSubWinRect, m_stackedWindow)}
     };
 
@@ -73,6 +75,10 @@ void MainWindow::keyPressedEvent(const KeyEvent& keyEvent)
 
         case Hotkeys::LocalFileSystemBrowserScreen:
             setVisibleWindow(StackedLocalFileBrowserWindow);
+            break;
+
+        case Hotkeys::MedialibBrowserScreen:
+            setVisibleWindow(StackedMedialibBrowser);
             break;
 
         case Hotkeys::PlaylistsBrowserScreen:

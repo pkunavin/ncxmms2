@@ -7,26 +7,31 @@ set(SOURCES
     settings.cpp
     commandlineoptions.cpp
     song.cpp
-    
+
     mainwindow/mainwindow.cpp
-    
+
     statusarea/playbackstatuswindow.cpp
     statusarea/statusarea.cpp
     statusarea/playbackprogressbar.cpp
     statusarea/questionwindow.cpp
-    
+
     localfilesystembrowser/localfilesystembrowser.cpp
-    
+
     headerwindow/headerwindow.cpp
-    
+
     playlistsbrowser/playlistsbrowser.cpp
     playlistsbrowser/playlistslistview.cpp
-    
+
     activeplaylistwindow/activeplaylistwindow.cpp
-    
+
     playlistview/playlistview.cpp
     playlistview/playlistmodel.cpp
-    playlistview/playlistitemdelegate.cpp)
+    playlistview/playlistitemdelegate.cpp
+
+    medialibbrowser/medialibbrowser.cpp
+    medialibbrowser/artistslistmodel.cpp
+    medialibbrowser/albumslistmodel.cpp
+    medialibbrowser/songslistmodel.cpp)
 
 set(HEADERS
     utils.h
@@ -35,26 +40,31 @@ set(HEADERS
     commandlineoptions.h
     song.h
     hotkeys.h
-    
+
     mainwindow/mainwindow.h
-   
+
     statusarea/playbackstatuswindow.h
     statusarea/statusarea.h
     statusarea/playbackprogressbar.h
     statusarea/questionwindow.h
-        
+
     localfilesystembrowser/localfilesystembrowser.h
-    
+
     headerwindow/headerwindow.h
-        
+
     playlistsbrowser/playlistsbrowser.h
     playlistsbrowser/playlistslistview.h
-    
+
     activeplaylistwindow/activeplaylistwindow.h
-    
+
     playlistview/playlistview.h
     playlistview/playlistmodel.h
-    playlistview/playlistitemdelegate.h)
+    playlistview/playlistitemdelegate.h
+
+    medialibbrowser/medialibbrowser.h
+    medialibbrowser/artistslistmodel.h
+    medialibbrowser/albumslistmodel.h
+    medialibbrowser/songslistmodel.h)
 
 add_executable(ncxmms2 ${SOURCES})
 
