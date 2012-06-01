@@ -9,6 +9,7 @@ Currently supported features:
  - Screens:
   - Playlist screen
   - Local file system browser screen
+  - Medialib browser screen
   - Playlists browser screen
   
 Hotkeys:
