@@ -14,11 +14,9 @@
  *  GNU General Public License for more details.
  */
 
-#include <stdexcept>
-
 #include "questionwindow.h"
 
-#include "../lib/label.h"
+#include "../lib/painter.h"
 #include "../lib/size.h"
 #include "../lib/rectangle.h"
 
@@ -29,36 +27,35 @@ QuestionWindow::QuestionWindow(int xPos, int yPos, int cols, Window *parent) :
 {
     setMinumumLines(1);
     setMaximumLines(1);
-    //TODO: What about minimum cols?
 
-    const int initialQuestionLabelCols = 1;
-    m_questionLabel = new Label(0, 0, initialQuestionLabelCols, this);
-    m_answerEdit = new LineEdit(initialQuestionLabelCols, 0, cols - initialQuestionLabelCols, this);
+    m_answerEdit = new LineEdit(0, 0, cols, this);
 }
 
 void QuestionWindow::askQuestion(const std::string &question,
                                  const LineEdit::ResultCallback& answerCallback,
                                  const std::string& initialAnswer)
 {
-    m_questionLabel->setText(question);
+    m_question = question;
     m_answerEdit->edit(answerCallback, initialAnswer);
     adjustSize();
 }
 
 void QuestionWindow::adjustSize()
 {
-    //FIXME: Handle empty string. Maybe hide m_questionLabel ?
-    const auto textSize = !m_questionLabel->text().empty() ? m_questionLabel->text().size() : 1;
-    if ((std::string::size_type)cols() < textSize)
-        throw std::runtime_error("QuestionWindow: terminal too small!");
-
-    m_questionLabel->resize(Size(textSize, lines()));
-    m_answerEdit->resize(Size(cols() - textSize, lines()));
-    m_answerEdit->move(textSize, 0);
+    m_answerEdit->resize(Size(cols() - m_question.size(), lines()));
+    m_answerEdit->move(m_question.size(), 0);
 }
 
 void QuestionWindow::resize(const Size &size)
 {
     Window::resize(size);
     adjustSize();
+}
+
+void QuestionWindow::paint(const Rectangle &rect)
+{
+    Painter painter(this);
+    painter.setBold(true);
+    painter.printString(m_question);
+    painter.flush();
 }

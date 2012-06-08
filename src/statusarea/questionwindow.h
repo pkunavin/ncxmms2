@@ -35,9 +35,12 @@ public:
 
     virtual void resize(const Size &size);
 
+protected:
+    virtual void paint(const Rectangle& rect);
+
 private:
-    Label *m_questionLabel;
     LineEdit *m_answerEdit;
+    std::string m_question;
 
     void adjustSize();
 };
