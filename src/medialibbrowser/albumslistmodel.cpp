@@ -33,15 +33,17 @@ void AlbumsListModel::setArtist(const std::string& artist)
 {
     m_artist = artist;
 
-    Xmms::Coll::Universe     allMedia;
-    const Xmms::Coll::Equals allByArtist(allMedia, "artist", artist, true);
+    if (!artist.empty()) { //FIXME: handle empty artist
+        Xmms::Coll::Universe     allMedia;
+        const Xmms::Coll::Equals allByArtist(allMedia, "artist", artist, true);
 
-    const std::list<std::string>   fetch = {"album"};
-    const std::list<std::string> groupBy = {"album"};
+        const std::list<std::string>   fetch = {"album"};
+        const std::list<std::string> groupBy = {"album"};
 
-    m_xmmsClient->collection.queryInfos(allByArtist, fetch, m_sortingOrder, 0, 0, groupBy)(
-        boost::bind(&AlbumsListModel::getAlbumsList, this, artist, _1)
-    );
+        m_xmmsClient->collection.queryInfos(allByArtist, fetch, m_sortingOrder, 0, 0, groupBy)(
+                    boost::bind(&AlbumsListModel::getAlbumsList, this, artist, _1)
+        );
+    }
 
     m_albums.clear();
     reset();

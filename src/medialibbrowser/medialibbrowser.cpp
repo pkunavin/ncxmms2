@@ -189,8 +189,8 @@ void MedialibBrowser::setSongsListViewAlbum(int item)
     AlbumsListModel *albumsModel = static_cast<AlbumsListModel*>(m_albumsListView->model());
     SongsListModel  *songsModel = static_cast<SongsListModel*>(m_songsListView->model());
 
-    if (item != -1)
-        songsModel->setAlbumByArtist(albumsModel->artist(), albumsModel->album(item));
+    songsModel->setAlbumByArtist(albumsModel->artist(),
+                                 item != -1 ? albumsModel->album(item) : std::string());
 }
 
 void MedialibBrowser::activePlaylistAddSong(int item)

@@ -31,15 +31,17 @@ SongsListModel::SongsListModel(Xmms::Client *xmmsClient, Object *parent) :
 
 void SongsListModel::setAlbumByArtist(const std::string& artist, const std::string& album)
 {
-    Xmms::Coll::Universe     allMedia;
-    Xmms::Coll::Equals       allByArtist(allMedia, "artist", artist, true);
-    const Xmms::Coll::Equals albumByArtist(allByArtist, "album", album, true);
+    if (!artist.empty() && !album.empty()) { //FIXME: handle empty artist and album
+        Xmms::Coll::Universe     allMedia;
+        Xmms::Coll::Equals       allByArtist(allMedia, "artist", artist, true);
+        const Xmms::Coll::Equals albumByArtist(allByArtist, "album", album, true);
 
-    const std::list<std::string> fetch = {"id", "title"};
+        const std::list<std::string> fetch = {"id", "title"};
 
-    m_xmmsClient->collection.queryInfos(albumByArtist, fetch, m_sortingOrder)(
-        Xmms::bind(&SongsListModel::getSongsList, this)
-    );
+        m_xmmsClient->collection.queryInfos(albumByArtist, fetch, m_sortingOrder)(
+                    Xmms::bind(&SongsListModel::getSongsList, this)
+        );
+    }
 
     m_songs.clear();
     reset();
