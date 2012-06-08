@@ -362,38 +362,40 @@ void AbstractItemViewPrivate::changeCurrentItem(int item)
 
 void AbstractItemView::resize(const Size& size)
 {
-    if (size.lines() > lines()) {
-        int extraSize = size.lines() - lines();
+    if (itemsCount() > 0) {
 
-        if (itemsCount() > d->viewportLastItem) {
-            const int min = std::min(itemsCount() - d->viewportLastItem, extraSize);
-            d->viewportLastItem += min;
-            extraSize -= min;
+        if (size.lines() > lines()) {
+            int extraSize = size.lines() - lines();
+
+            if (itemsCount() > d->viewportLastItem) {
+                const int min = std::min(itemsCount() - d->viewportLastItem, extraSize);
+                d->viewportLastItem += min;
+                extraSize -= min;
+            }
+
+            if (extraSize > 0 && d->viewportFirstItem > 0) {
+                const int min = std::min(d->viewportFirstItem, extraSize);
+                d->viewportFirstItem -= min;
+                extraSize -= min;
+            }
         }
 
-        if (extraSize > 0 && d->viewportFirstItem > 0) {
-            const int min = std::min(d->viewportFirstItem, extraSize);
-            d->viewportFirstItem -= min;
-            extraSize -= min;
+        if (size.lines() < lines()) {
+            int sizeDiff = lines() - size.lines();
+
+            if (lines() > itemsCount())
+                sizeDiff -= std::min(lines() - itemsCount(), sizeDiff);
+
+            if (sizeDiff > 0 && d->currentItem < d->viewportLastItem - 1) {
+                const int min = std::min(d->viewportLastItem - 1 - d->currentItem, sizeDiff);
+                d->viewportLastItem -= min;
+                sizeDiff -= min;
+            }
+
+            if (sizeDiff > 0)
+                d->viewportFirstItem += sizeDiff;
         }
     }
-
-    if (size.lines() < lines()) {
-        int sizeDiff = lines() - size.lines();
-
-        if (lines() > itemsCount())
-            sizeDiff -= std::min(lines() - itemsCount(), sizeDiff);
-
-        if (sizeDiff > 0 && d->currentItem < d->viewportLastItem - 1) {
-            const int min = std::min(d->viewportLastItem - 1 - d->currentItem, sizeDiff);
-            d->viewportLastItem -= min;
-            sizeDiff -= min;
-        }
-
-        if (sizeDiff > 0)
-            d->viewportFirstItem += sizeDiff;
-    }
-
     Window::resize(size);
 }
 
