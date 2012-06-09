@@ -70,7 +70,7 @@ set(HEADERS
 
 add_executable(ncxmms2 ${SOURCES})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -Wextra")
 
 find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})

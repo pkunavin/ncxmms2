@@ -38,7 +38,7 @@ set(HEADERS
 
 add_library(ncxmms2-lib ${SOURCES})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -Wextra")
 
 find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
