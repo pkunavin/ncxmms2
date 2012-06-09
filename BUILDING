@@ -1,1 +1,22 @@
-ncxmms2 uses C++0x features, so you need at least GCC 4.6. 
+ncxmms2 uses C++11 features, so you need at least GCC 4.6 or Clang 3.1.
+
+    Packages needed to build on Ubuntu (tested on Ubuntu 12.04):
+git
+build-essential
+cmake
+libboost-dev
+libncurses5-dev
+libncursesw5-dev
+libglib2.0-dev
+libxmmsclient++-dev
+libxmmsclient++-glib-dev
+
+    Build process is straightforward:
+$ git clone git://github.com/pkunavin/ncxmms2.git
+$ cd ncxmms2
+$ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr .
+$ make
+    And if you need system wide install:
+$ make install
+
+    Also there is a PKGBUILD for Arch Linux, see http://aur.archlinux.org/packages.php?ID=52383
