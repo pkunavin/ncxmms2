@@ -20,6 +20,7 @@ set(SOURCES
     headerwindow/headerwindow.cpp
 
     playlistsbrowser/playlistsbrowser.cpp
+    playlistsbrowser/playlistslistmodel.cpp
     playlistsbrowser/playlistslistview.cpp
 
     activeplaylistwindow/activeplaylistwindow.cpp
@@ -53,6 +54,7 @@ set(HEADERS
     headerwindow/headerwindow.h
 
     playlistsbrowser/playlistsbrowser.h
+    playlistsbrowser/playlistslistmodel.h
     playlistsbrowser/playlistslistview.h
 
     activeplaylistwindow/activeplaylistwindow.h

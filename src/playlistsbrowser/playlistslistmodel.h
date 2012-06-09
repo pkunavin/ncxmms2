@@ -14,33 +14,41 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef PLAYLISTSLISTVIEW_H
-#define PLAYLISTSLISTVIEW_H
+#ifndef PLAYLISTSLISTMODEL_H
+#define PLAYLISTSLISTMODEL_H
 
-#include "../lib/listview.h"
+#include <vector>
+#include "../lib/listmodel.h"
 
 namespace Xmms {
 class Client;
+class Dict;
+template <class T> class List;
 }
 
 namespace ncxmms2 {
 
-class PlaylistsListView : public ListView
+class PlaylistsListModel : public ListModel
 {
 public:
-    PlaylistsListView(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
+    PlaylistsListModel(Xmms::Client *xmmsClient, Object *parent = nullptr);
 
-    virtual void keyPressedEvent(const KeyEvent& keyEvent);
+    virtual void data(int item, ListModelItemData *itemData) const;
+    virtual int itemsCount() const;
 
     const std::string& playlist(int item) const;
+    bool playlistExists(const std::string& playlist) const;
 
 private:
     Xmms::Client *m_xmmsClient;
+    std::vector<std::string> m_playlists;
+    std::string m_currentPlaylist;
 
-    void loadPlaylist(int item);
-    void createPlaylist(const std::string& playlist);
-    void renamePlaylist(const std::string& oldName, const std::string& newName);
+    // Callbacks
+    bool getPlaylists(const Xmms::List<std::string>& playlists);
+    bool getCurrentPlaylist(const std::string& playlist);
+    bool handlePlaylistsChange(const Xmms::Dict& change);
 };
 } // ncxmms2
 
-#endif // PLAYLISTSLISTVIEW_H
+#endif // PLAYLISTSLISTMODEL_H
