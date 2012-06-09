@@ -48,6 +48,9 @@ void ListModelItemDelegate::paint(Painter *painter, const ListItemPaintOptions& 
 
     ListModelItemData itemData;
     model()->data(item, &itemData);
+    if (itemData.bold && options.state != ListItemStateCurrent) {
+        painter->setBold(true);
+    }
     painter->squeezedPrint(*itemData.textPtr, options.rect.cols());
 }
 

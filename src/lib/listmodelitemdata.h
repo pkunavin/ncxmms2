@@ -26,9 +26,12 @@ struct ListModelItemData
     std::string text;
     const std::string *textPtr;
 
+    bool bold;
     // TODO: Add more data fields: font settings, etc...
 
-    ListModelItemData() : textPtr(&text) {}
+    ListModelItemData() :
+        textPtr(&text),
+        bold(false) {}
 };
 } // ncxmms2
 
