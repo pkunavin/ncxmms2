@@ -28,7 +28,7 @@ CommandLineOptions::CommandLineOptions(int argc, char **argv)
     {
         {"ipcpath", 'i', 0, G_OPTION_ARG_STRING, &ipcPath, "Xmms2 IPC path", "path"},
         {"no-colors", 'n', 0, G_OPTION_ARG_NONE, &noColors, "Do not use colors", NULL},
-        {NULL}
+        {NULL, ' ', 0, G_OPTION_ARG_NONE, NULL, NULL, NULL}
     };
 
     GError *error = NULL;
