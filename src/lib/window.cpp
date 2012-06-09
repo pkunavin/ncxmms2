@@ -212,7 +212,7 @@ void Window::resize(const Size& size)
 
 void Window::paint(const Rectangle& rect)
 {
-
+    NCXMMS2_UNUSED(rect);
 }
 
 void Window::update()

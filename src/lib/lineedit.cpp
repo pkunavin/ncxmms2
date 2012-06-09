@@ -229,6 +229,8 @@ void LineEdit::resize(const Size &size)
 
 void LineEdit::paint(const Rectangle& rect)
 {
+    NCXMMS2_UNUSED(rect);
+
     Painter painter(this);
     painter.clearLine();
     painter.printString(d->text.c_str() + d->viewportBegin, cols());

@@ -157,6 +157,8 @@ void MedialibBrowser::resize(const Size& size)
 
 void MedialibBrowser::paint(const Rectangle& rect)
 {
+    NCXMMS2_UNUSED(rect);
+
     const int artistsListViewCols = (cols() - 2) / 3;
     const int albumsListViewCols = artistsListViewCols;
     const int songsListViewCols = cols() - artistsListViewCols - albumsListViewCols - 2;

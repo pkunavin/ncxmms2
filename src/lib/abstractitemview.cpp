@@ -186,7 +186,7 @@ void AbstractItemView::itemMoved(int from, int to)
 
 void AbstractItemView::itemEntered(int item)
 {
-
+    NCXMMS2_UNUSED(item);
 }
 
 int AbstractItemView::currentItem() const
@@ -279,6 +279,7 @@ void AbstractItemView::setViewportFirstItem(int item)
 
 void AbstractItemView::paint(const Rectangle& rect)
 {
+    NCXMMS2_UNUSED(rect);
     redrawAll();
 }
 

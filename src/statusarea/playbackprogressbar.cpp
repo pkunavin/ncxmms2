@@ -44,6 +44,8 @@ void PlaybackProgressBar::setMaxValue(int maxValue)
 
 void PlaybackProgressBar::paint(const Rectangle& rect)
 {
+    NCXMMS2_UNUSED(rect);
+
     Painter painter(this);
     painter.drawHLine(0, 0, cols());
     if (m_maxValue > 0) {

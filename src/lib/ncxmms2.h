@@ -14,32 +14,11 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef OBJECT_H
-#define OBJECT_H
+#ifndef NCXMMS2_H
+#define NCXMMS2_H
 
-#include <memory>
-#include "ncxmms2.h"
-#include "signals.h"
+// Put global stuff here
 
-namespace ncxmms2 {
+#define NCXMMS2_UNUSED(x) (void)x
 
-class ObjectPrivate;
-
-class Object
-{
-public:
-    Object(Object *parent = nullptr);
-    virtual ~Object();
-
-    Object *parent() const;
-
-    void registerConnection(const Signals::connection& connection);
-
-private:
-    Object(const Object& other);
-    Object& operator=(const Object& other);
-    std::unique_ptr<ObjectPrivate> d;
-};
-} // ncxmms2
-
-#endif // OBJECT_H
+#endif // NCXMMS2_H

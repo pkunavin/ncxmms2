@@ -38,6 +38,8 @@ Label::Label(int xPos, int yPos, int cols, Window *parent) :
 
 void Label::paint(const Rectangle& rect)
 {
+    NCXMMS2_UNUSED(rect);
+
     Painter painter(this);
     painter.clearWindow();
     painter.squeezedPrint(d->text, cols());

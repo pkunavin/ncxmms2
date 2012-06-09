@@ -54,6 +54,8 @@ void QuestionWindow::resize(const Size &size)
 
 void QuestionWindow::paint(const Rectangle &rect)
 {
+    NCXMMS2_UNUSED(rect);
+
     Painter painter(this);
     painter.setBold(true);
     painter.printString(m_question);

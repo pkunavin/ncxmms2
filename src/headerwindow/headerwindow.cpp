@@ -36,6 +36,8 @@ void HeaderWindow::setHeaderTitle(const std::string& string)
 
 void HeaderWindow::paint(const Rectangle& rect)
 {
+    NCXMMS2_UNUSED(rect);
+
     Painter painter(this);
     painter.clearLine();
     painter.setBold(true);

@@ -152,6 +152,10 @@ Size Application::terminalSize()
 
 gboolean ApplicationPrivate::stdinEvent(GIOChannel* iochan, GIOCondition cond, gpointer data)
 {
+    NCXMMS2_UNUSED(iochan);
+    NCXMMS2_UNUSED(cond);
+    NCXMMS2_UNUSED(data);
+
     static_assert(sizeof(wint_t) == sizeof(KeyEvent::key_t), "KeyEvent::key_t is too small for storing UTF chars!");
     wint_t key;
     const auto res = get_wch(&key);
@@ -183,6 +187,8 @@ void ApplicationPrivate::signalHandler(int signal)
 
 void ApplicationPrivate::resizeSignalHandler(int signal)
 {
+    NCXMMS2_UNUSED(signal);
+
     struct winsize size;
     ioctl(fileno(stdout), TIOCGWINSZ, (char*)&size);
     resizeterm(size.ws_row, size.ws_col);

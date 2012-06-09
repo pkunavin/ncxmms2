@@ -47,6 +47,8 @@ PlaylistsBrowser::PlaylistsBrowser(Xmms::Client *xmmsClient, const Rectangle& re
 
 void PlaylistsBrowser::paint(const Rectangle& rect)
 {
+    NCXMMS2_UNUSED(rect);
+
     Painter painter(this);
     painter.drawVLine(PlaylistsListViewCols, 0, lines());
     painter.flush();

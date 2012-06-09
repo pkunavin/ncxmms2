@@ -83,6 +83,8 @@ bool PlaybackStatusWindow::handleIdInfoChanged(const int& id)
 
 void PlaybackStatusWindow::paint(const Rectangle& rect)
 {
+    NCXMMS2_UNUSED(rect);
+
     Painter painter(this);
     painter.clearLine(0);
 
