@@ -31,20 +31,9 @@ SongsListModel::SongsListModel(Xmms::Client *xmmsClient, Object *parent) :
 
 void SongsListModel::setAlbumByArtist(const std::string& artist, const std::string& album)
 {
-    if (!artist.empty() && !album.empty()) { //FIXME: handle empty artist and album
-        Xmms::Coll::Universe     allMedia;
-        Xmms::Coll::Equals       allByArtist(allMedia, "artist", artist, true);
-        const Xmms::Coll::Equals albumByArtist(allByArtist, "album", album, true);
-
-        const std::list<std::string> fetch = {"id", "title"};
-
-        m_xmmsClient->collection.queryInfos(albumByArtist, fetch, m_sortingOrder)(
-                    Xmms::bind(&SongsListModel::getSongsList, this)
-        );
-    }
-
-    m_songs.clear();
-    reset();
+    m_artist = artist;
+    m_album = album;
+    refresh();
 }
 
 int SongsListModel::id(int item) const
@@ -74,8 +63,31 @@ int SongsListModel::itemsCount() const
     return m_songs.size();
 }
 
-bool SongsListModel::getSongsList(const Xmms::List<Xmms::Dict>& list)
+void SongsListModel::refresh()
 {
+    if (!m_artist.empty() && !m_album.empty()) { //FIXME: handle empty artist and album
+        Xmms::Coll::Universe     allMedia;
+        Xmms::Coll::Equals       allByArtist(allMedia, "artist", m_artist, true);
+        const Xmms::Coll::Equals albumByArtist(allByArtist, "album", m_album, true);
+
+        const std::list<std::string> fetch = {"id", "title"};
+
+        m_xmmsClient->collection.queryInfos(albumByArtist, fetch, m_sortingOrder)(
+            boost::bind(&SongsListModel::getSongsList, this, m_artist, m_album, _1)
+        );
+    }
+
+    m_songs.clear();
+    reset();
+}
+
+bool SongsListModel::getSongsList(const std::string& artist,
+                                  const std::string& album,
+                                  const Xmms::List<Xmms::Dict>& list)
+{
+    if (artist != m_artist || album != m_album)
+        return true;
+
     m_songs.clear();
     for (auto it = list.begin(), it_end = list.end(); it != it_end; ++it) {
         try {

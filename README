@@ -31,7 +31,11 @@ Hotkeys:
   Create new playlist : n
   Rename playlist : r
   
-Playlist window:
- Clear playlist : c
- Go to currently playing song : o
+ Playlist window:
+  Clear playlist : c
+  Go to currently playing song : o
+ 
+  Medialib browser:
+   Refresh : R
+   Add artist / album / song to active playlist: space, enter
   

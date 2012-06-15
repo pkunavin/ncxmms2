@@ -27,14 +27,7 @@ ArtistsListModel::ArtistsListModel(Xmms::Client *xmmsClient, Object *parent) :
     ListModel(parent),
     m_xmmsClient(xmmsClient)
 {
-    const Xmms::Coll::Universe allMedia;
-    const std::list<std::string>   fetch = {"artist"};
-    const std::list<std::string>   order = {"artist"};
-    const std::list<std::string> groupBy = {"artist"};
-
-    xmmsClient->collection.queryInfos(allMedia, fetch, order, 0, 0, groupBy)(
-        Xmms::bind(&ArtistsListModel::getArtistsList, this)
-    );
+    refresh();
 }
 
 const std::string& ArtistsListModel::artist(int item) const
@@ -51,6 +44,21 @@ void ArtistsListModel::data(int item, ListModelItemData *itemData) const
 int ArtistsListModel::itemsCount() const
 {
     return m_artists.size();
+}
+
+void ArtistsListModel::refresh()
+{
+    m_artists.clear();
+    reset();
+
+    const Xmms::Coll::Universe allMedia;
+    const std::list<std::string>   fetch = {"artist"};
+    const std::list<std::string>   order = {"artist"};
+    const std::list<std::string> groupBy = {"artist"};
+
+    m_xmmsClient->collection.queryInfos(allMedia, fetch, order, 0, 0, groupBy)(
+        Xmms::bind(&ArtistsListModel::getArtistsList, this)
+    );
 }
 
 bool ArtistsListModel::getArtistsList(const Xmms::List<Xmms::Dict>& list)

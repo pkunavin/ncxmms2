@@ -43,6 +43,8 @@ public:
     virtual void data(int item, ListModelItemData *itemData) const;
     virtual int itemsCount() const;
 
+    virtual void refresh();
+
 private:
     Xmms::Client *m_xmmsClient;
     std::string m_artist;

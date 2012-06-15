@@ -32,21 +32,7 @@ AlbumsListModel::AlbumsListModel(Xmms::Client *xmmsClient, Object *parent) :
 void AlbumsListModel::setArtist(const std::string& artist)
 {
     m_artist = artist;
-
-    if (!artist.empty()) { //FIXME: handle empty artist
-        Xmms::Coll::Universe     allMedia;
-        const Xmms::Coll::Equals allByArtist(allMedia, "artist", artist, true);
-
-        const std::list<std::string>   fetch = {"album"};
-        const std::list<std::string> groupBy = {"album"};
-
-        m_xmmsClient->collection.queryInfos(allByArtist, fetch, m_sortingOrder, 0, 0, groupBy)(
-                    boost::bind(&AlbumsListModel::getAlbumsList, this, artist, _1)
-        );
-    }
-
-    m_albums.clear();
-    reset();
+    refresh();
 }
 
 const std::string &AlbumsListModel::artist() const
@@ -73,6 +59,24 @@ void AlbumsListModel::data(int item, ListModelItemData *itemData) const
 int AlbumsListModel::itemsCount() const
 {
     return m_albums.size();
+}
+
+void AlbumsListModel::refresh()
+{
+    if (!m_artist.empty()) { //FIXME: handle empty artist
+        Xmms::Coll::Universe     allMedia;
+        const Xmms::Coll::Equals allByArtist(allMedia, "artist", m_artist, true);
+
+        const std::list<std::string>   fetch = {"album"};
+        const std::list<std::string> groupBy = {"album"};
+
+        m_xmmsClient->collection.queryInfos(allByArtist, fetch, m_sortingOrder, 0, 0, groupBy)(
+            boost::bind(&AlbumsListModel::getAlbumsList, this, m_artist, _1)
+        );
+    }
+
+    m_albums.clear();
+    reset();
 }
 
 bool AlbumsListModel::getAlbumsList(const std::string& artist, const Xmms::List<Xmms::Dict>& list)

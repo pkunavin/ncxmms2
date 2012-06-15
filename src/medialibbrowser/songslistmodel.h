@@ -44,8 +44,12 @@ public:
     virtual void data(int item, ListModelItemData *itemData) const;
     virtual int itemsCount() const;
 
+    virtual void refresh();
+
 private:
     Xmms::Client *m_xmmsClient;
+    std::string m_artist;
+    std::string m_album;
 
     class SongData
     {
@@ -61,7 +65,9 @@ private:
     std::list<std::string> m_sortingOrder;
     std::vector<SongData> m_songs;
 
-    bool getSongsList(const Xmms::List<Xmms::Dict>& list);
+    bool getSongsList(const std::string& artist,
+                      const std::string& album,
+                      const Xmms::List<Xmms::Dict>& list);
 };
 } // ncxmms2
 

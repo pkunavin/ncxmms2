@@ -16,6 +16,7 @@
 
 #include <xmmsclient/xmmsclient++.h>
 #include <boost/format.hpp>
+#include <boost/cast.hpp>
 #include <algorithm>
 #include <assert.h>
 
@@ -63,6 +64,15 @@ MedialibBrowser::MedialibBrowser(Xmms::Client *xmmsClient, const Rectangle& rect
     m_songsListView = new ListView(songsListViewRect, this);
     m_songsListView->setModel(new SongsListModel(xmmsClient, this));
     m_songsListView->itemEntered_Connect(&MedialibBrowser::activePlaylistAddSong, this); //TODO: Play song
+
+    // This will reload the whole medialib on adding new medialib entry.
+    // TODO: Can it be done in a more clever way?
+    m_xmmsClient->medialib.broadcastEntryAdded()([this](const int& id)
+    {
+        NCXMMS2_UNUSED(id);
+        m_artistsListView->model()->refresh();
+        return true;
+    });
 }
 
 void MedialibBrowser::keyPressedEvent(const KeyEvent& keyEvent)
@@ -121,6 +131,11 @@ void MedialibBrowser::keyPressedEvent(const KeyEvent& keyEvent)
                 activePlaylistAddArtist(m_artistsListView->currentItem());
             }
 
+            break;
+
+        case 'R':
+            assert(m_activeListView);
+            m_activeListView->model()->refresh();
             break;
 
         default: Window::keyPressedEvent(keyEvent);
