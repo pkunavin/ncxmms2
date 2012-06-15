@@ -181,7 +181,7 @@ void LineEdit::edit(const ResultCallback& resultCallback, const std::wstring& te
     d->resultCallback = resultCallback;
     d->text = text;
     d->cursorPosition = 0;
-    Application::stealFocus(this);
+    Application::grabFocus(this);
     update();
 }
 

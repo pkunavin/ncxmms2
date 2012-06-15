@@ -34,7 +34,7 @@ namespace ncxmms2 {
 class ApplicationPrivate
 {
 public:
-    ApplicationPrivate() : mainWindow(nullptr), stealedFocusWindow(nullptr) {}
+    ApplicationPrivate() : mainWindow(nullptr), grabbedFocusWindow(nullptr) {}
 
 
     GMainLoop *mainLoop;
@@ -46,7 +46,7 @@ public:
     static void resizeSignalHandler(int signal);
 
     Window *mainWindow;
-    Window *stealedFocusWindow;
+    Window *grabbedFocusWindow;
 };
 } // ncxmms2
 
@@ -133,16 +133,16 @@ void Application::setMainWindow(Window* window)
     inst->d->mainWindow = window;
 }
 
-void Application::stealFocus(Window *window)
+void Application::grabFocus(Window *window)
 {
     CHECK_INST;
-    inst->d->stealedFocusWindow = window;
+    inst->d->grabbedFocusWindow = window;
 }
 
 void Application::releaseFocus()
 {
     CHECK_INST;
-    inst->d->stealedFocusWindow = nullptr;
+    inst->d->grabbedFocusWindow = nullptr;
 }
 
 Size Application::terminalSize()
@@ -161,7 +161,7 @@ gboolean ApplicationPrivate::stdinEvent(GIOChannel* iochan, GIOCondition cond, g
     const auto res = get_wch(&key);
     if (res != ERR) {
         ApplicationPrivate *p = Application::inst->d.get();
-        Window *win = p->stealedFocusWindow ? p->stealedFocusWindow : p->mainWindow;
+        Window *win = p->grabbedFocusWindow ? p->grabbedFocusWindow : p->mainWindow;
         if (key == 127) {// Fix backpspace key
             win->keyPressedEvent(KeyEvent(KeyEvent::KeyBackspace, true));
         } else {

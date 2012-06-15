@@ -33,7 +33,7 @@ public:
     static void shutdown();
     static void setMainWindow(Window *window);
 
-    static void stealFocus(Window *window);
+    static void grabFocus(Window *window);
     static void releaseFocus();
 
     static Size terminalSize();
