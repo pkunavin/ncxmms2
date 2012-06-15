@@ -61,7 +61,7 @@ MainWindow::MainWindow(Xmms::Client *xmmsClient) :
         StackedWindows stackedWindow = (*it).first;
         Window *window = (*it).second;
         m_stackedWindow->addWindow(window);
-        window->titleChanged_Connect(&MainWindow::handleStackedWindowTitleChanged, this, stackedWindow, _1);
+        window->nameChanged_Connect(&MainWindow::handleStackedWindowNameChanged, this, stackedWindow, _1);
     }
     setVisibleWindow(StackedPlaylistWindow);
 }
@@ -135,10 +135,10 @@ void MainWindow::resize(const Size& size)
 void MainWindow::setVisibleWindow(StackedWindows win)
 {
     m_stackedWindow->setCurrentIndex(win);
-    m_headerWindow->setHeaderTitle(m_stackedWindow->window(win)->title());
+    m_headerWindow->setHeaderTitle(m_stackedWindow->window(win)->name());
 }
 
-void MainWindow::handleStackedWindowTitleChanged(StackedWindows win, const std::string& title)
+void MainWindow::handleStackedWindowNameChanged(StackedWindows win, const std::string& title)
 {
     if (m_stackedWindow->currentIndex() == win)
         m_headerWindow->setHeaderTitle(title);

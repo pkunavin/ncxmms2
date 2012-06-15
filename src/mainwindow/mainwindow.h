@@ -53,7 +53,7 @@ private:
     Xmms::Client *m_xmmsClient;
 
     void setVisibleWindow(StackedWindows win);
-    void handleStackedWindowTitleChanged(StackedWindows win, const std::string& title);
+    void handleStackedWindowNameChanged(StackedWindows win, const std::string& title);
 };
 } // ncxmms2
 

@@ -37,7 +37,7 @@ MedialibBrowser::MedialibBrowser(Xmms::Client *xmmsClient, const Rectangle& rect
     Window(rect, parent),
     m_xmmsClient(xmmsClient)
 {
-    setTitle("Medialib browser");
+    setName("Medialib browser");
 
     const int headerLines = 2;
     const int artistsListViewCols = (cols() - 2) / 3;

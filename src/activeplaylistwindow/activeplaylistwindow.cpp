@@ -62,7 +62,7 @@ void ActivePlaylistWindow::updateWindowTitle()
         }
         titleString.push_back(')');
     }
-    setTitle(titleString);
+    setName(titleString);
 }
 
 

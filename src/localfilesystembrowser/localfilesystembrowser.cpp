@@ -120,7 +120,7 @@ bool LocalFileSystemBrowser::setCurrentDir(const LocalFileSystemBrowser::Dir& di
               });
 
     m_currentDir = dir;
-    setTitle(std::string("Local file system: ").append(m_currentDir.path()));
+    setName(std::string("Local file system: ").append(m_currentDir.path()));
     reset();
     return true;
 }
