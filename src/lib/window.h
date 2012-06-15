@@ -17,7 +17,6 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include <string>
 #include "object.h"
 
 namespace ncxmms2 {
@@ -71,12 +70,6 @@ public:
 
     void setFocus();
     bool hasFocus() const;
-
-    void setTitle(const std::string& title);
-    const std::string& title() const;
-
-    // Signals
-    NCXMMS2_SIGNAL(titleChanged, const std::string&)
 
 protected:
     virtual void paint(const Rectangle& rect);

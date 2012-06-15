@@ -226,17 +226,6 @@ void Window::update(const Rectangle& rect)
         paint(rect);
 }
 
-const std::string& Window::title() const
-{
-    return d->title;
-}
-
-void Window::setTitle(const std::string& title)
-{
-    d->title = title;
-    titleChanged(title);
-}
-
 Window::~Window()
 {
     if (d->cursesWin)
