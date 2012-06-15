@@ -27,3 +27,8 @@ ListModel::~ListModel()
 {
 
 }
+
+void ListModel::refresh()
+{
+
+}

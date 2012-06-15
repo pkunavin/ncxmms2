@@ -32,6 +32,8 @@ public:
     virtual int itemsCount() const = 0;
     virtual void data(int item, ListModelItemData *itemData) const = 0;
 
+    virtual void refresh();
+
     // Signals
     NCXMMS2_SIGNAL(reset)
     NCXMMS2_SIGNAL(itemsChanged, int, int)
