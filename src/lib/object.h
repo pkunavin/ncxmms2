@@ -18,6 +18,7 @@
 #define OBJECT_H
 
 #include <memory>
+#include <string>
 #include "ncxmms2.h"
 #include "signals.h"
 
@@ -33,7 +34,13 @@ public:
 
     Object *parent() const;
 
+    void setName(const std::string& name);
+    const std::string& name() const;
+
     void registerConnection(const Signals::connection& connection);
+
+    // Signals:
+    NCXMMS2_SIGNAL(nameChanged, const std::string&)
 
 private:
     Object(const Object& other);

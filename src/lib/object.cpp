@@ -30,7 +30,7 @@ public:
     Object *parent;
     std::vector<Object*> children;
     bool aboutToBeDestroyedByParent;
-
+    std::string name;
     std::vector<Signals::connection> connections;
 };
 } // ncxmms2
@@ -70,4 +70,15 @@ Object::~Object()
 Object *Object::parent() const
 {
     return d->parent;
+}
+
+void Object::setName(const std::string& name)
+{
+    d->name = name;
+    nameChanged(d->name);
+}
+
+const std::string& Object::name() const
+{
+    return d->name;
 }
