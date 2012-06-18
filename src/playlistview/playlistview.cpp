@@ -90,6 +90,19 @@ void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
             break;
         }
 
+        // CTRL + U
+        // FIXME: See above comment
+        case 21:
+        {
+            auto resultCallback = [this](const std::string& url, LineEdit::ResultCode result)
+            {
+                if (result == LineEdit::Accepted)
+                    addUrl(url);
+            };
+            StatusArea::askQuestion("Add url: ", resultCallback);
+            break;
+        }
+
         default: ListView::keyPressedEvent(keyEvent);
     }
 }
@@ -187,4 +200,16 @@ void PlaylistView::addFile(const std::string& path)
             StatusArea::showMessage("Unknown file type!");
             break;
     }
+}
+
+void PlaylistView::addUrl(const std::string& url)
+{
+    PlaylistModel *plsModel = boost::polymorphic_downcast<PlaylistModel*>(model());
+    m_xmmsClient->playlist.addUrl(url, plsModel->playlist());
+
+    // FIXME: Url may be too long to display
+    StatusArea::showMessage(
+        (boost::format("Adding \"%1%\" to \"%2%\" playlist") % url
+                                                             % plsModel->playlist()).str()
+    );
 }

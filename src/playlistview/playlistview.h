@@ -41,6 +41,7 @@ private:
     void onItemEntered(int item);
     void addPath(const std::string& path);
     void addFile(const std::string& path);
+    void addUrl(const std::string& url);
 };
 
 } // ncxmms2
