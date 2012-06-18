@@ -17,6 +17,7 @@
 #include <curses.h>
 #include <glib.h>
 #include <stdexcept>
+#include <assert.h>
 
 #include "painter.h"
 #include "painter_p.h"
@@ -27,6 +28,8 @@ using namespace ncxmms2;
 
 Painter::Painter(Window *window)
 {
+    assert(!window->isHidden());
+
     WindowPrivate *p = window->d.get();
     if (G_UNLIKELY(p->isPainterPrivateAlreadyInUse))
         throw std::logic_error("You are trying to create more than one copy of"
