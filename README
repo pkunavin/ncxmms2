@@ -34,6 +34,7 @@ Hotkeys:
  Playlist window:
   Clear playlist : c
   Go to currently playing song : o
+  Add file / directory : Ctrl+O
  
   Medialib browser:
    Refresh : R

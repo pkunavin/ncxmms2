@@ -14,8 +14,11 @@
  *  GNU General Public License for more details.
  */
 
-#include "utils.h"
 #include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
+#include <set>
+
+#include "utils.h"
 
 using namespace ncxmms2;
 
@@ -58,4 +61,37 @@ std::string ncxmms2::Utils::getTimeStringFromInt(int msec)
     }
 
     return timeString;
+}
+
+Utils::FileType Utils::getFileType(const std::string& path)
+{
+    const std::string::size_type dotPos = path.rfind('.');
+    if (dotPos == std::string::npos || dotPos + 1 >= path.size() || dotPos == 0)
+        return Utils::UnknownFile;
+
+    std::string suffix = path.substr(dotPos + 1);
+    boost::to_lower(suffix);
+
+    static const std::set<std::string> playlistFileSuffixes{"cue",
+                                                            "m3u",
+                                                            "pls",
+                                                            "asx"};
+
+    static const std::set<std::string> mediaFileSuffixes{"mp3",
+                                                         "flac",
+                                                         "ape",
+                                                         "ogg",
+                                                         "wma",
+                                                         "wav",
+                                                         "mp4",
+                                                         "aac",
+                                                         "alac"};
+
+    if (mediaFileSuffixes.find(suffix) != mediaFileSuffixes.end())
+        return Utils::MediaFile;
+
+    if (playlistFileSuffixes.find(suffix) != playlistFileSuffixes.end())
+        return Utils::PlaylistFile;
+
+     return Utils::UnknownFile;
 }

@@ -3,6 +3,7 @@ add_subdirectory(lib)
 set(SOURCES
     main.cpp
     utils.cpp
+    xmmsutils.cpp
     xmms2client.cpp
     settings.cpp
     commandlineoptions.cpp
@@ -36,6 +37,7 @@ set(SOURCES
 
 set(HEADERS
     utils.h
+    xmmsutils.h
     xmms2client.h
     settings.h
     commandlineoptions.h

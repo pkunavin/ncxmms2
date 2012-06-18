@@ -14,26 +14,19 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef UTILS_H
-#define UTILS_H
+#include <xmmsclient/xmmsclient++.h>
+#include "xmmsutils.h"
 
-#include <string>
+using namespace ncxmms2;
 
-namespace ncxmms2 {
-namespace Utils {
-
-std::string getTimeStringFromInt(int msec);
-
-enum FileType
+void XmmsUtils::playlistAddPlaylistFile(Xmms::Client *xmmsClient,
+                                        const std::string& playlist, const std::string& file)
 {
-    MediaFile,
-    PlaylistFile,
-    UnknownFile
-};
+    auto getIdList = [xmmsClient, playlist](const Xmms::Coll::Coll& idlist)
+    {
+        xmmsClient->playlist.addIdlist(idlist, playlist);
+        return true;
+    };
 
-FileType getFileType(const std::string& path);
-
-} // Utils
-} // ncxmms2
-
-#endif // UTILS_H
+    xmmsClient->collection.idlistFromPlaylistFile(file)(getIdList);
+}
