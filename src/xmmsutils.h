@@ -18,6 +18,7 @@
 #define XMMSUTILS_H
 
 #include <string>
+#include <memory>
 
 namespace Xmms {
 class Client;
@@ -25,6 +26,8 @@ class Client;
 
 namespace ncxmms2 {
 namespace XmmsUtils {
+
+std::unique_ptr<Xmms::Client> clientCreateAndConnect(const std::string& ipcPath);
 
 void playlistAddPlaylistFile(Xmms::Client *xmmsClient,
                              const std::string& playlist, const std::string& file);

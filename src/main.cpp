@@ -16,7 +16,7 @@
 
 #include <xmmsclient/xmmsclient++.h>
 
-#include "xmms2client.h"
+#include "xmmsutils.h"
 #include "settings.h"
 #include "commandlineoptions.h"
 #include "mainwindow/mainwindow.h"
@@ -32,18 +32,18 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    ncxmms2::Xmms2Client xmms2Client;
     const std::string ipcPath = options.ipcPath().empty()
                                 ? ncxmms2::Settings::value<std::string>("General", "ipcpath")
                                 : options.ipcPath();
 
-    if (!xmms2Client.connect(ipcPath))
+    std::unique_ptr<Xmms::Client> xmmsClient = ncxmms2::XmmsUtils::clientCreateAndConnect(ipcPath);
+    if (!xmmsClient)
         return EXIT_FAILURE;
 
     try
     {
         ncxmms2::Application::init(options.useColors());
-        ncxmms2::Application::setMainWindow(new ncxmms2::MainWindow(xmms2Client.client()));
+        ncxmms2::Application::setMainWindow(new ncxmms2::MainWindow(xmmsClient.get()));
         ncxmms2::Application::run();
         ncxmms2::Application::shutdown();
     }
