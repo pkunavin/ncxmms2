@@ -71,6 +71,10 @@ void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
             m_xmmsClient->playlist.clear(plsModel->playlist());
             break;
 
+        case 'S':
+            m_xmmsClient->playlist.shuffle(plsModel->playlist());
+            break;
+
         case 'o':
             setCurrentItem(plsModel->currentSongItem());
             break;

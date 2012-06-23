@@ -33,6 +33,7 @@ Hotkeys:
   
  Playlist window:
   Clear playlist : c
+  Shuffle playlist : S
   Go to currently playing song : o
   Add file / directory : Ctrl+O
   Add url : Ctrl+U
