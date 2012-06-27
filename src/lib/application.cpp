@@ -156,7 +156,6 @@ gboolean ApplicationPrivate::stdinEvent(GIOChannel* iochan, GIOCondition cond, g
     NCXMMS2_UNUSED(cond);
     NCXMMS2_UNUSED(data);
 
-    static_assert(sizeof(wint_t) == sizeof(KeyEvent::key_t), "KeyEvent::key_t is too small for storing UTF chars!");
     wint_t key;
     const auto res = get_wch(&key);
     if (res != ERR) {

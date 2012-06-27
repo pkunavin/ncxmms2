@@ -24,7 +24,7 @@ namespace ncxmms2 {
 class KeyEvent
 {
 public:
-    typedef wchar_t key_t;
+    typedef char32_t key_t;
 
     KeyEvent(key_t key, bool isFunctionKey) : m_key(key)
     {
