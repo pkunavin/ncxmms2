@@ -37,7 +37,7 @@ public:
     typedef boost::function<void (const std::string&, ResultCode)> ResultCallback;
 
     void edit(const ResultCallback& resultCallback, const std::string& text = std::string());
-    void edit(const ResultCallback& resultCallback, const std::wstring& text = std::wstring());
+    void edit(const ResultCallback& resultCallback, const std::u32string& text = std::u32string());
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
     virtual void resize(const Size& size);

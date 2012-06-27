@@ -18,6 +18,7 @@
 #include <glib.h>
 
 #include "lineedit.h"
+#include "utf.h"
 #include "painter.h"
 #include "application.h"
 #include "keyevent.h"
@@ -35,10 +36,10 @@ public:
 
     LineEdit::ResultCallback resultCallback;
 
-    std::wstring text;
-    std::wstring::size_type cursorPosition;
-    std::wstring::size_type viewportBegin;
-    typedef std::wstring::size_type TextSizeType;
+    std::u32string text;
+    std::u32string::size_type cursorPosition;
+    std::u32string::size_type viewportBegin;
+    typedef std::u32string::size_type TextSizeType;
 
     void returnResult(LineEdit::ResultCode result);
 
@@ -49,38 +50,7 @@ public:
     void keyBackspace();
     void keyDelete();
 
-    void addChar(wchar_t ch);
-
-    static std::wstring utf8ToWString(const std::string& str)
-    {
-        std::wstring result;
-        if (!g_utf8_validate(str.c_str(), str.size(), NULL))
-            return result;
-
-        result.reserve(str.size());
-
-        const char *c_str = str.c_str();
-        while (*c_str) {
-            result.push_back(g_utf8_get_char(c_str));
-            c_str = g_utf8_next_char(c_str);
-        }
-        return result;
-    }
-
-    static std::string wStringToUtf8(const std::wstring& str)
-    {
-        std::string result;
-        result.reserve(str.size() * 3);
-
-        char buf[6];
-        int n;
-        for (wchar_t ch : str) {
-            n = g_unichar_to_utf8(ch, buf);
-            result.append(buf, n);
-        }
-
-        return result;
-    }
+    void addChar(char32_t ch);
 };
 } // ncxmms2
 
@@ -89,7 +59,7 @@ using namespace ncxmms2;
 void LineEditPrivate::returnResult(LineEdit::ResultCode result)
 {
     if (!resultCallback.empty())
-        resultCallback(wStringToUtf8(text), result);
+        resultCallback(u32stringToUtf8(text), result);
     Application::releaseFocus();
 }
 
@@ -151,7 +121,7 @@ void LineEditPrivate::keyDelete()
     }
 }
 
-void LineEditPrivate::addChar(wchar_t ch)
+void LineEditPrivate::addChar(char32_t ch)
 {
     if (cursorPosition < text.size()) {
         text.insert(cursorPosition, 1, ch);
@@ -173,10 +143,10 @@ LineEdit::LineEdit(int xPos, int yPos, int cols, Window *parent) :
 
 void LineEdit::edit(const ResultCallback& resultCallback, const std::string& text)
 {
-    edit(resultCallback, LineEditPrivate::utf8ToWString(text));
+    edit(resultCallback, utf8ToU32String(text));
 }
 
-void LineEdit::edit(const ResultCallback& resultCallback, const std::wstring& text)
+void LineEdit::edit(const ResultCallback& resultCallback, const std::u32string& text)
 {
     d->resultCallback = resultCallback;
     d->text = text;
@@ -237,6 +207,6 @@ void LineEdit::paint(const Rectangle& rect)
     const auto cursorPosition = d->cursorPosition;
     painter.move(cursorPosition - d->viewportBegin, 0);
     painter.setReverse(true);
-    painter.printChar(cursorPosition < d->text.size() ? d->text[cursorPosition] : wchar_t(' '));
+    painter.printChar(cursorPosition < d->text.size() ? d->text[cursorPosition] : char32_t(' '));
     painter.flush();
 }
