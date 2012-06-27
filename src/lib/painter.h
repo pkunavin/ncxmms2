@@ -43,12 +43,15 @@ public:
 
     void printChar(char ch);
     void printChar(wchar_t ch);
+    void printChar(char32_t ch);
 
     void printString(const std::string& str);
     void printString(const std::string& str, std::string::size_type maxLength);
     void printString(const char *str);
     void printString(const std::wstring& str);
     void printString(const wchar_t *str, size_t maxLength);
+    void printString(const std::u32string& str);
+    void printString(const char32_t *str, size_t maxLength);
     void squeezedPrint(const std::string& str, std::string::size_type maxLength);
 
     void drawHLine(int startX, int startY, int length, int symbol = 0);

@@ -113,6 +113,14 @@ void Painter::printChar(wchar_t ch)
     waddnwstr(d->cursesWin, &ch, 1);
 }
 
+void Painter::printChar(char32_t ch)
+{
+    // We assume here that char32_t and wchar_t have the smae size
+    static_assert(sizeof(char32_t) == sizeof(wchar_t),
+                  "sizeof(char32_t) != sizeof(wchar_t)");
+    waddnwstr(d->cursesWin, reinterpret_cast<const wchar_t*>(&ch), 1);
+}
+
 void Painter::printString(const std::string& str)
 {
     waddstr(d->cursesWin, str.c_str());
@@ -168,6 +176,22 @@ void Painter::printString(const std::wstring& str)
 void Painter::printString(const wchar_t *str, size_t maxLength)
 {
     waddnwstr(d->cursesWin, str, maxLength);
+}
+
+void Painter::printString(const std::u32string& str)
+{
+    // We assume here that char32_t and wchar_t have the smae size
+    static_assert(sizeof(char32_t) == sizeof(wchar_t),
+                  "sizeof(char32_t) != sizeof(wchar_t)");
+    waddnwstr(d->cursesWin, reinterpret_cast<const wchar_t*>(str.c_str()), str.size());
+}
+
+void Painter::printString(const char32_t *str, size_t maxLength)
+{
+    // We assume here that char32_t and wchar_t have the smae size
+    static_assert(sizeof(char32_t) == sizeof(wchar_t),
+                  "sizeof(char32_t) != sizeof(wchar_t)");
+    waddnwstr(d->cursesWin, reinterpret_cast<const wchar_t*>(str), maxLength);
 }
 
 void Painter::drawHLine(int startX, int startY, int length, int symbol)
