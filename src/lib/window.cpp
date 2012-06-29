@@ -15,6 +15,8 @@
  */
 
 #include <curses.h>
+#include <assert.h>
+#include <algorithm>
 
 #include "window.h"
 #include "window_p.h"
@@ -228,6 +230,17 @@ void Window::update(const Rectangle& rect)
 
 Window::~Window()
 {
+    if (d->parent) {
+        auto& childrenOfParent = d->parent->d->childrenWins;
+        auto it = std::find(childrenOfParent.begin(), childrenOfParent.end(), this);
+        assert(it != childrenOfParent.end());
+        childrenOfParent.erase(it);
+    }
+
+    for (Window *win : d->childrenWins) {
+        win->d->parent = nullptr;
+    }
+
     if (d->cursesWin)
         delwin(d->cursesWin);
 }
