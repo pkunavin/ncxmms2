@@ -18,6 +18,7 @@
 #include <boost/format.hpp>
 #include <boost/cast.hpp>
 #include <algorithm>
+#include <iterator>
 #include <assert.h>
 
 #include "medialibbrowser.h"
@@ -87,11 +88,10 @@ void MedialibBrowser::keyPressedEvent(const KeyEvent& keyEvent)
                 m_songsListView,
                 nullptr
             };
-            const int rightSwitchOrderSz = sizeof(rightSwitchOrder)
-                                           / sizeof(rightSwitchOrder[0]);
 
-            auto it = std::find(rightSwitchOrder, rightSwitchOrder + rightSwitchOrderSz, m_activeListView);
-            assert(it != rightSwitchOrder + rightSwitchOrderSz);
+            auto it = std::find(std::begin(rightSwitchOrder), std::end(rightSwitchOrder),
+                                m_activeListView);
+            assert(it != std::end(rightSwitchOrder));
             if (*(++it)) {
                 m_activeListView = *it;
                 m_activeListView->setFocus();
@@ -109,11 +109,10 @@ void MedialibBrowser::keyPressedEvent(const KeyEvent& keyEvent)
                 m_albumsListView,
                 m_songsListView
             };
-            const int leftSwitchOrderSz = sizeof(leftSwitchOrder)
-                                           / sizeof(leftSwitchOrder[0]);
 
-            auto it = std::find(leftSwitchOrder, leftSwitchOrder + leftSwitchOrderSz, m_activeListView);
-            assert(it != leftSwitchOrder + leftSwitchOrderSz);
+            auto it = std::find(std::begin(leftSwitchOrder), std::end(leftSwitchOrder),
+                                m_activeListView);
+            assert(it != std::end(leftSwitchOrder));
             if (*(--it)) {
                 m_activeListView = *it;
                 m_activeListView->setFocus();
