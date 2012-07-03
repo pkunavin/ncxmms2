@@ -43,6 +43,7 @@ void StackedWindow::addWindow(Window *window)
     if (d->currentIndex != -1)
         d->windows[d->currentIndex]->hide();
 
+    window->setFocus();
     d->currentIndex = d->windows.size();
     d->windows.push_back(window);
 }
@@ -57,6 +58,7 @@ void StackedWindow::setCurrentIndex(int index)
     if (d->currentIndex != -1)
         d->windows[d->currentIndex]->hide();
     d->currentIndex = index;
+    d->windows[index]->setFocus();
     d->windows[index]->show();
 }
 
