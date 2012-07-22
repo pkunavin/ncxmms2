@@ -239,7 +239,7 @@ LocalFileSystemBrowser::Dir& LocalFileSystemBrowser::Dir::cd(const std::string& 
     free(canonicalPath);
 
     if (*m_path.rbegin() == '/' && m_path.size() > 1)
-        m_path.pop_back();
+        m_path.resize(m_path.size() - 1);
 
     return *this;
 }
