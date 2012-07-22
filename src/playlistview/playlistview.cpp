@@ -130,19 +130,19 @@ void PlaylistView::onItemEntered(int item)
     if (plsModel->playlist() != m_activePlaylist)
         m_xmmsClient->playlist.load(plsModel->playlist());
 
-        m_xmmsClient->playlist.setNext(item);
-        m_xmmsClient->playback.tickle();
-        switch (m_playbackStatus) {
-            case Xmms::Playback::STOPPED:
-                m_xmmsClient->playback.start();
-                break;
-            case Xmms::Playback::PLAYING:
-                m_xmmsClient->playback.tickle();
-                break;
-            case Xmms::Playback::PAUSED:
-                m_xmmsClient->playback.start();
-                m_xmmsClient->playback.tickle();
-        }
+    m_xmmsClient->playlist.setNext(item);
+    m_xmmsClient->playback.tickle();
+    switch (m_playbackStatus) {
+        case Xmms::Playback::STOPPED:
+            m_xmmsClient->playback.start();
+            break;
+        case Xmms::Playback::PLAYING:
+            m_xmmsClient->playback.tickle();
+            break;
+        case Xmms::Playback::PAUSED:
+            m_xmmsClient->playback.start();
+            m_xmmsClient->playback.tickle();
+    }
 }
 
 void PlaylistView::addPath(const std::string& path)
