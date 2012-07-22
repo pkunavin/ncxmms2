@@ -4,7 +4,6 @@ set(SOURCES
     object.cpp
     window.cpp
     stackedwindow.cpp
-    abstractitemview.cpp
     timer.cpp
     painter.cpp
     label.cpp
@@ -24,7 +23,6 @@ set(HEADERS
     point.h
     size.h
     stackedwindow.h
-    abstractitemview.h
     timer.h
     colors.h
     painter.h
