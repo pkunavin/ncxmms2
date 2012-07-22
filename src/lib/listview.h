@@ -46,6 +46,11 @@ public:
 
     void scrollToItem(int item);
 
+    int viewportFirstItem() const;
+    int viewportLastItem() const;
+
+    void setViewportFirstItem(int item);
+
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
     virtual void resize(const Size& size);
 

@@ -224,6 +224,36 @@ void ListView::scrollToItem(int item)
     update();
 }
 
+int ListView::viewportFirstItem() const
+{
+    return d->viewportBeginItem;
+}
+
+int ListView::viewportLastItem() const
+{
+    return d->viewportEndItem != -1 ? d->viewportEndItem - 1 : -1;
+}
+
+void ListView::setViewportFirstItem(int item)
+{
+    const int itemsCount = d->model->itemsCount();
+    if (item < 0 || item >= itemsCount)
+        return;
+
+    if (itemsCount <= lines())
+        return;
+
+    if (item + lines() < itemsCount) {
+        d->viewportBeginItem = item;
+        d->viewportEndItem = d->viewportBeginItem + lines();
+    } else {
+        d->viewportEndItem = itemsCount;
+        d->viewportBeginItem = d->viewportEndItem - lines();
+    }
+    d->changeCurrentItem(d->viewportBeginItem);
+    update();
+}
+
 void ListViewPrivate::disconnectModel()
 {
     for (auto& connection : modelConnections) {
