@@ -17,6 +17,8 @@ set(SOURCES
     statusarea/questionwindow.cpp
 
     localfilesystembrowser/localfilesystembrowser.cpp
+    localfilesystembrowser/filesystemmodel.cpp
+    localfilesystembrowser/filesystemitemdelegate.cpp
 
     headerwindow/headerwindow.cpp
 
@@ -52,6 +54,8 @@ set(HEADERS
     statusarea/questionwindow.h
 
     localfilesystembrowser/localfilesystembrowser.h
+    localfilesystembrowser/filesystemmodel.h
+    localfilesystembrowser/filesystemitemdelegate.h
 
     headerwindow/headerwindow.h
 

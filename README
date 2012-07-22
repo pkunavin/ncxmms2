@@ -37,6 +37,13 @@ Hotkeys:
   Go to currently playing song : o
   Add file / directory : Ctrl+O
   Add url : Ctrl+U
+  
+ Local file system browser:
+  Add file or directory to active playlist : space
+  Add file to active playlist : enter
+  Go up : left arrow
+  Change directory : g
+  Reload directory : R
  
   Medialib browser:
    Refresh : R
