@@ -106,6 +106,7 @@ Application::Application(bool useColors) : d(new ApplicationPrivate())
     //Install signal handler
     signal(SIGINT,   ApplicationPrivate::signalHandler);
     signal(SIGTERM,  ApplicationPrivate::signalHandler);
+    signal(SIGTSTP,  ApplicationPrivate::signalHandler);
     signal(SIGWINCH, ApplicationPrivate::resizeSignalHandler);
 
     //Creat mainloop
