@@ -28,6 +28,7 @@
 #include "../utils.h"
 #include "../xmmsutils.h"
 #include "../settings.h"
+#include "../hotkeys.h"
 
 #include "../lib/keyevent.h"
 
@@ -64,7 +65,7 @@ void LocalFileSystemBrowser::keyPressedEvent(const KeyEvent& keyEvent)
             boost::polymorphic_downcast<FileSystemModel*>(model());
 
     switch (keyEvent.key()) {
-        case ' ':
+        case Hotkeys::Screens::LocalFileSystemBrowser::AddFileOrDirectoryToActivePlaylist:
         {
             const int item = currentItem();
             if (item == -1)
@@ -84,12 +85,12 @@ void LocalFileSystemBrowser::keyPressedEvent(const KeyEvent& keyEvent)
             break;
         }
 
-        case KeyEvent::KeyLeft:
+        case Hotkeys::Screens::LocalFileSystemBrowser::GoUp:
             if (m_currentDir.path() != "/")
                 cd("..");
             break;
 
-        case 'g':
+        case Hotkeys::Screens::LocalFileSystemBrowser::ChangeDirectory:
         {
             auto resultCallback = [this](const std::string& path,
                                          LineEdit::ResultCode result)
@@ -101,7 +102,7 @@ void LocalFileSystemBrowser::keyPressedEvent(const KeyEvent& keyEvent)
             break;
         }
 
-        case 'R':
+        case Hotkeys::Screens::LocalFileSystemBrowser::ReloadDirectory:
             fsModel->refresh();
             break;
 

@@ -21,6 +21,7 @@
 #include "playlistslistview.h"
 #include "playlistslistmodel.h"
 #include "../statusarea/statusarea.h"
+#include "../hotkeys.h"
 
 #include "../lib/keyevent.h"
 
@@ -56,12 +57,12 @@ void PlaylistsListView::keyPressedEvent(const KeyEvent& keyEvent)
             boost::polymorphic_downcast<PlaylistsListModel*>(model());
 
     switch (keyEvent.key()) {
-        case KeyEvent::KeyDelete:
+        case Hotkeys::Screens::PlaylistsBrowser::RemovePlaylist:
             if (plsModel->itemsCount() > 1)
                 m_xmmsClient->playlist.remove(plsModel->playlist(currentItem()));
             break;
 
-        case 'n':
+        case Hotkeys::Screens::PlaylistsBrowser::CreateNewPlaylist:
         {
             auto resultCallback = [this](const std::string& playlist, LineEdit::ResultCode result)
             {
@@ -73,7 +74,7 @@ void PlaylistsListView::keyPressedEvent(const KeyEvent& keyEvent)
             break;
         }
 
-        case 'r':
+        case Hotkeys::Screens::PlaylistsBrowser::RenamePlaylist:
         {
             const std::string playlist = plsModel->playlist(currentItem());
             auto resultCallback = [this, playlist](const std::string& newName, LineEdit::ResultCode result)

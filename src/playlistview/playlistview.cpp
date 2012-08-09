@@ -25,6 +25,7 @@
 #include "../statusarea/statusarea.h"
 #include "../utils.h"
 #include "../xmmsutils.h"
+#include "../hotkeys.h"
 
 #include "../lib/keyevent.h"
 
@@ -60,26 +61,26 @@ void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
     PlaylistModel *plsModel = boost::polymorphic_downcast<PlaylistModel*>(model());
 
     switch (keyEvent.key()) {
-        case KeyEvent::KeyDelete:
+        case Hotkeys::PlaylistView::RemoveEntry:
             if (plsModel->itemsCount() && !isCurrentItemHidden()) {
                 m_xmmsClient->playlist.removeEntry(currentItem(), plsModel->playlist());
                 showCurrentItem();
             }
             break;
 
-        case 'c':
+        case Hotkeys::PlaylistView::ClearPlaylist:
             m_xmmsClient->playlist.clear(plsModel->playlist());
             break;
 
-        case 'S':
+        case Hotkeys::PlaylistView::ShufflePlaylist:
             m_xmmsClient->playlist.shuffle(plsModel->playlist());
             break;
 
-        case 'o':
+        case Hotkeys::PlaylistView::GoToCurrentlyPlayingSong:
             setCurrentItem(plsModel->currentSongItem());
             break;
 
-        case KeyEvent::ModifierCtrl | 'o':
+        case Hotkeys::PlaylistView::AddFileOrDirectory:
         {
             auto resultCallback = [this](const std::string& path, LineEdit::ResultCode result)
             {
@@ -90,7 +91,7 @@ void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
             break;
         }
 
-        case KeyEvent::ModifierCtrl | 'u':
+        case Hotkeys::PlaylistView::AddUrl:
         {
             auto resultCallback = [this](const std::string& url, LineEdit::ResultCode result)
             {

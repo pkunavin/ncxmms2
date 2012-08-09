@@ -69,23 +69,23 @@ MainWindow::MainWindow(Xmms::Client *xmmsClient) :
 void MainWindow::keyPressedEvent(const KeyEvent& keyEvent)
 {
     switch (keyEvent.key()) {
-        case Hotkeys::PlaylistScreen:
+        case Hotkeys::Screens::ActivePlaylist::Activate:
             setVisibleWindow(StackedPlaylistWindow);
             break;
 
-        case Hotkeys::LocalFileSystemBrowserScreen:
+        case Hotkeys::Screens::LocalFileSystemBrowser::Activate:
             setVisibleWindow(StackedLocalFileBrowserWindow);
             break;
 
-        case Hotkeys::MedialibBrowserScreen:
+        case Hotkeys::Screens::MedialibBrowser::Activate:
             setVisibleWindow(StackedMedialibBrowser);
             break;
 
-        case Hotkeys::PlaylistsBrowserScreen:
+        case Hotkeys::Screens::PlaylistsBrowser::Activate:
             setVisibleWindow(StackedPlaylistsBrowser);
             break;
 
-        case Hotkeys::PlaybackToggle:
+        case Hotkeys::Playback::Toggle:
             if (m_statusArea->playbackStatus() == Xmms::Playback::PLAYING) {
                 m_xmmsClient->playback.pause();
             } else {
@@ -93,25 +93,25 @@ void MainWindow::keyPressedEvent(const KeyEvent& keyEvent)
             }
             break;
 
-        case Hotkeys::PlaybackStop:
+        case Hotkeys::Playback::Stop:
             m_xmmsClient->playback.stop();
             break;
 
-        case Hotkeys::PlaybackNext:
+        case Hotkeys::Playback::Next:
             m_xmmsClient->playlist.setNextRel(1);
             m_xmmsClient->playback.tickle();
             break;
 
-        case Hotkeys::PlaybackPrev:
+        case Hotkeys::Playback::Prev:
             m_xmmsClient->playlist.setNextRel(-1);
             m_xmmsClient->playback.tickle();
             break;
 
-        case Hotkeys::PlaybackSeekForward:
+        case Hotkeys::Playback::SeekForward:
             m_xmmsClient->playback.seekMsRel(1000);
             break;
 
-        case Hotkeys::PlaybackSeekBackward:
+        case Hotkeys::Playback::SeekBackward:
             m_xmmsClient->playback.seekMsRel(-1000);
             break;
 

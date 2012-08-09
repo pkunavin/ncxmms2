@@ -26,6 +26,7 @@
 #include "albumslistmodel.h"
 #include "songslistmodel.h"
 #include "../statusarea/statusarea.h"
+#include "../hotkeys.h"
 
 #include "../lib/listview.h"
 #include "../lib/painter.h"
@@ -121,7 +122,7 @@ void MedialibBrowser::keyPressedEvent(const KeyEvent& keyEvent)
             break;
         }
 
-        case ' ':
+        case Hotkeys::Screens::MedialibBrowser::AddItemToActivePlaylist:
             if (m_activeListView == m_songsListView) {
                 activePlaylistAddSong(m_songsListView->currentItem());
             } else if (m_activeListView == m_albumsListView) {
@@ -132,7 +133,7 @@ void MedialibBrowser::keyPressedEvent(const KeyEvent& keyEvent)
 
             break;
 
-        case 'R':
+        case Hotkeys::Screens::MedialibBrowser::Refresh:
             assert(m_activeListView);
             m_activeListView->model()->refresh();
             break;

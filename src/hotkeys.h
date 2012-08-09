@@ -17,26 +17,83 @@
 #ifndef HOTKEYS_H
 #define HOTKEYS_H
 
+#include "lib/keyevent.h"
+
 namespace ncxmms2 {
 namespace Hotkeys {
+
 enum
 {
-    Quit = 'q',
-
-    // Screens switching
-    PlaylistScreen               = '2',
-    LocalFileSystemBrowserScreen = '3',
-    MedialibBrowserScreen        = '5',
-    PlaylistsBrowserScreen       = '6',
-
-    // Playback control
-    PlaybackToggle       = 'P',
-    PlaybackStop         = 's',
-    PlaybackNext         = '>',
-    PlaybackPrev         = '<',
-    PlaybackSeekForward  = 'f',
-    PlaybackSeekBackward = 'b'
+    Quit = 'q'
 };
+
+namespace Playback {
+enum
+{
+    Toggle       = 'P',
+    Stop         = 's',
+    Next         = '>',
+    Prev         = '<',
+    SeekForward  = 'f',
+    SeekBackward = 'b'
+};
+}
+
+namespace PlaylistView {
+enum
+{
+    RemoveEntry              = KeyEvent::KeyDelete,
+    ClearPlaylist            = 'c',
+    ShufflePlaylist          = 'S',
+    GoToCurrentlyPlayingSong = 'o',
+    AddFileOrDirectory       = KeyEvent::ModifierCtrl | 'o',
+    AddUrl                   = KeyEvent::ModifierCtrl | 'u'
+};
+}
+
+namespace Screens {
+
+namespace ActivePlaylist {
+enum
+{
+    Activate = '2'
+};
+}
+
+namespace LocalFileSystemBrowser {
+enum
+{
+    Activate = '3',
+
+    AddFileOrDirectoryToActivePlaylist = ' ',
+    GoUp                               = KeyEvent::KeyLeft,
+    ChangeDirectory                    = 'g',
+    ReloadDirectory                    = 'R'
+};
+}
+
+namespace MedialibBrowser {
+enum
+{
+    Activate = '5',
+
+    AddItemToActivePlaylist = ' ',
+    Refresh                 = 'R'
+};
+}
+
+namespace PlaylistsBrowser {
+enum
+{
+    Activate = '6',
+
+    CreateNewPlaylist = 'n',
+    RemovePlaylist    = KeyEvent::KeyDelete,
+    RenamePlaylist    = 'r'
+};
+}
+
+} // Screens
 } // Hotkeys
 } // ncxmms2
 #endif // HOTKEYS_H
