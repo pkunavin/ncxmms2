@@ -79,11 +79,7 @@ void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
             setCurrentItem(plsModel->currentSongItem());
             break;
 
-        // CTRL + O
-        // FIXME: Remove this magic number
-        // I didn't find an easy way to recognise modifiers keys,
-        // other projects like ncmpc or ncmpcpp also use such hardcoded numbers
-        case 15:
+        case KeyEvent::ModifierCtrl | 'o':
         {
             auto resultCallback = [this](const std::string& path, LineEdit::ResultCode result)
             {
@@ -94,9 +90,7 @@ void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
             break;
         }
 
-        // CTRL + U
-        // FIXME: See above comment
-        case 21:
+        case KeyEvent::ModifierCtrl | 'u':
         {
             auto resultCallback = [this](const std::string& url, LineEdit::ResultCode result)
             {

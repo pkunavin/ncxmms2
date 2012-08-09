@@ -6,6 +6,7 @@ set(SOURCES
     stackedwindow.cpp
     timer.cpp
     painter.cpp
+    keyevent.cpp
     label.cpp
     lineedit.cpp
     listmodel.cpp
@@ -51,5 +52,6 @@ include_directories(${NCURSESW_INCLUDE_DIRS})
 pkg_check_modules(GLIB glib-2.0 REQUIRED)
 include_directories(${GLIB_INCLUDE_DIRS})
 
-target_link_libraries(ncxmms2-lib ${NCURSESW_LIBRARIES}
+target_link_libraries(ncxmms2-lib libtermkey
+                                  ${NCURSESW_LIBRARIES}
                                   ${GLIB_LIBRARIES})

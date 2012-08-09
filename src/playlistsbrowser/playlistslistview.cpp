@@ -50,7 +50,7 @@ void PlaylistsListView::loadPlaylist(int item)
     m_xmmsClient->playlist.load(plsModel->playlist(item));
 }
 
-void PlaylistsListView::keyPressedEvent(const KeyEvent &keyEvent)
+void PlaylistsListView::keyPressedEvent(const KeyEvent& keyEvent)
 {
     PlaylistsListModel *plsModel =
             boost::polymorphic_downcast<PlaylistsListModel*>(model());

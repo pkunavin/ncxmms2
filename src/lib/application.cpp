@@ -17,6 +17,7 @@
 #include <glib.h>
 #include <curses.h>
 #include <signal.h>
+#include <unistd.h>
 #include <sys/ioctl.h>
 
 #include <map>
@@ -29,18 +30,28 @@
 #include "keyevent.h"
 #include "colors.h"
 
+#include "../../3rdparty/libtermkey/termkey.h"
+
 namespace ncxmms2 {
 
 class ApplicationPrivate
 {
 public:
-    ApplicationPrivate() : mainWindow(nullptr), grabbedFocusWindow(nullptr) {}
-
+    ApplicationPrivate() :
+        mainLoop(nullptr),
+        termKey(nullptr),
+        termKeyReadTimeoutId(0),
+        mainWindow(nullptr),
+        grabbedFocusWindow(nullptr) {}
 
     GMainLoop *mainLoop;
 
+    TermKey *termKey;
+    int termKeyReadTimeoutId;
     int stdinPollSource;
     static gboolean stdinEvent(GIOChannel *iochan, GIOCondition cond, gpointer data);
+    static gboolean readKeyAfterTimeout(gpointer data);
+    void sendKeyPressedEvent(const TermKeyKey& key);
 
     static void signalHandler(int signal);
     static void resizeSignalHandler(int signal);
@@ -54,7 +65,10 @@ using namespace ncxmms2;
 
 Application *Application::inst = nullptr;
 
-#define CHECK_INST if (!inst) {throw std::logic_error(std::string(__PRETTY_FUNCTION__).append(": There is no instance of application!"));}
+#define CHECK_INST if (!inst) { \
+                       throw std::logic_error(std::string(__PRETTY_FUNCTION__) \
+                                    .append(": There is no instance of application!")); \
+                    } \
 
 void Application::init(bool useColors)
 {
@@ -72,13 +86,16 @@ Application::Application(bool useColors) : d(new ApplicationPrivate())
 {
     setlocale(LC_ALL, "");
 
+    // Initialize libtermkey
+    d->termKey = termkey_new(STDIN_FILENO, 0);
+    if (!d->termKey)
+        throw std::runtime_error("Can't allocate memory for TermKey!");
+    termkey_set_flags(d->termKey, TERMKEY_FLAG_UTF8);
+
     //Init ncurses
     initscr();
-    cbreak();
-    noecho();
     curs_set(FALSE);
-    nodelay(stdscr, TRUE);
-    keypad(stdscr, TRUE);
+    raw();
 
     if (has_colors() && useColors) {
         start_color();
@@ -100,8 +117,6 @@ Application::Application(bool useColors) : d(new ApplicationPrivate())
             init_pair((*it).first, (*it).second.first, (*it).second.second);
         }
     }
-
-    refresh();
 
     //Install signal handler
     signal(SIGINT,   ApplicationPrivate::signalHandler);
@@ -151,24 +166,50 @@ Size Application::terminalSize()
     return Size(COLS, LINES);
 }
 
-gboolean ApplicationPrivate::stdinEvent(GIOChannel* iochan, GIOCondition cond, gpointer data)
+gboolean ApplicationPrivate::stdinEvent(GIOChannel *iochan, GIOCondition cond, gpointer data)
 {
     NCXMMS2_UNUSED(iochan);
     NCXMMS2_UNUSED(cond);
     NCXMMS2_UNUSED(data);
 
-    wint_t key;
-    const auto res = get_wch(&key);
-    if (res != ERR) {
-        ApplicationPrivate *p = Application::inst->d.get();
-        Window *win = p->grabbedFocusWindow ? p->grabbedFocusWindow : p->mainWindow;
-        if (key == 127) {// Fix backpspace key
-            win->keyPressedEvent(KeyEvent(KeyEvent::KeyBackspace, true));
-        } else {
-            win->keyPressedEvent(KeyEvent(key, res == KEY_CODE_YES));
-        }
+    ApplicationPrivate *p = Application::inst->d.get();
+
+    if(p->termKeyReadTimeoutId) {
+        g_source_remove(p->termKeyReadTimeoutId);
+        p->termKeyReadTimeoutId = 0;
     }
+
+    termkey_advisereadable(p->termKey);
+
+    TermKeyResult res;
+    TermKeyKey key;
+    while((res = termkey_getkey(p->termKey, &key)) == TERMKEY_RES_KEY)
+        p->sendKeyPressedEvent(key);
+
+    if(res == TERMKEY_RES_AGAIN)
+        p->termKeyReadTimeoutId = g_timeout_add(termkey_get_waittime(p->termKey),
+                                                readKeyAfterTimeout, NULL);
+
     return TRUE;
+}
+
+gboolean ApplicationPrivate::readKeyAfterTimeout(gpointer data)
+{
+    NCXMMS2_UNUSED(data);
+
+    ApplicationPrivate *p = Application::inst->d.get();
+    TermKeyKey key;
+    if(termkey_getkey_force(p->termKey, &key) == TERMKEY_RES_KEY)
+        p->sendKeyPressedEvent(key);
+
+    p->termKeyReadTimeoutId = 0;
+    return FALSE;
+}
+
+void ApplicationPrivate::sendKeyPressedEvent(const TermKeyKey& key)
+{
+    Window *win = grabbedFocusWindow ? grabbedFocusWindow : mainWindow;
+    win->keyPressedEvent(KeyEvent(key));
 }
 
 void ApplicationPrivate::signalHandler(int signal)
@@ -193,13 +234,6 @@ void ApplicationPrivate::resizeSignalHandler(int signal)
     ioctl(fileno(stdout), TIOCGWINSZ, (char*)&size);
     resizeterm(size.ws_row, size.ws_col);
 
-    cbreak();
-    noecho();
-    curs_set(FALSE);
-    nodelay(stdscr, TRUE);
-    keypad(stdscr, TRUE);
-    refresh();
-
     if (Application::inst && Application::inst->d->mainWindow)
         Application::inst->d->mainWindow->resize(Size(size.ws_col, size.ws_row));
 }
@@ -208,11 +242,17 @@ Application::~Application()
 {
     delete d->mainWindow;
 
+    if (d->termKeyReadTimeoutId)
+        g_source_remove(d->termKeyReadTimeoutId);
+
+    g_source_remove(d->stdinPollSource);
+
     if (g_main_loop_is_running(d->mainLoop))
         g_main_loop_quit(d->mainLoop);
 
-    g_source_remove(d->stdinPollSource);
     g_main_loop_unref(d->mainLoop);
+
     endwin();
+    termkey_destroy(d->termKey);
 }
 

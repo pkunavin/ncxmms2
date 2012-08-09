@@ -17,44 +17,69 @@
 #ifndef KEYEVENT_H
 #define KEYEVENT_H
 
-#include <curses.h>
+#include <memory>
+
+typedef struct TermKeyKey_St TermKeyKey;
 
 namespace ncxmms2 {
+
+class KeyEventPrivate;
 
 class KeyEvent
 {
 public:
     typedef char32_t key_t;
 
-    KeyEvent(key_t key, bool isFunctionKey) : m_key(key)
-    {
-        m_isFunctionKey = isFunctionKey
-                          || key==KeyEnter
-                          || key==KeyEscape;
-    }
+    KeyEvent(const TermKeyKey& termKey);
+    ~KeyEvent();
 
-    key_t key() const          {return m_key;}
-    bool isFunctionKey() const {return m_isFunctionKey;}
+    key_t key() const;
+    bool isFunctionKey() const;
 
     enum
     {
-        KeyDown   = KEY_DOWN,
-        KeyUp     = KEY_UP,
-        KeyLeft   = KEY_LEFT,
-        KeyRight  = KEY_RIGHT,
+        KeyLastUtf32Char = 0x10FFFF,
 
-        KeyHome = KEY_HOME,
-        KeyEnd  = KEY_END,
+        KeyEnter,
+        KeyEscape,
 
-        KeyEnter     = '\n',
-        KeyEscape    = '\033',
-        KeyDelete    = KEY_DC,
-        KeyBackspace = KEY_BACKSPACE
+        KeyBackspace,
+        KeyDelete,
+        KeyInsert,
+
+        KeyUp,
+        KeyDown,
+        KeyLeft,
+        KeyRight,
+        KeyTab,
+
+        KeyHome,
+        KeyEnd,
+        KeyPageUp,
+        KeyPageDown,
+
+        KeyF1,
+        KeyF2,
+        KeyF3,
+        KeyF4,
+        KeyF5,
+        KeyF6,
+        KeyF7,
+        KeyF8,
+        KeyF9,
+        KeyF10,
+        KeyF11,
+        KeyF12
+    };
+
+    enum
+    {
+        ModifierAlt  = 0x40000000,
+        ModifierCtrl = 0x80000000
     };
 
 private:
-    key_t m_key;
-    bool m_isFunctionKey;
+    std::unique_ptr<KeyEventPrivate> d;
 };
 } // ncxmms2
 
