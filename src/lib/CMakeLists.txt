@@ -12,7 +12,8 @@ set(SOURCES
     listmodel.cpp
     listview.cpp
     listmodelitemdelegate.cpp
-    utf.cpp)
+    utf.cpp
+    textview.cpp)
 
 set(HEADERS
     signals.h
@@ -35,7 +36,8 @@ set(HEADERS
     listview.h
     listmodelitemdelegate.h
     listitempaintoptions.h
-    utf.h)
+    utf.h
+    textview.h)
 
 add_library(ncxmms2-lib ${SOURCES})
 
