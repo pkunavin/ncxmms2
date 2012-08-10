@@ -17,13 +17,11 @@
 #ifndef KEYEVENT_H
 #define KEYEVENT_H
 
-#include <memory>
+#include <string>
 
 typedef struct TermKeyKey_St TermKeyKey;
 
 namespace ncxmms2 {
-
-class KeyEventPrivate;
 
 class KeyEvent
 {
@@ -31,10 +29,11 @@ public:
     typedef char32_t key_t;
 
     KeyEvent(const TermKeyKey& termKey);
-    ~KeyEvent();
+    KeyEvent(key_t key) : m_key(key) {}
 
-    key_t key() const;
-    bool isFunctionKey() const;
+    key_t key() const          {return m_key;}
+    bool isFunctionKey() const {return (m_key & KeyCodeMask) > KeyLastUtf32Char;}
+    std::string keyName() const;
 
     enum
     {
@@ -75,11 +74,13 @@ public:
     enum
     {
         ModifierAlt  = 0x40000000,
-        ModifierCtrl = 0x80000000
+        ModifierCtrl = 0x80000000,
+
+        KeyCodeMask = 0x00FFFFFF
     };
 
 private:
-    std::unique_ptr<KeyEventPrivate> d;
+    key_t m_key;
 };
 } // ncxmms2
 

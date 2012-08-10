@@ -15,66 +15,54 @@
  */
 
 #include <map>
+#include <glib.h>
+#include <boost/lexical_cast.hpp>
 
 #include "keyevent.h"
 #include "../../3rdparty/libtermkey/termkey.h"
 
-namespace ncxmms2 {
-
-class KeyEventPrivate
-{
-public:
-    KeyEventPrivate(){}
-
-    KeyEvent::key_t key;
-    static const std::map<char32_t, char32_t> keyMap;
-};
-
-const std::map<char32_t, char32_t> KeyEventPrivate::keyMap =
-{
-    {TERMKEY_SYM_ENTER,     KeyEvent::KeyEnter},
-    {TERMKEY_SYM_ESCAPE,    KeyEvent::KeyEscape},
-
-    {TERMKEY_SYM_BACKSPACE, KeyEvent::KeyBackspace},
-    {TERMKEY_SYM_DEL,       KeyEvent::KeyBackspace},
-    {TERMKEY_SYM_DELETE,    KeyEvent::KeyDelete},
-    {TERMKEY_SYM_INSERT,    KeyEvent::KeyInsert},
-
-    {TERMKEY_SYM_UP,        KeyEvent::KeyUp},
-    {TERMKEY_SYM_DOWN,      KeyEvent::KeyDown},
-    {TERMKEY_SYM_LEFT,      KeyEvent::KeyLeft},
-    {TERMKEY_SYM_RIGHT,     KeyEvent::KeyRight},
-    {TERMKEY_SYM_TAB,       KeyEvent::KeyTab},
-
-    {TERMKEY_SYM_HOME,      KeyEvent::KeyHome},
-    {TERMKEY_SYM_END,       KeyEvent::KeyEnd},
-    {TERMKEY_SYM_PAGEUP,    KeyEvent::KeyPageUp},
-    {TERMKEY_SYM_PAGEDOWN,  KeyEvent::KeyPageDown}
-};
-
-} // ncxmms2
-
 using namespace ncxmms2;
 
-KeyEvent::KeyEvent(const TermKeyKey& termKey) :
-    d(new KeyEventPrivate())
+KeyEvent::KeyEvent(const TermKeyKey& termKey)
 {
+    static const std::map<char32_t, char32_t> keyMap =
+    {
+        {TERMKEY_SYM_ENTER,     KeyEvent::KeyEnter},
+        {TERMKEY_SYM_ESCAPE,    KeyEvent::KeyEscape},
+
+        {TERMKEY_SYM_BACKSPACE, KeyEvent::KeyBackspace},
+        {TERMKEY_SYM_DEL,       KeyEvent::KeyBackspace},
+        {TERMKEY_SYM_DELETE,    KeyEvent::KeyDelete},
+        {TERMKEY_SYM_INSERT,    KeyEvent::KeyInsert},
+
+        {TERMKEY_SYM_UP,        KeyEvent::KeyUp},
+        {TERMKEY_SYM_DOWN,      KeyEvent::KeyDown},
+        {TERMKEY_SYM_LEFT,      KeyEvent::KeyLeft},
+        {TERMKEY_SYM_RIGHT,     KeyEvent::KeyRight},
+        {TERMKEY_SYM_TAB,       KeyEvent::KeyTab},
+
+        {TERMKEY_SYM_HOME,      KeyEvent::KeyHome},
+        {TERMKEY_SYM_END,       KeyEvent::KeyEnd},
+        {TERMKEY_SYM_PAGEUP,    KeyEvent::KeyPageUp},
+        {TERMKEY_SYM_PAGEDOWN,  KeyEvent::KeyPageDown}
+    };
+
     switch (termKey.type) {
         case TERMKEY_TYPE_UNICODE:
-            d->key = termKey.code.codepoint;
+            m_key = termKey.code.codepoint;
             break;
 
         case TERMKEY_TYPE_KEYSYM:
         {
-            auto it = KeyEventPrivate::keyMap.find(termKey.code.sym);
-            if (it != KeyEventPrivate::keyMap.end())
-                d->key = it->second;
+            auto it = keyMap.find(termKey.code.sym);
+            if (it != keyMap.end())
+                m_key = it->second;
             break;
         }
 
         case TERMKEY_TYPE_FUNCTION:
             if (termKey.code.number > 0 && termKey.code.number <= 12)
-                d->key = KeyF1 + termKey.code.number - 1;
+                m_key = KeyF1 + termKey.code.number - 1;
             break;
 
         default:
@@ -82,23 +70,67 @@ KeyEvent::KeyEvent(const TermKeyKey& termKey) :
     }
 
     if (termKey.modifiers & TERMKEY_KEYMOD_ALT)
-        d->key |= ModifierAlt;
+        m_key |= ModifierAlt;
 
     if (termKey.modifiers & TERMKEY_KEYMOD_CTRL)
-        d->key |= ModifierCtrl;
+        m_key |= ModifierCtrl;
 }
 
-KeyEvent::~KeyEvent()
+std::string KeyEvent::keyName() const
 {
+    static const std::map<key_t, std::string> keyNames =
+    {
+        {KeyEnter,     "Enter"},
+        {KeyEscape,    "Escape"},
+        {KeyBackspace, "Backspace"},
+        {KeyDelete,    "Delete"},
+        {KeyInsert,    "Insert"},
+        {KeyUp,        "Up arrow"},
+        {KeyDown,      "Down arrow"},
+        {KeyLeft,      "Left arrow"},
+        {KeyRight,     "Right arrow"},
+        {KeyTab,       "Tab"},
+        {KeyHome,      "Home"},
+        {KeyEnd,       "End"},
+        {KeyPageUp,    "PageUp"},
+        {KeyPageDown,  "PageDown"}
+    };
 
-}
+    std::string name;
 
-KeyEvent::key_t KeyEvent::key() const
-{
-    return d->key;
-}
+    if (m_key & ModifierCtrl)
+        name.append("Ctrl-");
 
-bool KeyEvent::isFunctionKey() const
-{
-    return (d->key & 0x00FFFFFF) > KeyLastUtf32Char;
+    if (m_key & ModifierAlt)
+        name.append("Alt-");
+
+    if (isFunctionKey()) {
+        key_t keyCode = m_key & KeyCodeMask;
+        if (keyCode >= KeyF1 && keyCode <= KeyF12) {
+            name.push_back('F');
+            name.append(boost::lexical_cast<std::string>(keyCode - KeyF1 + 1));
+        } else if (keyCode < KeyF1) {
+            auto it = keyNames.find(keyCode);
+            if (it != keyNames.end()) {
+                name.append(it->second);
+            } else {
+                name = "Unknown";
+            }
+        } else {
+            name = "Unknown";
+        }
+    } else {
+        char buf[6];
+        char32_t ch = m_key & KeyCodeMask;
+        if (ch == ' ') {
+            name.append("space");
+        } else {
+            if (m_key & (ModifierCtrl | ModifierAlt))
+                ch = g_unichar_toupper(ch);
+            const int n = g_unichar_to_utf8(ch, buf);
+            name.append(buf, n);
+        }
+    }
+
+    return std::move(name);
 }
