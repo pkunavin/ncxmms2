@@ -53,6 +53,13 @@ enum
 
 namespace Screens {
 
+namespace Help {
+enum
+{
+    Activate = '1'
+};
+}
+
 namespace ActivePlaylist {
 enum
 {

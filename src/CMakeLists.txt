@@ -28,6 +28,8 @@ set(SOURCES
 
     activeplaylistwindow/activeplaylistwindow.cpp
 
+    helpbrowser/helpbrowser.cpp
+
     playlistview/playlistview.cpp
     playlistview/playlistmodel.cpp
     playlistview/playlistitemdelegate.cpp
@@ -64,6 +66,8 @@ set(HEADERS
     playlistsbrowser/playlistslistview.h
 
     activeplaylistwindow/activeplaylistwindow.h
+
+    helpbrowser/helpbrowser.h
 
     playlistview/playlistview.h
     playlistview/playlistmodel.h

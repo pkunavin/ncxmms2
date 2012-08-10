@@ -19,6 +19,7 @@
 
 #include "mainwindow.h"
 #include "../statusarea/statusarea.h"
+#include "../helpbrowser/helpbrowser.h"
 #include "../activeplaylistwindow/activeplaylistwindow.h"
 #include "../localfilesystembrowser/localfilesystembrowser.h"
 #include "../medialibbrowser/medialibbrowser.h"
@@ -51,6 +52,7 @@ MainWindow::MainWindow(Xmms::Client *xmmsClient) :
     const Rectangle stackedSubWinRect(0, 0, stackedWindowRect.cols(), stackedWindowRect.lines());
     const std::map<StackedWindows, Window*> stakedWindows =
     {
+        {StackedHelpBrowser,            new HelpBrowser           (            stackedSubWinRect, m_stackedWindow)},
         {StackedPlaylistWindow,         new ActivePlaylistWindow  (xmmsClient, stackedSubWinRect, m_stackedWindow)},
         {StackedLocalFileBrowserWindow, new LocalFileSystemBrowser(xmmsClient, stackedSubWinRect, m_stackedWindow)},
         {StackedMedialibBrowser,        new MedialibBrowser       (xmmsClient, stackedSubWinRect, m_stackedWindow)},
@@ -69,6 +71,10 @@ MainWindow::MainWindow(Xmms::Client *xmmsClient) :
 void MainWindow::keyPressedEvent(const KeyEvent& keyEvent)
 {
     switch (keyEvent.key()) {
+        case Hotkeys::Screens::Help::Activate:
+            setVisibleWindow(StackedHelpBrowser);
+            break;
+
         case Hotkeys::Screens::ActivePlaylist::Activate:
             setVisibleWindow(StackedPlaylistWindow);
             break;

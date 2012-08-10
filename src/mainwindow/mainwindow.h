@@ -37,6 +37,7 @@ public:
 
     enum StackedWindows
     {
+        StackedHelpBrowser,
         StackedPlaylistWindow,
         StackedLocalFileBrowserWindow,
         StackedMedialibBrowser,
