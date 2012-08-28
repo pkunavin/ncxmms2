@@ -39,6 +39,7 @@ void HeaderWindow::paint(const Rectangle& rect)
     NCXMMS2_UNUSED(rect);
 
     Painter painter(this);
+    painter.setColor(ColorWhite);
     painter.clearLine();
     painter.setBold(true);
     painter.squeezedPrint(m_headerTitle, cols());

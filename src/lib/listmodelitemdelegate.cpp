@@ -42,7 +42,7 @@ void ListModelItemDelegate::paint(Painter *painter, const ListItemPaintOptions& 
         painter->setColor(backgroungColor);
         painter->setReverse(true);
     } else {
-        painter->setColor(ColorYellow );
+        painter->setColor(ColorYellow);
         painter->clearLine(options.rect.y());
     }
 

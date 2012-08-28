@@ -179,6 +179,7 @@ void MedialibBrowser::paint(const Rectangle& rect)
     const int songsListViewCols = cols() - artistsListViewCols - albumsListViewCols - 2;
 
     Painter painter(this);
+    painter.setColor(ColorWhite);
     painter.clearLine();
     painter.printString("Artists:");
     painter.move(artistsListViewCols + 1, 0);

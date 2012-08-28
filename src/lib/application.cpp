@@ -100,22 +100,6 @@ Application::Application(bool useColors) : d(new ApplicationPrivate())
     if (has_colors() && useColors) {
         start_color();
         use_default_colors();
-
-        std::map<int, std::pair<int, int>> colorPairs =
-        {
-            {ColorBlack,   {COLOR_BLACK,   -1}},
-            {ColorRed,     {COLOR_RED,     -1}},
-            {ColorGreen,   {COLOR_GREEN,   -1}},
-            {ColorYellow,  {COLOR_YELLOW,  -1}},
-            {ColorBlue,    {COLOR_BLUE,    -1}},
-            {ColorMagenta, {COLOR_MAGENTA, -1}},
-            {ColorCyan,    {COLOR_CYAN,    -1}},
-            {ColorWhite,   {COLOR_WHITE,   -1}},
-        };
-
-        for (auto it = colorPairs.begin(), end = colorPairs.end(); it != end; ++it) {
-            init_pair((*it).first, (*it).second.first, (*it).second.second);
-        }
     }
 
     //Install signal handler

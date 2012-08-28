@@ -21,7 +21,9 @@ namespace ncxmms2 {
 
 enum Color
 {
-    ColorBlack = 1,
+    ColorDefault,
+
+    ColorBlack,
     ColorRed,
     ColorGreen,
     ColorYellow,

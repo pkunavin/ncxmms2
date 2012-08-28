@@ -18,6 +18,10 @@
 #define PAINTER_P_H
 
 #include <curses.h>
+#include <stdint.h>
+#include <map>
+
+#include "colors.h"
 
 namespace ncxmms2 {
 
@@ -30,8 +34,16 @@ public:
         window(window_),
         cursesWin(cursesWin_) {}
 
+    Color color;
+    Color backgroundColor;
+
     Window *window;
     WINDOW *cursesWin;
+
+    static int colorPairsNumber;
+    static std::map<uint32_t, int> colorPairsMap;
+    static int getColorPair(Color foreground, Color background);
+    static int getCursesColor(Color color);
 };
 } // ncxmss2
 

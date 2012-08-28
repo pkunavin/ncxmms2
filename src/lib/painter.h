@@ -40,6 +40,8 @@ public:
     void clearWindow();
     void setBold(bool bold);
     void setColor(Color color);
+    void setBackgroundColor(Color color);
+    void setColorPair(Color foreground, Color background);
 
     void printChar(char ch);
     void printChar(wchar_t ch);

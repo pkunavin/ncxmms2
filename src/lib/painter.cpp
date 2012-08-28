@@ -26,6 +26,44 @@
 
 using namespace ncxmms2;
 
+int PainterPrivate::colorPairsNumber = 1;
+
+std::map<uint32_t, int> PainterPrivate::colorPairsMap;
+
+int PainterPrivate::getColorPair(Color foreground, Color background)
+{
+    const uint32_t pairKey = background + ((foreground << 16) & 0xFFFF0000);
+
+    auto it = colorPairsMap.find(pairKey);
+    if (it != colorPairsMap.end())
+        return it->second;
+
+    if (colorPairsNumber >= COLOR_PAIRS)
+        throw std::runtime_error("Painter: Can't create color pair: no empty pairs left!");
+
+    colorPairsMap[pairKey] = colorPairsNumber;
+    init_pair(colorPairsNumber, getCursesColor(foreground), getCursesColor(background));
+    return colorPairsNumber++;
+}
+
+int PainterPrivate::getCursesColor(Color color)
+{
+    switch (color) {
+        case ColorDefault: return -1;
+        case ColorBlack:   return COLOR_BLACK;
+        case ColorRed:     return COLOR_RED;
+        case ColorGreen:   return COLOR_GREEN;
+        case ColorYellow:  return COLOR_YELLOW;
+        case ColorBlue:    return COLOR_BLUE;
+        case ColorMagenta: return COLOR_MAGENTA;
+        case ColorCyan:    return COLOR_CYAN;
+        case ColorWhite:   return COLOR_WHITE;
+        default:
+            assert(false);
+            return -1;
+    }
+}
+
 Painter::Painter(Window *window)
 {
     assert(!window->isHidden());
@@ -42,6 +80,8 @@ Painter::Painter(Window *window)
     wmove(d->cursesWin, 0, 0);
     wbkgdset(d->cursesWin, A_NORMAL);
     wattrset(d->cursesWin, A_NORMAL);
+
+    setColorPair(ColorYellow, ColorBlack); // TODO: Use colors from palette
 }
 
 Painter::~Painter()
@@ -69,7 +109,7 @@ void Painter::clearLine(int line)
 void Painter::fillLine(int line, ncxmms2::Color color)
 {
     auto bg = getbkgd(d->cursesWin);
-    wbkgdset(d->cursesWin, A_REVERSE | COLOR_PAIR(color));
+    wbkgdset(d->cursesWin, A_REVERSE | COLOR_PAIR(PainterPrivate::getColorPair(color, d->backgroundColor)));
     wmove(d->cursesWin, line, 0);
     wclrtoeol(d->cursesWin);
     wbkgdset(d->cursesWin, bg);
@@ -98,10 +138,26 @@ void Painter::setBold(bool bold)
     }
 }
 
-void Painter::setColor(ncxmms2::Color color)
+void Painter::setColor(Color color)
 {
-    wattron(d->cursesWin, COLOR_PAIR(color));
-    wbkgdset(d->cursesWin, COLOR_PAIR(color));
+    d->color = color;
+    wattron(d->cursesWin, COLOR_PAIR(PainterPrivate::getColorPair(d->color, d->backgroundColor)));
+    wbkgdset(d->cursesWin, COLOR_PAIR(PainterPrivate::getColorPair(d->color, d->backgroundColor)));
+}
+
+void Painter::setBackgroundColor(Color color)
+{
+    d->backgroundColor = color;
+    wattron(d->cursesWin, COLOR_PAIR(PainterPrivate::getColorPair(d->color, d->backgroundColor)));
+    wbkgdset(d->cursesWin, COLOR_PAIR(PainterPrivate::getColorPair(d->color, d->backgroundColor)));
+}
+
+void Painter::setColorPair(Color foreground, Color background)
+{
+    d->color = foreground;
+    d->backgroundColor = background;
+    wattron(d->cursesWin, COLOR_PAIR(PainterPrivate::getColorPair(d->color, d->backgroundColor)));
+    wbkgdset(d->cursesWin, COLOR_PAIR(PainterPrivate::getColorPair(d->color, d->backgroundColor)));
 }
 
 void Painter::printChar(char ch)
@@ -219,3 +275,4 @@ int Painter::y() const
 {
     return getcury(d->cursesWin);
 }
+

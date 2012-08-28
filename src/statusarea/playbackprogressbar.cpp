@@ -47,6 +47,7 @@ void PlaybackProgressBar::paint(const Rectangle& rect)
     NCXMMS2_UNUSED(rect);
 
     Painter painter(this);
+    painter.setColor(ColorWhite);
     painter.drawHLine(0, 0, cols());
     if (m_maxValue > 0) {
         const int pos = ((double)m_value / (double)m_maxValue) * cols();

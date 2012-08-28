@@ -125,7 +125,6 @@ void TextView::paint(const Rectangle& rect)
     NCXMMS2_UNUSED(rect);
 
     Painter painter(this);
-    painter.setColor(ColorYellow);
 
     if (!d->textLines.empty()) {
         const int lastLine = std::min(d->viewportBeginLine + lines(), d->viewportEndLine);

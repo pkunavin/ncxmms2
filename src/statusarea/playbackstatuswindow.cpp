@@ -86,6 +86,7 @@ void PlaybackStatusWindow::paint(const Rectangle& rect)
     NCXMMS2_UNUSED(rect);
 
     Painter painter(this);
+    painter.setColor(ColorWhite);
     painter.clearLine(0);
 
     painter.setBold(true);
