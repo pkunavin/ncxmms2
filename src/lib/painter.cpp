@@ -101,6 +101,7 @@ void Painter::setBold(bool bold)
 void Painter::setColor(ncxmms2::Color color)
 {
     wattron(d->cursesWin, COLOR_PAIR(color));
+    wbkgdset(d->cursesWin, COLOR_PAIR(color));
 }
 
 void Painter::printChar(char ch)
