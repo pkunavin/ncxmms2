@@ -38,11 +38,14 @@ class ApplicationPrivate
 {
 public:
     ApplicationPrivate() :
+        useColors(true),
         mainLoop(nullptr),
         termKey(nullptr),
         termKeyReadTimeoutId(0),
         mainWindow(nullptr),
         grabbedFocusWindow(nullptr) {}
+
+    bool useColors;
 
     GMainLoop *mainLoop;
 
@@ -97,6 +100,7 @@ Application::Application(bool useColors) : d(new ApplicationPrivate())
     curs_set(FALSE);
     raw();
 
+    d->useColors = useColors;
     if (has_colors() && useColors) {
         start_color();
         use_default_colors();
@@ -143,6 +147,12 @@ void Application::releaseFocus()
 {
     CHECK_INST;
     inst->d->grabbedFocusWindow = nullptr;
+}
+
+bool Application::useColors()
+{
+    CHECK_INST;
+    return inst->d->useColors;
 }
 
 Size Application::terminalSize()

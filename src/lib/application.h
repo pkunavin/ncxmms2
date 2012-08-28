@@ -36,6 +36,7 @@ public:
     static void grabFocus(Window *window);
     static void releaseFocus();
 
+    static bool useColors();
     static Size terminalSize();
 
 private:

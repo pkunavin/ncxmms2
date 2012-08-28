@@ -21,6 +21,7 @@
 
 #include "painter.h"
 #include "painter_p.h"
+#include "application.h"
 #include "window.h"
 #include "window_p.h"
 
@@ -32,6 +33,9 @@ std::map<uint32_t, int> PainterPrivate::colorPairsMap;
 
 int PainterPrivate::getColorPair(Color foreground, Color background)
 {
+    if (G_UNLIKELY(!Application::useColors()))
+        return 0;
+
     const uint32_t pairKey = background + ((foreground << 16) & 0xFFFF0000);
 
     auto it = colorPairsMap.find(pairKey);
