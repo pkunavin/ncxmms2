@@ -18,8 +18,8 @@
 #define SETTINGS_H
 
 #include <string>
-
-typedef struct _GKeyFile GKeyFile;
+#include <utility>
+#include "lib/iniparser.h"
 
 namespace ncxmms2 {
 
@@ -27,17 +27,17 @@ class Settings
 {
 public:
 
-    template<class T>
-    static T value(const std::string& group, const std::string& key, T defaultValue = T())
+    template <class T>
+    static T value(const std::string& group, const std::string& key, T&& defaultValue = T())
     {
-        instance().getValue(group, key, &defaultValue);
-        return defaultValue;
+        return instance().m_iniParser.value<T>(group, key, std::forward<T>(defaultValue));
     }
 
-
-    static void setValue(const std::string& group, const std::string& key, int value);
-    static void setValue(const std::string& group, const std::string& key, const std::string& value);
-    static void setValue(const std::string& group, const std::string& key, bool value);
+    template <class T>
+    static void setValue(const std::string& group, const std::string& key, T&& value)
+    {
+        instance().m_iniParser.setValue(group, key, std::forward<T>(value));
+    }
 
 private:
     static Settings& instance()
@@ -51,12 +51,7 @@ private:
     Settings(const Settings& other);
     Settings& operator=(const Settings& other);
 
-    void getValue(const std::string& group, const std::string& key, int *value);
-    void getValue(const std::string& group, const std::string& key, std::string *value);
-    void getValue(const std::string& group, const std::string& key, bool *value);
-
-    GKeyFile *m_configFile;
-    std::string m_configFilePath;
+    IniParser m_iniParser;
 };
 } // ncxmms2
 
