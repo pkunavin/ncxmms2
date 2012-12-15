@@ -59,6 +59,7 @@ StatusArea::StatusArea(Xmms::Client *client, int xPos, int yPos, int cols, Windo
     });
     m_stackedWindow->setFocus();
     m_stackedWindow->setCurrentIndex(StackedPlaybackStatusWindow);
+    m_stackedWindow->window(StackedMessageWindow)->loadPalette("StatusMessageWindow");
 
     m_playbackProgressBar = new PlaybackProgressBar(0, 0, cols, this);
     auto *playbackStatusWin = static_cast<PlaybackStatusWindow*>(m_stackedWindow->window(StackedPlaybackStatusWindow));

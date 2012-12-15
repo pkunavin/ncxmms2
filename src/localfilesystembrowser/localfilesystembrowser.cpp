@@ -41,6 +41,8 @@ LocalFileSystemBrowser::LocalFileSystemBrowser(Xmms::Client *xmmsClient,
     m_xmmsClient(xmmsClient),
     m_currentDir("/")
 {
+    loadPalette("LocalFileSystemBrowser");
+
     FileSystemModel *fsModel = new FileSystemModel(this);
     setModel(fsModel);
     setItemDelegate(new FileSystemItemDelegate(fsModel));

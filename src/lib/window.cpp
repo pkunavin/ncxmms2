@@ -23,6 +23,7 @@
 #include "size.h"
 #include "rectangle.h"
 #include "exceptions.h"
+#include "application.h"
 
 using namespace ncxmms2;
 
@@ -39,6 +40,8 @@ Window::Window(const Rectangle& rect, Window *parent) :
     } else {
         d->cursesWin = newwin(rect.lines(), rect.cols(), rect.y(), rect.x());
     }
+
+    loadPalette("Window");
 }
 
 int Window::cols() const
@@ -191,6 +194,28 @@ bool Window::hasFocus() const
         return true;
 
     return d->parent->d->focusedWindow == this;
+}
+
+void Window::setPalette(const std::shared_ptr<Palette>& palette)
+{
+    d->palette = palette;
+}
+
+const Palette& Window::palette() const
+{
+    return *(d->palette);
+}
+
+void Window::loadPalette(const std::string&                className,
+                         const std::map<std::string, int>& userRolesMap)
+{
+    std::shared_ptr<Palette> newPalette = Application::getPalette(className,
+                                                                  d->palette,
+                                                                  userRolesMap);
+    if (newPalette)
+        d->palette = newPalette;
+
+    assert(d->palette);
 }
 
 void Window::keyPressedEvent(const KeyEvent& keyEvent)

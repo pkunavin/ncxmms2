@@ -18,7 +18,9 @@
 #include "filesystemmodel.h"
 
 #include "../lib/painter.h"
+#include "../lib/palette.h"
 #include "../lib/listitempaintoptions.h"
+#include "../lib/application.h"
 
 using namespace ncxmms2;
 
@@ -29,14 +31,23 @@ FileSystemItemDelegate::FileSystemItemDelegate(const FileSystemModel *fsModel) :
 
 void FileSystemItemDelegate::paint(Painter *painter, const ListItemPaintOptions &options, int item)
 {
-    // TODO: use colors from color scheme
+    const Palette *palette = options.palette;
+    const Palette::ColorGroup colorGroup = options.hasFocus
+                                           ? Palette::GroupActive
+                                           : Palette::GroupInactive;
+
     if (options.state == ListItemStateCurrent) {
-        const Color backgroungColor = options.hasFocus ? ColorYellow : ColorWhite;
-        painter->fillLine(options.rect.y(), backgroungColor);
-        painter->setColor(backgroungColor);
-        painter->setReverse(true);
+        if (Application::useColors()) {
+            painter->setColorPair(palette->color(colorGroup, Palette::RoleSelectedText),
+                                  palette->color(colorGroup, Palette::RoleSelection));
+            painter->clearLine(options.rect.y());
+        } else {
+            painter->fillLine(options.rect.y(), ColorBlack);
+            painter->setColor(ColorBlack);
+            painter->setReverse(true);
+        }
     } else {
-        painter->setColor(ColorYellow);
+        painter->setColor(palette->color(colorGroup, Palette::RoleText));
         painter->clearLine(options.rect.y());
     }
 

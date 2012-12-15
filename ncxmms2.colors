@@ -1,0 +1,147 @@
+//               ncxmms2 color scheme file
+//   This file is typically stored in /usr/share/ncxmms2 (according to INSTALL_PREFIX)
+// and provides default system wide color settinngs for xmms2. Of course, you can
+// modify it, but it is much better to copy this file into ncxmms2 user config
+// directory (typically ~/.config/ncxmms2) and use it as a starting point.
+//   You can set colors for any window class. Any window class can be in two states:
+// "Active" or "Inactive" (having or not having input focus). Colors are setted via
+// roles. Standart roles are:
+//   "Text" - text color
+//   "Background" - background color
+//   "Selection" - selection color
+//   "SelectedText" - text color under selection
+// For custom window classes special roles can be provided.
+//   For each role yuu can use one of the following colors:
+// "Black", "Red", "Green", "Yellow", "Blue", "Magenta", "Cyan", "White".
+// Maybe one day ncxmms2 will have 256 colors support...
+//   It's worth to mention, that you don't have to change all roles in some
+// window class, because they are inherited from base window class.
+{
+   "Window":
+    {
+        "Active":
+        {
+            "Text"         : "Yellow",
+            "Background"   : "Black",
+            "Selection"    : "Yellow",
+            "SelectedText" : "Black"
+        },
+        
+        "Inactive":
+        {
+            "Text"         : "Yellow",
+            "Background"   : "Black",
+            "Selection"    : "White",
+            "SelectedText" : "Black"
+        }
+    },
+    
+    "HeaderWindow":
+    {
+        "Active":
+        {
+            "Text" : "White"
+        },
+        
+        "Inactive":
+        {
+            "Text" : "White"
+        }
+    },
+    
+    "PlaybackProgressBar":
+    {
+        "Active":
+        {
+            "Text" : "White"
+        },
+        
+        "Inactive":
+        {
+            "Text" : "White"
+        }
+    },
+    
+    "PlaybackStatusWindow":
+    {
+        "Active":
+        {
+            "Text" : "White"
+        },
+        
+        "Inactive":
+        {
+            "Text" : "White"
+        }
+    },
+    
+    "QuestionWindow":
+    {
+        "Active":
+        {
+            "Text" : "White"
+        },
+        
+        "Inactive":
+        {
+            "Text" : "White"
+        }
+    },
+    
+    "StatusMessageWindow":
+    {
+        "Active":
+        {
+            "Text" : "White"
+        },
+        
+        "Inactive":
+        {
+            "Text" : "White"
+        }
+    },
+    
+    "MedialibBrowser":
+    {
+        "Active":
+        {
+            "Text" : "White"
+        },
+        
+        "Inactive":
+        {
+            "Text" : "White"
+        }
+    },
+    
+    "PlaylistsBrowser":
+    {
+        "Active":
+        {
+            "Text" : "White"
+        },
+        
+        "Inactive":
+        {
+            "Text" : "White"
+        }
+    },
+    
+    "PlaylistView":
+    {
+        "Active":
+        {
+            // Temporary roles, full featured display format setting coming soon...
+            "Artist"   : "Yellow",
+            "Title"    : "Yellow",
+            "Duration" : "Green"
+        },
+        
+        "Inactive":
+        {
+            "Artist"   : "Yellow",
+            "Title"    : "Yellow",
+            "Duration" : "Green"
+        }
+    }
+}

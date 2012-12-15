@@ -33,7 +33,7 @@ Label::Label(int xPos, int yPos, int cols, Window *parent) :
     Window(Rectangle(xPos, yPos, cols, 1), parent),
     d(new LabelPrivate())
 {
-
+    loadPalette("Label");
 }
 
 void Label::paint(const Rectangle& rect)

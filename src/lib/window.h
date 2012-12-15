@@ -26,6 +26,7 @@ class Point;
 class Size;
 class WindowPrivate;
 class Rectangle;
+class Palette;
 
 class Window : public Object
 {
@@ -70,6 +71,12 @@ public:
 
     void setFocus();
     bool hasFocus() const;
+
+    void setPalette(const std::shared_ptr<Palette>& palette);
+    const Palette& palette() const;
+
+    void loadPalette(const std::string& className,
+                     const std::map<std::string, int>& userRolesMap = std::map<std::string, int>());
 
 protected:
     virtual void paint(const Rectangle& rect);

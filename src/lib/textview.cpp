@@ -52,7 +52,7 @@ TextView::TextView(const Rectangle& rect, Window *parent) :
     Window(rect, parent),
     d(new TextViewPrivate(this))
 {
-
+    loadPalette("TextView");
 }
 
 TextView::~TextView()

@@ -24,11 +24,13 @@
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
 #include "application.h"
 #include "window.h"
 #include "keyevent.h"
-#include "colors.h"
+#include "palette.h"
 
 #include "../../3rdparty/libtermkey/termkey.h"
 
@@ -61,6 +63,12 @@ public:
 
     Window *mainWindow;
     Window *grabbedFocusWindow;
+
+    boost::property_tree::ptree colorSchemeTree;
+    std::map<std::string, std::shared_ptr<Palette>> paletteMap;
+    void parseColorSchemeTree(const boost::property_tree::ptree&  colorSchemeTree,
+                              Palette                            *palette,
+                              const std::map<std::string, int>&   rolesMap);
 };
 } // ncxmms2
 
@@ -68,10 +76,13 @@ using namespace ncxmms2;
 
 Application *Application::inst = nullptr;
 
-#define CHECK_INST if (!inst) { \
-                       throw std::logic_error(std::string(__PRETTY_FUNCTION__) \
-                                    .append(": There is no instance of application!")); \
-                    } \
+#define CHECK_INST                                                                     \
+    do {                                                                               \
+        if (!inst) {                                                                   \
+            throw std::logic_error(std::string(__PRETTY_FUNCTION__)                    \
+                                   .append(": There is no instance of application!")); \
+        }                                                                              \
+    } while (0)
 
 void Application::init(bool useColors)
 {
@@ -158,6 +169,105 @@ bool Application::useColors()
 Size Application::terminalSize()
 {
     return Size(COLS, LINES);
+}
+
+void Application::setColorSchemeFile(const std::string& file)
+{
+    CHECK_INST;
+    try
+    {
+        boost::property_tree::json_parser::read_json(file, inst->d->colorSchemeTree);
+    }
+    catch (const boost::property_tree::json_parser::json_parser_error& error)
+    {
+        throw std::runtime_error(
+                std::string("Parsing color scheme file failed: ").append(error.what())
+              );
+    }
+}
+
+std::shared_ptr<Palette> Application::getPalette(const std::string&                className,
+                                                 const std::shared_ptr<Palette>&   oldPalette,
+                                                 const std::map<std::string, int>& userRolesMap)
+{
+    CHECK_INST;
+    ApplicationPrivate *p = inst->d.get();
+
+    auto it = p->paletteMap.find(className);
+    if (it != p->paletteMap.end()) // Already have palette in map
+        return it->second;         // no need to parse color scheme again
+
+    const auto classPalette = p->colorSchemeTree.find(className);
+    if (classPalette == p->colorSchemeTree.not_found()) {
+        if (oldPalette)                        // Return empty ptr, if we have no custom
+            return std::shared_ptr<Palette>(); // palette
+
+        std::shared_ptr<Palette> palette = std::make_shared<Palette>(); // This is a special
+        p->paletteMap[className] = palette;                             // case where Window
+        return palette;                                                 // gets it initial palette
+    }
+
+    // At this point we have custom palette, old palette is used as initial (custom palette doesn't
+    // have to change all roles) or creat new if emtpty pointer is passed
+    std::shared_ptr<Palette> palette = oldPalette
+                                       ? std::make_shared<Palette>(*oldPalette)
+                                       : std::make_shared<Palette>();
+    p->paletteMap[className] = palette;
+
+    static const std::map<std::string, int> standartRolesMap =
+    {
+        {"Text",         Palette::RoleText},
+        {"Background",   Palette::RoleBackground},
+        {"Selection",    Palette::RoleSelection},
+        {"SelectedText", Palette::RoleSelectedText}
+    };
+    p->parseColorSchemeTree(classPalette->second, palette.get(), standartRolesMap);
+    p->parseColorSchemeTree(classPalette->second, palette.get(), userRolesMap);
+
+    return palette;
+}
+
+void ApplicationPrivate::parseColorSchemeTree(const boost::property_tree::ptree&  colorSchemeTree,
+                                              Palette                            *palette,
+                                              const std::map<std::string, int>&   rolesMap)
+{
+    static const struct PaletteGroup {const char *name; int group;} paletteGroupes[] =
+    {
+        {"Active",   Palette::GroupActive},
+        {"Inactive", Palette::GroupInactive},
+        {nullptr, -1}
+    };
+
+    static const std::map<std::string, Color> colorNamesMap =
+    {
+        {"Black",   ColorBlack},
+        {"Red",     ColorRed},
+        {"Green",   ColorGreen},
+        {"Yellow",  ColorYellow},
+        {"Blue",    ColorBlue},
+        {"Magenta", ColorMagenta},
+        {"Cyan",    ColorCyan},
+        {"White",   ColorWhite}
+    };
+
+    const PaletteGroup *paletteGroup = paletteGroupes;
+    while (paletteGroup->name) {
+        std::string key(paletteGroup->name);
+        key.push_back('.');
+        const size_t keyStrSize = key.size();
+        for (auto roleIt = rolesMap.begin(), roleItEnd = rolesMap.end(); roleIt != roleItEnd; ++roleIt) {
+            key.resize(keyStrSize);
+            key.append(roleIt->first);
+            std::string colorName = colorSchemeTree.get(key, std::string());
+            auto it = colorNamesMap.find(colorName);
+            if (it != colorNamesMap.end()) {
+                palette->setColor((Palette::ColorGroup)paletteGroup->group,
+                                  roleIt->second,
+                                  it->second);
+            }
+        }
+        ++paletteGroup;
+    }
 }
 
 gboolean ApplicationPrivate::stdinEvent(GIOChannel *iochan, GIOCondition cond, gpointer data)

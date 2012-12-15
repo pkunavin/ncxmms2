@@ -24,6 +24,7 @@ using namespace ncxmms2;
 HeaderWindow::HeaderWindow(int xPos, int yPos, int cols, Window *parent) :
     Window(Rectangle(xPos, yPos, cols, LinesNumber), parent)
 {
+    loadPalette("HeaderWindow");
     setMinumumLines(LinesNumber);
     setMaximumLines(LinesNumber);
 }
@@ -39,7 +40,6 @@ void HeaderWindow::paint(const Rectangle& rect)
     NCXMMS2_UNUSED(rect);
 
     Painter painter(this);
-    painter.setColor(ColorWhite);
     painter.clearLine();
     painter.setBold(true);
     painter.squeezedPrint(m_headerTitle, cols());

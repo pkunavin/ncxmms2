@@ -27,8 +27,9 @@ QuestionWindow::QuestionWindow(int xPos, int yPos, int cols, Window *parent) :
 {
     setMinumumLines(1);
     setMaximumLines(1);
-
+    loadPalette("QuestionWindow");
     m_answerEdit = new LineEdit(0, 0, cols, this);
+    m_answerEdit->loadPalette("QuestionWindow");
 }
 
 void QuestionWindow::askQuestion(const std::string &question,

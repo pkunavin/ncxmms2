@@ -1,0 +1,6 @@
+#ifndef CONFIG_H_IN
+#define CONFIG_H_IN
+
+#define CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
+
+#endif // CONFIG_H_IN

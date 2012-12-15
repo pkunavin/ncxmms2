@@ -79,6 +79,7 @@ ListView::ListView(const Rectangle& rect, Window *parent) :
     Window(rect, parent),
     d(new ListViewPrivate(this))
 {
+    loadPalette("ListView");
     d->hideSelectionTimer.timeout_Connect(&ListView::hideCurrentItem, this);
 }
 
@@ -266,6 +267,7 @@ void ListView::paint(const Rectangle &rect)
     if (G_LIKELY(d->model)) {
         int item = rect.y() + d->viewportBeginItem;
         const int lastItem = std::min(item + rect.lines(), d->viewportEndItem);
+        const Palette *_palette = &palette();
         const bool focused = hasFocus();
 
         for (; item < lastItem; ++item) {
@@ -273,7 +275,8 @@ void ListView::paint(const Rectangle &rect)
                                         ? ListItemStateCurrent
                                         : ListItemStateRegular;
 
-            const ListItemPaintOptions options(Rectangle(0, d->itemLine(item), cols(), 1),
+            const ListItemPaintOptions options(_palette,
+                                               Rectangle(0, d->itemLine(item), cols(), 1),
                                                state,
                                                focused);
 

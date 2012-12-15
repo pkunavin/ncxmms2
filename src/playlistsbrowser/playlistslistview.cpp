@@ -31,6 +31,7 @@ PlaylistsListView::PlaylistsListView(Xmms::Client *xmmsClient, const Rectangle& 
     ListView(rect, parent),
     m_xmmsClient(xmmsClient)
 {
+    loadPalette("PlaylistsListView");
     setModel(new PlaylistsListModel(xmmsClient, this));
     itemEntered_Connect(&PlaylistsListView::loadPlaylist, this);
 }

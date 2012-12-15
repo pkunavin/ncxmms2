@@ -20,6 +20,7 @@
 #include <curses.h>
 #include <vector>
 #include <limits>
+#include <memory>
 
 #include "point.h"
 #include "size.h"
@@ -28,6 +29,7 @@
 namespace ncxmms2 {
 
 class Window;
+class Palette;
 
 class WindowPrivate
 {
@@ -42,7 +44,7 @@ public:
         maximumSize(std::numeric_limits<int>::max(), std::numeric_limits<int>::max()),
         isVisible(true),
         painterPrivate(nullptr, nullptr),
-        isPainterPrivateAlreadyInUse(false){}
+        isPainterPrivateAlreadyInUse(false) {}
 
     WINDOW *cursesWin;
     Window *parent;
@@ -61,6 +63,8 @@ public:
 
     PainterPrivate painterPrivate;
     bool isPainterPrivateAlreadyInUse;
+
+    std::shared_ptr<Palette> palette;
 
     void checkSize(const Size& size);
 };

@@ -14,49 +14,47 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef LOG_H
-#define LOG_H
+#ifndef PALETTE_H
+#define PALETTE_H
 
-#include <cstdio>
+#include <vector>
+#include "colors.h"
 
 namespace ncxmms2 {
 
-class Log
+class Palette
 {
 public:
-    static void logPrintf(const char *format, ...)
-#ifdef __GNUC__
-    __attribute__((format (printf, 1, 2)))
-#endif
-;
+    Palette();
 
-    static void debugPrintf(const char *format, ...)
-#ifdef __GNUC__
-    __attribute__((format (printf, 1, 2)))
-#endif
-;
+    enum ColorGroup
+    {
+        GroupActive,
+        GroupInactive,
+
+        ColorGroupsNumber
+    };
+
+    enum ColorRole
+    {
+        RoleText,
+        RoleBackground,
+        RoleSelection,
+        RoleSelectedText,
+
+        RoleUser
+    };
+
+    Color color(ColorGroup group, int role) const;
+    Color color(ColorGroup group, int role, Color defaultColor) const;
+    bool hasColor(ColorGroup group, int role) const;
+
+    void setColor(ColorGroup group, int role, Color color);
 
 private:
-    Log();
-    Log(const Log&);
-    Log& operator=(const Log&);
-    ~Log();
-
-    static Log& instance()
-    {
-        static Log inst;
-        return inst;
-    }
-
-    std::FILE *m_logFile;
+    std::vector<Color> m_colors;
 };
+
 } // ncxmms2
 
-#define NCXMMS2_LOG(...) ncxmms2::Log::logPrintf(__VA_ARGS__)
-#ifndef NDEBUG
-#define NCXMMS2_DEBUG(...) ncxmms2::Log::debugPrintf(__VA_ARGS__)
-#else
-#define NCXMMS2_DEBUG(...)
-#endif
-
-#endif // LOG_H
+#endif // PALETTE_H

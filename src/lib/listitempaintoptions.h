@@ -21,6 +21,8 @@
 
 namespace ncxmms2 {
 
+class Palette;
+
 enum ListItemState
 {
     ListItemStateRegular,
@@ -30,11 +32,16 @@ enum ListItemState
 class ListItemPaintOptions
 {
 public:
-    ListItemPaintOptions(const Rectangle& _rect, ListItemState _state, bool _hasFocus) :
+    ListItemPaintOptions(const Palette    *_palette,
+                         const Rectangle&  _rect,
+                         ListItemState     _state,
+                         bool              _hasFocus) :
+        palette(_palette),
         rect(_rect),
         state(_state),
         hasFocus(_hasFocus){}
 
+    const Palette *palette;
     Rectangle rect;
     ListItemState state;
     bool hasFocus;

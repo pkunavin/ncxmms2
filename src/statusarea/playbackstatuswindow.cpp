@@ -30,6 +30,7 @@ PlaybackStatusWindow::PlaybackStatusWindow(Xmms::Client *client, int xPos, int y
     m_playbackStatus(Xmms::Playback::STOPPED),
     m_playbackPlaytime(0)
 {
+    loadPalette("PlaybackStatusWindow");
     setMinumumLines(1);
     setMaximumLines(1);
     setMinumumCols(strlen("[Stopped] ...[xx::xx::xx/xx::xx::xx]"));
@@ -86,7 +87,6 @@ void PlaybackStatusWindow::paint(const Rectangle& rect)
     NCXMMS2_UNUSED(rect);
 
     Painter painter(this);
-    painter.setColor(ColorWhite);
     painter.clearLine(0);
 
     painter.setBold(true);

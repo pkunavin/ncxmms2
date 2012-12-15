@@ -78,6 +78,10 @@ set(HEADERS
     medialibbrowser/albumslistmodel.h
     medialibbrowser/songslistmodel.h)
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
+               ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+include_directories(${CMAKE_BINARY_DIR}/src)
+
 add_executable(ncxmms2 ${SOURCES})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -Wextra")
@@ -102,3 +106,4 @@ target_link_libraries(ncxmms2 ncxmms2-lib
                               ${XMMS2_CPP_GLIB_LIBRARIES})
 
 install (TARGETS ncxmms2 DESTINATION bin)
+

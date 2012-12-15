@@ -138,7 +138,7 @@ LineEdit::LineEdit(int xPos, int yPos, int cols, Window *parent) :
     Window(Rectangle(xPos, yPos, cols, 1), parent),
     d(new LineEditPrivate(this))
 {
-
+    loadPalette("LineEdit");
 }
 
 void LineEdit::edit(const ResultCallback& resultCallback, const std::string& text)

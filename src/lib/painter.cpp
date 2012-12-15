@@ -24,6 +24,7 @@
 #include "application.h"
 #include "window.h"
 #include "window_p.h"
+#include "palette.h"
 
 using namespace ncxmms2;
 
@@ -85,7 +86,12 @@ Painter::Painter(Window *window)
     wbkgdset(d->cursesWin, A_NORMAL);
     wattrset(d->cursesWin, A_NORMAL);
 
-    setColorPair(ColorYellow, ColorBlack); // TODO: Use colors from palette
+    const Palette& palette = window->palette();
+    const Palette::ColorGroup colorGroup = window->hasFocus()
+                                           ? Palette::GroupActive
+                                           : Palette::GroupInactive;
+    setColorPair(palette.color(colorGroup, Palette::RoleText),
+                 palette.color(colorGroup, Palette::RoleBackground));
 }
 
 Painter::~Painter()

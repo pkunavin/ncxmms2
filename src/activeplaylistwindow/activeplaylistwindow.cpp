@@ -41,6 +41,7 @@ ActivePlaylistWindow::ActivePlaylistWindow(Xmms::Client *xmmsClient, const Recta
     plsModel->totalDurationChanged_Connect(&ActivePlaylistWindow::updateWindowTitle, this);
 
     //Settings
+    loadPalette("ActivePlaylistWindow");
     m_autoScrollToActiveSong = Settings::value("ActivePlaylistScreen", "autoScrollToActiveSong", true);
 }
 

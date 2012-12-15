@@ -29,6 +29,7 @@ PlaylistsBrowser::PlaylistsBrowser(Xmms::Client *xmmsClient, const Rectangle& re
     Window(rect, parent)
 {
     setName("Playlists browser");
+    loadPalette("PlaylistsBrowser");
 
     const Rectangle plsListViewRect(0, 0, PlaylistsListViewCols, rect.lines());
     m_plsListView = new PlaylistsListView(xmmsClient, plsListViewRect, this);
@@ -50,7 +51,6 @@ void PlaylistsBrowser::paint(const Rectangle& rect)
     NCXMMS2_UNUSED(rect);
 
     Painter painter(this);
-    painter.setColor(ColorWhite);
     painter.drawVLine(PlaylistsListViewCols, 0, lines());
     painter.flush();
 }

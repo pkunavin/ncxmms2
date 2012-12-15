@@ -24,6 +24,8 @@ namespace ncxmms2 {
 
 class Window;
 class ApplicationPrivate;
+class ColorScheme;
+class Palette;
 
 class Application
 {
@@ -38,6 +40,12 @@ public:
 
     static bool useColors();
     static Size terminalSize();
+
+    static void setColorSchemeFile(const std::string& file);
+    static std::shared_ptr<Palette> getPalette(const std::string&                className,
+                                               const std::shared_ptr<Palette>&   oldPalette,
+                                               const std::map<std::string, int>& userRolesMap =
+                                                                    std::map<std::string, int>());
 
 private:
     Application(bool useColors);
