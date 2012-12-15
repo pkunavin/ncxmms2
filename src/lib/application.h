@@ -17,6 +17,7 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
+#include <map>
 #include <memory>
 #include "size.h"
 
