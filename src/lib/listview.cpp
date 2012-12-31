@@ -52,6 +52,8 @@ public:
 
     int itemLine(int item) const {return item - viewportBeginItem;}
 
+    std::vector<int> selectedItems;
+
     Timer hideSelectionTimer;
     bool currentItemHidden;
     unsigned int hideCurrentItemSelectionInterval;
@@ -69,6 +71,8 @@ public:
     void changeCurrentItem(int item);
     void scrollUp();
     void scrollDown();
+
+    void toggleSelection(int item);
 
 };
 } // ncxmms2
@@ -255,6 +259,27 @@ void ListView::setViewportFirstItem(int item)
     update();
 }
 
+const std::vector<int>& ListView::selectedItems() const
+{
+    return d->selectedItems;
+}
+
+bool ListView::isItemSelected(int item) const
+{
+    return std::binary_search(d->selectedItems.begin(), d->selectedItems.end(),
+                              item);
+}
+
+void ListView::clearSelection()
+{
+    if (!d->selectedItems.empty()) {
+        const int first = *d->selectedItems.begin();
+        const int last = *d->selectedItems.rbegin();
+        d->selectedItems.clear();
+        d->itemsChanged(first, last);
+    }
+}
+
 void ListViewPrivate::disconnectModel()
 {
     for (auto& connection : modelConnections) {
@@ -262,7 +287,7 @@ void ListViewPrivate::disconnectModel()
     }
 }
 
-void ListView::paint(const Rectangle &rect)
+void ListView::paint(const Rectangle& rect)
 {
     if (G_LIKELY(d->model)) {
         int item = rect.y() + d->viewportBeginItem;
@@ -271,13 +296,19 @@ void ListView::paint(const Rectangle &rect)
         const bool focused = hasFocus();
 
         for (; item < lastItem; ++item) {
-            const ListItemState state = item == d->currentItem && !d->currentItemHidden
-                                        ? ListItemStateCurrent
-                                        : ListItemStateRegular;
+            int stateFlags = ListItemStateRegular;
+            const bool selected = std::binary_search(d->selectedItems.begin(),
+                                                     d->selectedItems.end(),
+                                                     item);
+            if (selected)
+                stateFlags |= ListItemStateSelected;
+
+            if (item == d->currentItem && !d->currentItemHidden)
+                stateFlags |= ListItemStateCurrent;
 
             const ListItemPaintOptions options(_palette,
                                                Rectangle(0, d->itemLine(item), cols(), 1),
-                                               state,
+                                               stateFlags,
                                                focused);
 
             Painter painter(this);
@@ -330,6 +361,15 @@ void ListView::keyPressedEvent(const KeyEvent& keyEvent)
                 itemEntered(d->currentItem);
             break;
 
+        case KeyEvent::KeyInsert:
+            if (d->currentItem != -1 && !d->currentItemHidden)
+                d->toggleSelection(d->currentItem);
+
+            d->scrollDown();
+            if (d->hideCurrentItemSelectionInterval)
+                d->hideSelectionTimer.start(d->hideCurrentItemSelectionInterval);
+            break;
+
         default:
             break;
     }
@@ -380,6 +420,8 @@ void ListViewPrivate::reset()
 {
     const int itemsCount = model->itemsCount();
 
+    selectedItems.clear();
+
     if (itemsCount > 0) {
         changeCurrentItem(0);
         viewportBeginItem = 0;
@@ -425,6 +467,13 @@ void ListViewPrivate::itemInserted(int item)
     if (q->lines() >= itemsCount)
         viewportEndItem = itemsCount;
 
+    auto it = std::lower_bound(selectedItems.begin(), selectedItems.end(), item);
+    if (it != selectedItems.end()) {
+        std::for_each(it, selectedItems.end(), [](int& item){
+             ++item;
+        });
+    }
+
     itemsChanged(item, itemsCount - 1);
 }
 
@@ -438,6 +487,15 @@ void ListViewPrivate::itemRemoved(int item)
         /* Current item number is not changed, but items are moving,
     so information corresponding to the current item is changed */
         changeCurrentItem(currentItem);
+    }
+
+    auto it = std::lower_bound(selectedItems.begin(), selectedItems.end(), item);
+    if (it != selectedItems.end()) {
+        std::for_each(it, selectedItems.end(), [](int& item){
+             --item;
+        });
+        if (*it + 1 == item)
+            selectedItems.erase(it);
     }
 
     if (q->lines() > itemsCount) {
@@ -461,7 +519,28 @@ void ListViewPrivate::itemRemoved(int item)
 
 void ListViewPrivate::itemMoved(int from, int to)
 {
-    itemsChanged(std::min(from, to), std::max(from, to));
+    auto it = std::lower_bound(selectedItems.begin(), selectedItems.end(), from);
+    bool itemSelected = false;
+    if (it != selectedItems.end()) {
+        std::for_each(it, selectedItems.end(), [](int& item){
+             --item;
+        });
+        if (*it + 1 == from) {
+            selectedItems.erase(it);
+            itemSelected = true;
+        }
+    }
+
+    it = std::lower_bound(selectedItems.begin(), selectedItems.end(), to);
+    if (it != selectedItems.end()) {
+        std::for_each(it, selectedItems.end(), [](int& item){
+             ++item;
+        });
+    }
+    if (itemSelected)
+        selectedItems.insert(it, to);
+
+    q->update();
 }
 
 void ListViewPrivate::changeCurrentItem(int item)
@@ -503,4 +582,16 @@ void ListViewPrivate::scrollDown()
             q->update(Rectangle(0, itemLine(currentItem - 1), q->cols(), 2));
         }
     }
+}
+
+void ListViewPrivate::toggleSelection(int item)
+{
+    assert(item >= 0 && item < q->model()->itemsCount());
+    auto it = std::lower_bound(selectedItems.begin(), selectedItems.end(), item);
+    if (it != selectedItems.end() && *it == item) {
+        selectedItems.erase(it);
+    } else {
+        selectedItems.insert(it, item);
+    }
+    itemsChanged(item, item);
 }

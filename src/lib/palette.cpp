@@ -26,15 +26,17 @@ Palette::Palette()
     m_colors.reserve(ColorGroupsNumber * RoleUser);
 
     // Default colors
-    setColor(Palette::GroupActive, Palette::RoleText,           ColorYellow);
-    setColor(Palette::GroupActive, Palette::RoleBackground,     ColorBlack);
-    setColor(Palette::GroupActive, Palette::RoleSelection,      ColorCyan);
-    setColor(Palette::GroupActive, Palette::RoleSelectedText,   ColorBlack);
+    setColor(Palette::GroupActive, Palette::RoleText,            ColorYellow);
+    setColor(Palette::GroupActive, Palette::RoleBackground,      ColorBlack);
+    setColor(Palette::GroupActive, Palette::RoleSelection,       ColorMagenta);
+    setColor(Palette::GroupActive, Palette::RoleHighlight,       ColorCyan);
+    setColor(Palette::GroupActive, Palette::RoleHighlightedText, ColorBlack);
 
-    setColor(Palette::GroupInactive, Palette::RoleText,         ColorYellow);
-    setColor(Palette::GroupInactive, Palette::RoleBackground,   ColorBlack);
-    setColor(Palette::GroupInactive, Palette::RoleSelection,    ColorWhite);
-    setColor(Palette::GroupInactive, Palette::RoleSelectedText, ColorBlack);
+    setColor(Palette::GroupInactive, Palette::RoleText,            ColorYellow);
+    setColor(Palette::GroupInactive, Palette::RoleBackground,      ColorBlack);
+    setColor(Palette::GroupInactive, Palette::RoleSelection,       ColorMagenta);
+    setColor(Palette::GroupInactive, Palette::RoleHighlight,       ColorWhite);
+    setColor(Palette::GroupInactive, Palette::RoleHighlightedText, ColorBlack);
 }
 
 Color Palette::color(Palette::ColorGroup group, int role) const

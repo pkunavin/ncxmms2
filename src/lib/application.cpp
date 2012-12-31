@@ -216,10 +216,11 @@ std::shared_ptr<Palette> Application::getPalette(const std::string&             
 
     static const std::map<std::string, int> standartRolesMap =
     {
-        {"Text",         Palette::RoleText},
-        {"Background",   Palette::RoleBackground},
-        {"Selection",    Palette::RoleSelection},
-        {"SelectedText", Palette::RoleSelectedText}
+        {"Text",            Palette::RoleText},
+        {"Background",      Palette::RoleBackground},
+        {"Selection",       Palette::RoleSelection},
+        {"Highlight",       Palette::RoleHighlight},
+        {"HighlightedText", Palette::RoleHighlightedText}
     };
     p->parseColorSchemeTree(classPalette->second, palette.get(), standartRolesMap);
     p->parseColorSchemeTree(classPalette->second, palette.get(), userRolesMap);

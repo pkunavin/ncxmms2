@@ -40,7 +40,8 @@ public:
         RoleText,
         RoleBackground,
         RoleSelection,
-        RoleSelectedText,
+        RoleHighlight,
+        RoleHighlightedText,
 
         RoleUser
     };

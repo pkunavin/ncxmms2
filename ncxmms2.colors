@@ -8,8 +8,9 @@
 // roles. Standart roles are:
 //   "Text" - text color
 //   "Background" - background color
-//   "Selection" - selection color
-//   "SelectedText" - text color under selection
+//   "Selection" - color to indicate selected item
+//   "Highlight" - color to indicate current item
+//   "HighlightedText" - text color under highlighted current item
 // For custom window classes special roles can be provided.
 //   For each role yuu can use one of the following colors:
 // "Black", "Red", "Green", "Yellow", "Blue", "Magenta", "Cyan", "White".
@@ -21,18 +22,20 @@
     {
         "Active":
         {
-            "Text"         : "Yellow",
-            "Background"   : "Black",
-            "Selection"    : "Yellow",
-            "SelectedText" : "Black"
+            "Text"            : "Yellow",
+            "Background"      : "Black",
+            "Selection"       : "Magenta",
+            "Highlight"       : "Yellow"
+            "HighlightedText" : "Black"
         },
         
         "Inactive":
         {
-            "Text"         : "Yellow",
-            "Background"   : "Black",
-            "Selection"    : "White",
-            "SelectedText" : "Black"
+            "Text"            : "Yellow",
+            "Background"      : "Black",
+            "Selection"       : "Magenta",
+            "Highlight"       : "White"
+            "HighlightedText" : "Black"
         }
     },
     

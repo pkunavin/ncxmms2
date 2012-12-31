@@ -51,6 +51,11 @@ public:
 
     void setViewportFirstItem(int item);
 
+    // Returns sorted list of selected items
+    const std::vector<int>& selectedItems() const;
+    bool isItemSelected(int item) const;
+    void clearSelection();
+
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
     virtual void resize(const Size& size);
 

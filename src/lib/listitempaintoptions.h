@@ -23,10 +23,11 @@ namespace ncxmms2 {
 
 class Palette;
 
-enum ListItemState
+enum ListItemStateFlags
 {
-    ListItemStateRegular,
-    ListItemStateCurrent
+    ListItemStateRegular = 0x00000000,
+    ListItemStateCurrent = 0x00000001,
+    ListItemStateSelected = 0x00000002
 };
 
 class ListItemPaintOptions
@@ -34,7 +35,7 @@ class ListItemPaintOptions
 public:
     ListItemPaintOptions(const Palette    *_palette,
                          const Rectangle&  _rect,
-                         ListItemState     _state,
+                         int               _state,
                          bool              _hasFocus) :
         palette(_palette),
         rect(_rect),
@@ -43,7 +44,7 @@ public:
 
     const Palette *palette;
     Rectangle rect;
-    ListItemState state;
+    int state;
     bool hasFocus;
 };
 } // ncxmms2
