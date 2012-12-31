@@ -27,6 +27,11 @@ Hotkeys:
   Prev : <
   Seek forward : f
   Seek backward : b
+
+ ListView:
+  Move cursor up : up arrow
+  Move cursor down : down arrow
+  Toggle selection : insert
   
  Playlists browser:
   Create new playlist : n

@@ -49,7 +49,7 @@ MedialibBrowser::MedialibBrowser(Xmms::Client *xmmsClient, const Rectangle& rect
     m_artistsListView = new ListView(artistsListViewRect, this);
     m_artistsListView->setModel(new ArtistsListModel(xmmsClient, this));
     m_artistsListView->currentItemChanged_Connect(&MedialibBrowser::setAlbumsListViewArtist, this);
-    m_artistsListView->itemEntered_Connect(&MedialibBrowser::activePlaylistAddArtist, this); //TODO: Play artist
+    m_artistsListView->itemEntered_Connect(&MedialibBrowser::activePlaylistAddArtist, this,  _1, false); //TODO: Play artist
     m_activeListView = m_artistsListView;
     m_artistsListView->setFocus();
 
@@ -59,14 +59,14 @@ MedialibBrowser::MedialibBrowser(Xmms::Client *xmmsClient, const Rectangle& rect
     m_albumsListView = new ListView(albumsListViewRect, this);
     m_albumsListView->setModel(new AlbumsListModel(xmmsClient, this));
     m_albumsListView->currentItemChanged_Connect(&MedialibBrowser::setSongsListViewAlbum, this);
-    m_albumsListView->itemEntered_Connect(&MedialibBrowser::activePlaylistAddAlbum, this); //TODO: Play album
+    m_albumsListView->itemEntered_Connect(&MedialibBrowser::activePlaylistAddAlbum, this,  _1, false); //TODO: Play album
 
     const int songsListViewCols = cols() - artistsListViewCols - albumsListViewCols - 2;
     const Rectangle songsListViewRect(cols() - songsListViewCols, headerLines,
                                       songsListViewCols, lines() - headerLines);
     m_songsListView = new ListView(songsListViewRect, this);
     m_songsListView->setModel(new SongsListModel(xmmsClient, this));
-    m_songsListView->itemEntered_Connect(&MedialibBrowser::activePlaylistAddSong, this); //TODO: Play song
+    m_songsListView->itemEntered_Connect(&MedialibBrowser::activePlaylistAddSong, this, _1, false); //TODO: Play song
 
     // This will reload the whole medialib on adding new medialib entry.
     // TODO: Can it be done in a more clever way?
@@ -124,20 +124,53 @@ void MedialibBrowser::keyPressedEvent(const KeyEvent& keyEvent)
         }
 
         case Hotkeys::Screens::MedialibBrowser::AddItemToActivePlaylist:
+        {
+            const int currentItem = m_activeListView->currentItem();
+            const std::vector<int>& selectedItems = m_activeListView->selectedItems();
+
+#define ADD_ITEMS_TO_ACTIVE_PLAYLIST(addFunction, itemDescription)                  \
+    do {                                                                            \
+        if (!selectedItems.empty()) {                                               \
+            for (int item : selectedItems) {                                        \
+                addFunction(item, true);                                            \
+            }                                                                       \
+            StatusArea::showMessage(                                                \
+                (boost::format("Adding %1% " itemDescription " to active playlist") \
+                                  % selectedItems.size()).str()                     \
+            );                                                                      \
+            m_activeListView->clearSelection();                                     \
+        } else {                                                                    \
+            if (currentItem != -1)                                                  \
+                addFunction(currentItem);                                           \
+        }                                                                           \
+    } while (0)
+
             if (m_activeListView == m_songsListView) {
-                activePlaylistAddSong(m_songsListView->currentItem());
+                ADD_ITEMS_TO_ACTIVE_PLAYLIST(activePlaylistAddSong, "songs");
             } else if (m_activeListView == m_albumsListView) {
-                activePlaylistAddAlbum(m_albumsListView->currentItem());
+                ADD_ITEMS_TO_ACTIVE_PLAYLIST(activePlaylistAddAlbum, "albums");
             } else if (m_activeListView == m_artistsListView) {
-                activePlaylistAddArtist(m_artistsListView->currentItem());
+                ADD_ITEMS_TO_ACTIVE_PLAYLIST(activePlaylistAddArtist, "artists");
             }
 
+#undef ADD_ITEMS_TO_ACTIVE_PLAYLIST
             break;
+        }
 
         case Hotkeys::Screens::MedialibBrowser::Refresh:
             assert(m_activeListView);
             m_activeListView->model()->refresh();
             break;
+
+        case KeyEvent::KeyInsert: // Toggle selection
+        {
+            assert(m_activeListView);
+            m_activeListView->keyPressedEvent(keyEvent);
+            StatusArea::showMessage(
+                (boost::format("%1% items selected") % m_activeListView->selectedItems().size()).str()
+            );
+            break;
+        }
 
         default: Window::keyPressedEvent(keyEvent);
     }
@@ -211,16 +244,18 @@ void MedialibBrowser::setSongsListViewAlbum(int item)
                                  item != -1 ? albumsModel->album(item) : std::string());
 }
 
-void MedialibBrowser::activePlaylistAddSong(int item)
+void MedialibBrowser::activePlaylistAddSong(int item, bool beQuiet)
 {
     SongsListModel *songsModel = static_cast<SongsListModel*>(m_songsListView->model());
     m_xmmsClient->playlist.addId(songsModel->id(item));
-    StatusArea::showMessage(
-        (boost::format("Adding \"%1%\" song to active playlist") % songsModel->title(item)).str()
-    );
+    if (!beQuiet) {
+        StatusArea::showMessage(
+            (boost::format("Adding \"%1%\" song to active playlist") % songsModel->title(item)).str()
+        );
+    }
 }
 
-void MedialibBrowser::activePlaylistAddAlbum(int item)
+void MedialibBrowser::activePlaylistAddAlbum(int item, bool beQuiet)
 {
     AlbumsListModel *albumsModel = static_cast<AlbumsListModel*>(m_albumsListView->model());
     SongsListModel  *songsModel = static_cast<SongsListModel*>(m_songsListView->model());
@@ -232,12 +267,14 @@ void MedialibBrowser::activePlaylistAddAlbum(int item)
     const Xmms::Coll::Equals albumByArtist(allByArtist, "album", album, true);
 
     m_xmmsClient->playlist.addCollection(albumByArtist, songsModel->sortingOrder());
-    StatusArea::showMessage(
-        (boost::format("Adding \"%1%\" album to active playlist") % album).str()
-    );
+    if (!beQuiet) {
+        StatusArea::showMessage(
+            (boost::format("Adding \"%1%\" album to active playlist") % album).str()
+        );
+    }
 }
 
-void MedialibBrowser::activePlaylistAddArtist(int item)
+void MedialibBrowser::activePlaylistAddArtist(int item, bool beQuiet)
 {
     ArtistsListModel *artistsModel = static_cast<ArtistsListModel*>(m_artistsListView->model());
     AlbumsListModel  *albumsModel = static_cast<AlbumsListModel*>(m_albumsListView->model());
@@ -250,12 +287,13 @@ void MedialibBrowser::activePlaylistAddArtist(int item)
     const std::list<std::string> groupBy = {"album"};
 
     m_xmmsClient->collection.queryInfos(allByArtist, fetch, albumsModel->sortingOrder(), 0, 0, groupBy)(
-        boost::bind(&MedialibBrowser::activePlaylistAddAlbums, this, artist, _1)
+        boost::bind(&MedialibBrowser::activePlaylistAddAlbums, this, artist, _1, beQuiet)
     );
 }
 
-bool MedialibBrowser::activePlaylistAddAlbums(const std::string& artist,
-                                              const Xmms::List<Xmms::Dict>& list)
+bool MedialibBrowser::activePlaylistAddAlbums(const std::string&            artist,
+                                              const Xmms::List<Xmms::Dict>& list,
+                                              bool                          beQuiet)
 {
     SongsListModel  *songsModel = static_cast<SongsListModel*>(m_songsListView->model());
     Xmms::Coll::Universe allMedia;
@@ -274,8 +312,10 @@ bool MedialibBrowser::activePlaylistAddAlbums(const std::string& artist,
         }
     }
 
-    StatusArea::showMessage(
-        (boost::format("Adding all albums by \"%1%\" to active playlist") % artist).str()
-    );
+    if (!beQuiet) {
+        StatusArea::showMessage(
+            (boost::format("Adding all albums by \"%1%\" to active playlist") % artist).str()
+        );
+    }
     return true;
 }

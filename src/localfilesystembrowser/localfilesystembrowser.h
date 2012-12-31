@@ -57,7 +57,8 @@ private:
     bool setDirectory(const Dir& dir);
     void onItemEntered(int item);
     void cd(const std::string& dir);
-    void activePlaylistAddFile(int item);
+    void activePlaylistAddFileOrDirectory(int item, bool beQuiet = false);
+    void activePlaylistAddFile(int item, bool beQuiet = false);
 
     class ViewportState
     {

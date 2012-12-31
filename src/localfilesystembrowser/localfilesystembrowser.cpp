@@ -69,20 +69,20 @@ void LocalFileSystemBrowser::keyPressedEvent(const KeyEvent& keyEvent)
     switch (keyEvent.key()) {
         case Hotkeys::Screens::LocalFileSystemBrowser::AddFileOrDirectoryToActivePlaylist:
         {
-            const int item = currentItem();
-            if (item == -1)
-                break;
-
-            if (fsModel->isDirectory(item)) {
-                m_xmmsClient->playlist.addRecursive(
-                    std::string("file://").append(fsModel->filePath(item))
-                );
+            const std::vector<int>& _selectedItems = selectedItems();
+            if (!_selectedItems.empty()) {
+                for (int item : _selectedItems) {
+                    activePlaylistAddFileOrDirectory(item, true);
+                }
                 StatusArea::showMessage(
-                    (boost::format("Adding \"%1%\" directory to active playlist")
-                                    % fsModel->fileName(item)).str()
+                    (boost::format("Adding %1% items to active playlist")
+                                    % _selectedItems.size()).str()
                 );
-             } else if (fsModel->isRegularFile(item)) {
-                activePlaylistAddFile(item);
+                clearSelection();
+            } else {
+                const int item = currentItem();
+                if (item == -1)
+                    activePlaylistAddFileOrDirectory(item);
             }
             break;
         }
@@ -107,6 +107,15 @@ void LocalFileSystemBrowser::keyPressedEvent(const KeyEvent& keyEvent)
         case Hotkeys::Screens::LocalFileSystemBrowser::ReloadDirectory:
             fsModel->refresh();
             break;
+
+        case KeyEvent::KeyInsert: // Toggle selection
+        {
+            ListView::keyPressedEvent(keyEvent);
+            StatusArea::showMessage(
+                (boost::format("%1% items selected") % selectedItems().size()).str()
+            );
+            break;
+        }
 
         default: ListView::keyPressedEvent(keyEvent);
     }
@@ -188,12 +197,32 @@ void LocalFileSystemBrowser::cd(const std::string& dir)
     }
 }
 
-void LocalFileSystemBrowser::activePlaylistAddFile(int item)
+void LocalFileSystemBrowser::activePlaylistAddFileOrDirectory(int item, bool beQuiet)
 {
-    assert(item != -1);
-
     FileSystemModel *fsModel =
             boost::polymorphic_downcast<FileSystemModel*>(model());
+    assert(item >= 0 && item < fsModel->itemsCount());
+
+    if (fsModel->isDirectory(item)) {
+        m_xmmsClient->playlist.addRecursive(
+            std::string("file://").append(fsModel->filePath(item))
+        );
+        if (!beQuiet) {
+            StatusArea::showMessage(
+                (boost::format("Adding \"%1%\" directory to active playlist")
+                                % fsModel->fileName(item)).str()
+            );
+        }
+     } else if (fsModel->isRegularFile(item)) {
+        activePlaylistAddFile(item, beQuiet);
+    }
+}
+
+void LocalFileSystemBrowser::activePlaylistAddFile(int item, bool beQuiet)
+{
+    FileSystemModel *fsModel =
+            boost::polymorphic_downcast<FileSystemModel*>(model());
+    assert(item >= 0 && item < fsModel->itemsCount());
 
     const std::string fileName = fsModel->fileName(item);
     const std::string filePath = std::string("file://").append(fsModel->filePath(item));
@@ -203,22 +232,27 @@ void LocalFileSystemBrowser::activePlaylistAddFile(int item)
             XmmsUtils::playlistAddPlaylistFile(m_xmmsClient,
                                                XMMS_ACTIVE_PLAYLIST,
                                                filePath);
-            StatusArea::showMessage(
-                (boost::format("Adding \"%1%\" playlist file to active playlist")
-                                % fileName).str()
-            );
+            if (!beQuiet) {
+                StatusArea::showMessage(
+                    (boost::format("Adding \"%1%\" playlist file to active playlist")
+                                    % fileName).str()
+                );
+            }
             break;
 
         case Utils::MediaFile:
             m_xmmsClient->playlist.addUrl(filePath);
-            StatusArea::showMessage(
-                (boost::format("Adding \"%1%\" file to active playlist")
-                                % fileName).str()
-            );
+            if (!beQuiet) {
+                StatusArea::showMessage(
+                    (boost::format("Adding \"%1%\" file to active playlist")
+                                    % fileName).str()
+                );
+            }
             break;
 
         case Utils::UnknownFile:
-            StatusArea::showMessage("Unknown file type!");
+            if (!beQuiet)
+                StatusArea::showMessage("Unknown file type!");
             break;
     }
 }

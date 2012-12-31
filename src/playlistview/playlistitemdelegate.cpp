@@ -39,20 +39,27 @@ void PlaylistItemDelegate::paint(Painter *painter, const ListItemPaintOptions& o
     Color titleColor    = ColorBlack;
     Color durationColor = ColorBlack;
     Color textColor     = ColorBlack;
-    if (options.state == ListItemStateCurrent) {
+    if (options.state & ListItemStateCurrent) {
         if (Application::useColors()) {
             artistColor   =
             titleColor    =
             durationColor =
-            textColor     = palette->color(colorGroup, Palette::RoleSelectedText);
-            painter->setColorPair(palette->color(colorGroup, Palette::RoleSelectedText),
-                                  palette->color(colorGroup, Palette::RoleSelection));
+            textColor     = palette->color(colorGroup, Palette::RoleHighlightedText);
+            painter->setColorPair(palette->color(colorGroup, Palette::RoleHighlightedText),
+                                  palette->color(colorGroup, Palette::RoleHighlight));
             painter->clearLine(options.rect.y());
         } else {
             painter->fillLine(options.rect.y(), ColorBlack);
             painter->setColor(ColorBlack);
             painter->setReverse(true);
         }
+    } else if (options.state & ListItemStateSelected)  {
+        artistColor   =
+        titleColor    =
+        durationColor =
+        textColor     = palette->color(colorGroup, Palette::RoleSelection);
+        painter->clearLine(options.rect.y());
+        painter->setBold(true);
     } else {
         artistColor   = palette->color(colorGroup, RoleArtist,        ColorYellow);
         titleColor    = palette->color(colorGroup, RoleTitle,         ColorYellow);
@@ -65,7 +72,7 @@ void PlaylistItemDelegate::paint(Painter *painter, const ListItemPaintOptions& o
     const Song& song = plsModel->song(item);
 
     if (song.id()) {
-        if (item == plsModel->currentSongItem() && options.state != ListItemStateCurrent)
+        if (item == plsModel->currentSongItem() && !(options.state & ListItemStateCurrent))
             painter->setBold(true);
 
         int durationStringSize = 0;

@@ -51,10 +51,10 @@ private:
     void setAlbumsListViewArtist(int item);
     void setSongsListViewAlbum(int item);
 
-    void activePlaylistAddSong(int item);
-    void activePlaylistAddAlbum(int item);
-    void activePlaylistAddArtist(int item);
-    bool activePlaylistAddAlbums(const std::string& artist, const Xmms::List<Xmms::Dict>& list);
+    void activePlaylistAddSong(int item, bool beQuiet = false);
+    void activePlaylistAddAlbum(int item, bool beQuiet = false);
+    void activePlaylistAddArtist(int item, bool beQuiet = false);
+    bool activePlaylistAddAlbums(const std::string& artist, const Xmms::List<Xmms::Dict>& list, bool beQuiet = false);
 };
 } // ncxmms2
 

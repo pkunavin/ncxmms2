@@ -70,11 +70,21 @@ void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
 
     switch (keyEvent.key()) {
         case Hotkeys::PlaylistView::RemoveEntry:
+        {
             if (plsModel->itemsCount() && !isCurrentItemHidden()) {
-                m_xmmsClient->playlist.removeEntry(currentItem(), plsModel->playlist());
+                const std::vector<int>& _selectedItems = selectedItems();
+                if (!_selectedItems.empty()) {
+                    assert(std::is_sorted(_selectedItems.begin(), _selectedItems.end()));
+                    std::for_each(_selectedItems.rbegin(), _selectedItems.rend(), [&](int item){
+                        m_xmmsClient->playlist.removeEntry(item, plsModel->playlist());
+                    });
+                } else {
+                    m_xmmsClient->playlist.removeEntry(currentItem(), plsModel->playlist());
+                }
                 showCurrentItem();
             }
             break;
+        }
 
         case Hotkeys::PlaylistView::ClearPlaylist:
             m_xmmsClient->playlist.clear(plsModel->playlist());
@@ -107,6 +117,15 @@ void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
                     addUrl(url);
             };
             StatusArea::askQuestion("Add url: ", resultCallback);
+            break;
+        }
+
+        case KeyEvent::KeyInsert: // Toggle selection
+        {
+            ListView::keyPressedEvent(keyEvent);
+            StatusArea::showMessage(
+                (boost::format("%1% items selected") % selectedItems().size()).str()
+            );
             break;
         }
 

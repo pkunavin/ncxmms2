@@ -59,9 +59,19 @@ void PlaylistsListView::keyPressedEvent(const KeyEvent& keyEvent)
 
     switch (keyEvent.key()) {
         case Hotkeys::Screens::PlaylistsBrowser::RemovePlaylist:
-            if (plsModel->itemsCount() > 1)
-                m_xmmsClient->playlist.remove(plsModel->playlist(currentItem()));
+        {
+            if (plsModel->itemsCount() > 1) {
+                const std::vector<int>& _selectedItems = selectedItems();
+                if (!_selectedItems.empty()) {
+                    for (int item : _selectedItems) {
+                        m_xmmsClient->playlist.remove(plsModel->playlist(item));
+                    }
+                } else {
+                    m_xmmsClient->playlist.remove(plsModel->playlist(currentItem()));
+                }
+            }
             break;
+        }
 
         case Hotkeys::Screens::PlaylistsBrowser::CreateNewPlaylist:
         {
@@ -85,6 +95,15 @@ void PlaylistsListView::keyPressedEvent(const KeyEvent& keyEvent)
             };
 
             StatusArea::askQuestion("Rename playlist: ", resultCallback, playlist);
+            break;
+        }
+
+        case KeyEvent::KeyInsert: // Toggle selection
+        {
+            ListView::keyPressedEvent(keyEvent);
+            StatusArea::showMessage(
+                (boost::format("%1% items selected") % selectedItems().size()).str()
+            );
             break;
         }
 

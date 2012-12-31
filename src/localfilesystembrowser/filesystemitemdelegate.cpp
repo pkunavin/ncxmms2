@@ -36,23 +36,27 @@ void FileSystemItemDelegate::paint(Painter *painter, const ListItemPaintOptions 
                                            ? Palette::GroupActive
                                            : Palette::GroupInactive;
 
-    if (options.state == ListItemStateCurrent) {
+    if (options.state & ListItemStateCurrent) {
         if (Application::useColors()) {
-            painter->setColorPair(palette->color(colorGroup, Palette::RoleSelectedText),
-                                  palette->color(colorGroup, Palette::RoleSelection));
+            painter->setColorPair(palette->color(colorGroup, Palette::RoleHighlightedText),
+                                  palette->color(colorGroup, Palette::RoleHighlight));
             painter->clearLine(options.rect.y());
         } else {
             painter->fillLine(options.rect.y(), ColorBlack);
             painter->setColor(ColorBlack);
             painter->setReverse(true);
         }
+    } else if (options.state & ListItemStateSelected) {
+        painter->setColor(palette->color(colorGroup, Palette::RoleSelection));
+        painter->clearLine(options.rect.y());
+        painter->setBold(true);
     } else {
         painter->setColor(palette->color(colorGroup, Palette::RoleText));
         painter->clearLine(options.rect.y());
     }
 
     const FileSystemModel *fsModel = static_cast<const FileSystemModel*>(model());
-    if (fsModel->isDirectory(item) && options.state != ListItemStateCurrent) {
+    if (fsModel->isDirectory(item) && !(options.state & ListItemStateCurrent)) {
         painter->setBold(true);
     }
 

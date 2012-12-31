@@ -36,6 +36,14 @@ HelpBrowser::HelpBrowser(const Rectangle& rect, Window *parent) :
         {nullptr, 0}
     };
 
+    const KeyDescription listViewKeys[] =
+    {
+        {"Move cursor up", KeyEvent::KeyUp},
+        {"Move cursor down", KeyEvent::KeyDown},
+        {"Toggle selection", KeyEvent::KeyInsert},
+        {nullptr, 0}
+    };
+
     const KeyDescription playbackControlKeys[] =
     {
         {"Toggle playback", Hotkeys::Playback::Toggle},
@@ -86,6 +94,7 @@ HelpBrowser::HelpBrowser(const Rectangle& rect, Window *parent) :
     {
         {"Screens switching",         screensSwitchingKeys},
         {"Playback control",          playbackControlKeys},
+        {"List View",                 listViewKeys},
         {"Playlist view",             playlistViewKeys},
         {"Local file system browser", localFileSystemBrowserKeys},
         {"Medialib browser",          medialibBrowserKeys},
