@@ -25,7 +25,7 @@
             "Text"            : "Yellow",
             "Background"      : "Black",
             "Selection"       : "Magenta",
-            "Highlight"       : "Yellow"
+            "Highlight"       : "Yellow",
             "HighlightedText" : "Black"
         },
         
@@ -34,7 +34,7 @@
             "Text"            : "Yellow",
             "Background"      : "Black",
             "Selection"       : "Magenta",
-            "Highlight"       : "White"
+            "Highlight"       : "White",
             "HighlightedText" : "Black"
         }
     },
