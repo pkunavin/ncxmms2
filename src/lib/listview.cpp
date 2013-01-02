@@ -132,9 +132,8 @@ void ListView::setModel(ListModel *model)
             model->itemMoved_Connect(
                 boost::bind(&ListViewPrivate::itemMoved, d.get(), _1, _2)
         ));
-
-        d->reset();
     }
+    d->reset();
 }
 
 ListModel *ListView::model() const
@@ -163,6 +162,10 @@ int ListView::currentItem() const
 
 void ListView::setCurrentItem(int item)
 {
+    if (d->currentItem == -1)
+        return;
+
+    assert(d->model);
     if (item < 0 || item >= d->model->itemsCount())
         return;
 
@@ -370,6 +373,14 @@ void ListView::keyPressedEvent(const KeyEvent& keyEvent)
                 d->hideSelectionTimer.start(d->hideCurrentItemSelectionInterval);
             break;
 
+        case KeyEvent::KeyHome:
+            setCurrentItem(0);
+            break;
+
+        case KeyEvent::KeyEnd:
+            setCurrentItem(d->model->itemsCount() - 1);
+            break;
+
         default:
             break;
     }
@@ -418,7 +429,7 @@ void ListView::resize(const Size& size)
 
 void ListViewPrivate::reset()
 {
-    const int itemsCount = model->itemsCount();
+    const int itemsCount = model ? model->itemsCount() : 0;
 
     selectedItems.clear();
 

@@ -31,6 +31,8 @@ Hotkeys:
  ListView:
   Move cursor up : up arrow
   Move cursor down : down arrow
+  Move cursor to the first item : Home
+  Move cursor to the last item : End
   Toggle selection : insert
   
  Playlists browser:

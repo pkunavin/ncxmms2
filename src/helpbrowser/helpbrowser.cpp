@@ -38,9 +38,11 @@ HelpBrowser::HelpBrowser(const Rectangle& rect, Window *parent) :
 
     const KeyDescription listViewKeys[] =
     {
-        {"Move cursor up", KeyEvent::KeyUp},
-        {"Move cursor down", KeyEvent::KeyDown},
-        {"Toggle selection", KeyEvent::KeyInsert},
+        {"Move cursor up",                KeyEvent::KeyUp},
+        {"Move cursor down",              KeyEvent::KeyDown},
+        {"Move cursor to the first item", KeyEvent::KeyHome},
+        {"Move cursor to the last item",  KeyEvent::KeyEnd},
+        {"Toggle selection",              KeyEvent::KeyInsert},
         {nullptr, 0}
     };
 
