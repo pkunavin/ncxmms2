@@ -143,11 +143,13 @@ ListModel *ListView::model() const
 
 void ListView::setItemDelegate(ListModelItemDelegate *delegate)
 {
-    delete d->delegate;
-    d->delegate = delegate
-                  ? delegate
-                  : new ListModelItemDelegate(d->model);
-    update();
+    if (d->model) {
+        delete d->delegate;
+        d->delegate = delegate
+                      ? delegate
+                      : new ListModelItemDelegate(d->model);
+        update();
+    }
 }
 
 ListModelItemDelegate *ListView::itemDelegate() const
@@ -188,6 +190,9 @@ bool ListView::isCurrentItemHidden() const
 
 void ListView::setHideCurrentItemInterval(unsigned int sec)
 {
+    if (!d->model)
+        return;
+
     d->hideCurrentItemSelectionInterval = sec;
     if (d->hideCurrentItemSelectionInterval) {
         d->hideSelectionTimer.start(d->hideCurrentItemSelectionInterval);
@@ -200,6 +205,9 @@ void ListView::setHideCurrentItemInterval(unsigned int sec)
 
 void ListView::showCurrentItem()
 {
+    if (!d->model)
+        return;
+
     d->currentItemHidden = false;
     d->itemsChanged(d->currentItem, d->currentItem);
     if (d->hideCurrentItemSelectionInterval)
@@ -208,6 +216,9 @@ void ListView::showCurrentItem()
 
 void ListView::hideCurrentItem()
 {
+    if (!d->model)
+        return;
+
     d->hideSelectionTimer.stop();
     d->currentItemHidden = true;
     d->itemsChanged(d->currentItem, d->currentItem);
@@ -215,6 +226,9 @@ void ListView::hideCurrentItem()
 
 void ListView::scrollToItem(int item)
 {
+    if (!d->model)
+        return;
+
     if (item < 0 || item >= d->model->itemsCount())
         return;
 
@@ -244,6 +258,9 @@ int ListView::viewportLastItem() const
 
 void ListView::setViewportFirstItem(int item)
 {
+    if (!d->model)
+        return;
+
     const int itemsCount = d->model->itemsCount();
     if (item < 0 || item >= itemsCount)
         return;
@@ -275,6 +292,9 @@ bool ListView::isItemSelected(int item) const
 
 void ListView::clearSelection()
 {
+    if (!d->model)
+        return;
+
     if (!d->selectedItems.empty()) {
         const int first = *d->selectedItems.begin();
         const int last = *d->selectedItems.rbegin();
@@ -336,6 +356,9 @@ void ListView::paint(const Rectangle& rect)
 
 void ListView::keyPressedEvent(const KeyEvent& keyEvent)
 {
+    if (!d->model)
+        return;
+
     switch (keyEvent.key()) {
         case KeyEvent::KeyUp:
             if (d->currentItemHidden) {
@@ -388,7 +411,7 @@ void ListView::keyPressedEvent(const KeyEvent& keyEvent)
 
 void ListView::resize(const Size& size)
 {
-    const int itemsCount = d->model->itemsCount();
+    const int itemsCount = d->model ? d->model->itemsCount() : 0;
 
     if (itemsCount > 0) {
 
