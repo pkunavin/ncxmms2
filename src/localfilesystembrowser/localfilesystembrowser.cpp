@@ -81,7 +81,7 @@ void LocalFileSystemBrowser::keyPressedEvent(const KeyEvent& keyEvent)
                 clearSelection();
             } else {
                 const int item = currentItem();
-                if (item == -1)
+                if (item != -1)
                     activePlaylistAddFileOrDirectory(item);
             }
             break;
