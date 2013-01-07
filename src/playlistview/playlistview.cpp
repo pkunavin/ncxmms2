@@ -121,13 +121,13 @@ void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
         }
 
         case KeyEvent::KeyInsert: // Toggle selection
-        {
-            ListView::keyPressedEvent(keyEvent);
-            StatusArea::showMessage(
-                (boost::format("%1% items selected") % selectedItems().size()).str()
-            );
+            if (!isCurrentItemHidden()) {
+                ListView::keyPressedEvent(keyEvent);
+                StatusArea::showMessage(
+                    (boost::format("%1% items selected") % selectedItems().size()).str()
+                );
+            }
             break;
-        }
 
         default: ListView::keyPressedEvent(keyEvent);
     }

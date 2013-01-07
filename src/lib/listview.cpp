@@ -388,12 +388,12 @@ void ListView::keyPressedEvent(const KeyEvent& keyEvent)
             break;
 
         case KeyEvent::KeyInsert:
-            if (d->currentItem != -1 && !d->currentItemHidden)
+            if (d->currentItem != -1 && !d->currentItemHidden) {
                 d->toggleSelection(d->currentItem);
-
-            d->scrollDown();
-            if (d->hideCurrentItemSelectionInterval)
-                d->hideSelectionTimer.start(d->hideCurrentItemSelectionInterval);
+                d->scrollDown();
+                if (d->hideCurrentItemSelectionInterval)
+                    d->hideSelectionTimer.start(d->hideCurrentItemSelectionInterval);
+            }
             break;
 
         case KeyEvent::KeyHome:
