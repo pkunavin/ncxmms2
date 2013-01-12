@@ -109,13 +109,12 @@ void LocalFileSystemBrowser::keyPressedEvent(const KeyEvent& keyEvent)
             break;
 
         case KeyEvent::KeyInsert: // Toggle selection
-        {
+        case '*': // Invert selection
             ListView::keyPressedEvent(keyEvent);
             StatusArea::showMessage(
                 (boost::format("%1% items selected") % selectedItems().size()).str()
             );
             break;
-        }
 
         default: ListView::keyPressedEvent(keyEvent);
     }

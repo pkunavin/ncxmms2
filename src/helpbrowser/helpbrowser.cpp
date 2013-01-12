@@ -43,6 +43,7 @@ HelpBrowser::HelpBrowser(const Rectangle& rect, Window *parent) :
         {"Move cursor to the first item", KeyEvent::KeyHome},
         {"Move cursor to the last item",  KeyEvent::KeyEnd},
         {"Toggle selection",              KeyEvent::KeyInsert},
+        {"Invert selection",              '*'},
         {nullptr, 0}
     };
 
@@ -96,7 +97,7 @@ HelpBrowser::HelpBrowser(const Rectangle& rect, Window *parent) :
     {
         {"Screens switching",         screensSwitchingKeys},
         {"Playback control",          playbackControlKeys},
-        {"List View",                 listViewKeys},
+        {"List view",                 listViewKeys},
         {"Playlist view",             playlistViewKeys},
         {"Local file system browser", localFileSystemBrowserKeys},
         {"Medialib browser",          medialibBrowserKeys},

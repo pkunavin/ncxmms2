@@ -303,6 +303,23 @@ void ListView::clearSelection()
     }
 }
 
+void ListView::invertSelection()
+{
+    if (!d->model)
+        return;
+
+    const int itemsCount = d->model->itemsCount();
+    std::vector<int> invertedSelection;
+    invertedSelection.reserve(itemsCount - d->selectedItems.size());
+    for (int item = 0; item < itemsCount; ++item) {
+        if (!isItemSelected(item)) {
+            invertedSelection.push_back(item);
+        }
+    }
+    d->selectedItems.swap(invertedSelection);
+    update();
+}
+
 void ListViewPrivate::disconnectModel()
 {
     for (auto& connection : modelConnections) {
@@ -394,6 +411,10 @@ void ListView::keyPressedEvent(const KeyEvent& keyEvent)
                 if (d->hideCurrentItemSelectionInterval)
                     d->hideSelectionTimer.start(d->hideCurrentItemSelectionInterval);
             }
+            break;
+
+        case '*':
+            invertSelection();
             break;
 
         case KeyEvent::KeyHome:

@@ -55,6 +55,7 @@ public:
     const std::vector<int>& selectedItems() const;
     bool isItemSelected(int item) const;
     void clearSelection();
+    void invertSelection();
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
     virtual void resize(const Size& size);

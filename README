@@ -28,12 +28,13 @@ Hotkeys:
   Seek forward : f
   Seek backward : b
 
- ListView:
+ List view:
   Move cursor up : up arrow
   Move cursor down : down arrow
   Move cursor to the first item : Home
   Move cursor to the last item : End
   Toggle selection : insert
+  Invert selection : *
   
  Playlists browser:
   Create new playlist : n

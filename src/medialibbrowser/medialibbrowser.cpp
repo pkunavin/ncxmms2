@@ -162,15 +162,15 @@ void MedialibBrowser::keyPressedEvent(const KeyEvent& keyEvent)
             m_activeListView->model()->refresh();
             break;
 
+
         case KeyEvent::KeyInsert: // Toggle selection
-        {
+        case '*': // Invert selection
             assert(m_activeListView);
             m_activeListView->keyPressedEvent(keyEvent);
             StatusArea::showMessage(
                 (boost::format("%1% items selected") % m_activeListView->selectedItems().size()).str()
             );
             break;
-        }
 
         default: Window::keyPressedEvent(keyEvent);
     }
