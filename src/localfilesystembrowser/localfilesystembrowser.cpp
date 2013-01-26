@@ -34,10 +34,10 @@
 
 using namespace ncxmms2;
 
-LocalFileSystemBrowser::LocalFileSystemBrowser(Xmms::Client *xmmsClient,
+LocalFileSystemBrowser::LocalFileSystemBrowser(Xmms::Client    *xmmsClient,
                                                const Rectangle& rect,
-                                               Window *parent) :
-    ListView(rect, parent),
+                                               Window          *parent) :
+    ListViewAppIntegrated(rect, parent),
     m_xmmsClient(xmmsClient),
     m_currentDir("/")
 {
@@ -108,15 +108,7 @@ void LocalFileSystemBrowser::keyPressedEvent(const KeyEvent& keyEvent)
             fsModel->refresh();
             break;
 
-        case KeyEvent::KeyInsert: // Toggle selection
-        case '*': // Invert selection
-            ListView::keyPressedEvent(keyEvent);
-            StatusArea::showMessage(
-                (boost::format("%1% items selected") % selectedItems().size()).str()
-            );
-            break;
-
-        default: ListView::keyPressedEvent(keyEvent);
+        default: ListViewAppIntegrated::keyPressedEvent(keyEvent);
     }
 }
 

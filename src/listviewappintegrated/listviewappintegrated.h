@@ -14,33 +14,21 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef PLAYLISTSLISTVIEW_H
-#define PLAYLISTSLISTVIEW_H
+#ifndef LISTVIEWAPPINTEGRATED_H
+#define LISTVIEWAPPINTEGRATED_H
 
-#include "../listviewappintegrated/listviewappintegrated.h"
-
-namespace Xmms {
-class Client;
-}
+#include "../lib/listview.h"
 
 namespace ncxmms2 {
 
-class PlaylistsListView : public ListViewAppIntegrated
+// Application integrated ListView class, i.e. it can use StatusArea, Settings, ...,
+class ListViewAppIntegrated : public ListView
 {
 public:
-    PlaylistsListView(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
+    ListViewAppIntegrated(const Rectangle& rect, Window *parent = nullptr);
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
-
-    const std::string& playlist(int item) const;
-
-private:
-    Xmms::Client *m_xmmsClient;
-
-    void loadPlaylist(int item);
-    void createPlaylist(const std::string& playlist);
-    void renamePlaylist(const std::string& oldName, const std::string& newName);
 };
 } // ncxmms2
 
-#endif // PLAYLISTSLISTVIEW_H
+#endif // LISTVIEWAPPINTEGRATED_H

@@ -18,11 +18,11 @@
 #define PLAYLISTVIEW_H
 
 #include <xmmsclient/xmmsclient++.h>
-#include "../lib/listview.h"
+#include "../listviewappintegrated/listviewappintegrated.h"
 
 namespace ncxmms2 {
 
-class PlaylistView : public ListView
+class PlaylistView : public ListViewAppIntegrated
 {
 public:
     PlaylistView(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);

@@ -18,7 +18,7 @@
 #define LOCALFILESYSTEMBROWSER_H
 
 #include <stack>
-#include "../lib/listview.h"
+#include "../listviewappintegrated/listviewappintegrated.h"
 
 namespace Xmms {
 class Client;
@@ -26,12 +26,12 @@ class Client;
 
 namespace ncxmms2 {
 
-class LocalFileSystemBrowser : public ListView
+class LocalFileSystemBrowser : public ListViewAppIntegrated
 {
 public:
-    LocalFileSystemBrowser(Xmms::Client *xmmsClient,
+    LocalFileSystemBrowser(Xmms::Client    *xmmsClient,
                            const Rectangle& rect,
-                           Window *parent = nullptr);
+                           Window          *parent = nullptr);
     ~LocalFileSystemBrowser();
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);

@@ -25,10 +25,11 @@
 #include "artistslistmodel.h"
 #include "albumslistmodel.h"
 #include "songslistmodel.h"
+
+#include "../listviewappintegrated/listviewappintegrated.h"
 #include "../statusarea/statusarea.h"
 #include "../hotkeys.h"
 
-#include "../lib/listview.h"
 #include "../lib/painter.h"
 #include "../lib/rectangle.h"
 #include "../lib/keyevent.h"
@@ -46,7 +47,7 @@ MedialibBrowser::MedialibBrowser(Xmms::Client *xmmsClient, const Rectangle& rect
     const int artistsListViewCols = (cols() - 2) / 3;
     const Rectangle artistsListViewRect(0, headerLines,
                                         artistsListViewCols, lines() - headerLines);
-    m_artistsListView = new ListView(artistsListViewRect, this);
+    m_artistsListView = new ListViewAppIntegrated(artistsListViewRect, this);
     m_artistsListView->setModel(new ArtistsListModel(xmmsClient, this));
     m_artistsListView->currentItemChanged_Connect(&MedialibBrowser::setAlbumsListViewArtist, this);
     m_artistsListView->itemEntered_Connect(&MedialibBrowser::activePlaylistAddArtist, this,  _1, false); //TODO: Play artist
@@ -56,7 +57,7 @@ MedialibBrowser::MedialibBrowser(Xmms::Client *xmmsClient, const Rectangle& rect
     const int albumsListViewCols = artistsListViewCols;
     const Rectangle albumsListViewRect(artistsListViewCols + 1, headerLines,
                                        albumsListViewCols, lines() - headerLines);
-    m_albumsListView = new ListView(albumsListViewRect, this);
+    m_albumsListView = new ListViewAppIntegrated(albumsListViewRect, this);
     m_albumsListView->setModel(new AlbumsListModel(xmmsClient, this));
     m_albumsListView->currentItemChanged_Connect(&MedialibBrowser::setSongsListViewAlbum, this);
     m_albumsListView->itemEntered_Connect(&MedialibBrowser::activePlaylistAddAlbum, this,  _1, false); //TODO: Play album
@@ -64,7 +65,7 @@ MedialibBrowser::MedialibBrowser(Xmms::Client *xmmsClient, const Rectangle& rect
     const int songsListViewCols = cols() - artistsListViewCols - albumsListViewCols - 2;
     const Rectangle songsListViewRect(cols() - songsListViewCols, headerLines,
                                       songsListViewCols, lines() - headerLines);
-    m_songsListView = new ListView(songsListViewRect, this);
+    m_songsListView = new ListViewAppIntegrated(songsListViewRect, this);
     m_songsListView->setModel(new SongsListModel(xmmsClient, this));
     m_songsListView->itemEntered_Connect(&MedialibBrowser::activePlaylistAddSong, this, _1, false); //TODO: Play song
 
@@ -160,16 +161,6 @@ void MedialibBrowser::keyPressedEvent(const KeyEvent& keyEvent)
         case Hotkeys::Screens::MedialibBrowser::Refresh:
             assert(m_activeListView);
             m_activeListView->model()->refresh();
-            break;
-
-
-        case KeyEvent::KeyInsert: // Toggle selection
-        case '*': // Invert selection
-            assert(m_activeListView);
-            m_activeListView->keyPressedEvent(keyEvent);
-            StatusArea::showMessage(
-                (boost::format("%1% items selected") % m_activeListView->selectedItems().size()).str()
-            );
             break;
 
         default: Window::keyPressedEvent(keyEvent);

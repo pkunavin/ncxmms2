@@ -16,6 +16,8 @@ set(SOURCES
     statusarea/playbackprogressbar.cpp
     statusarea/questionwindow.cpp
 
+    listviewappintegrated/listviewappintegrated.cpp
+
     localfilesystembrowser/localfilesystembrowser.cpp
     localfilesystembrowser/filesystemmodel.cpp
     localfilesystembrowser/filesystemitemdelegate.cpp
@@ -54,6 +56,8 @@ set(HEADERS
     statusarea/statusarea.h
     statusarea/playbackprogressbar.h
     statusarea/questionwindow.h
+
+    listviewappintegrated/listviewappintegrated.h
 
     localfilesystembrowser/localfilesystembrowser.h
     localfilesystembrowser/filesystemmodel.h

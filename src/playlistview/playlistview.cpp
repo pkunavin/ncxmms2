@@ -32,7 +32,7 @@
 using namespace ncxmms2;
 
 PlaylistView::PlaylistView(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent) :
-    ListView(rect, parent),
+    ListViewAppIntegrated(rect, parent),
     m_xmmsClient(xmmsClient),
     m_playbackStatus(Xmms::Playback::STOPPED)
 {
@@ -120,23 +120,7 @@ void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
             break;
         }
 
-        case KeyEvent::KeyInsert: // Toggle selection
-            if (!isCurrentItemHidden()) {
-                ListView::keyPressedEvent(keyEvent);
-                StatusArea::showMessage(
-                    (boost::format("%1% items selected") % selectedItems().size()).str()
-                );
-            }
-            break;
-
-        case '*': // Invert selection
-            ListView::keyPressedEvent(keyEvent);
-            StatusArea::showMessage(
-                (boost::format("%1% items selected") % selectedItems().size()).str()
-            );
-            break;
-
-        default: ListView::keyPressedEvent(keyEvent);
+        default: ListViewAppIntegrated::keyPressedEvent(keyEvent);
     }
 }
 
