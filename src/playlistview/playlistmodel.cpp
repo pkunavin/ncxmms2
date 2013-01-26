@@ -272,6 +272,7 @@ void PlaylistModel::data(int item, ListModelItemData *itemData) const
     const Song& s = song(item);
 
     if (s.id()) {
+        itemData->text.clear();
         itemData->text.append(s.artist()).append(" - ").append(s.title());
     } else {
         itemData->text = "Loading...";
