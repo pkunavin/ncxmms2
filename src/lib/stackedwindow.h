@@ -39,6 +39,9 @@ public:
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
     virtual void resize(const Size& size);
 
+protected:
+    virtual void showEvent();
+
 private:
     std::unique_ptr<StackedWindowPrivate> d;
 };

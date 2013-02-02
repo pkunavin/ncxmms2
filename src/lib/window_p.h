@@ -42,7 +42,7 @@ public:
         size(size_),
         minimumSize(1, 1),
         maximumSize(std::numeric_limits<int>::max(), std::numeric_limits<int>::max()),
-        isVisible(true),
+        isVisible(false),
         painterPrivate(nullptr, nullptr),
         isPainterPrivateAlreadyInUse(false) {}
 

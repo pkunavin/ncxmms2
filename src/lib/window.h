@@ -79,6 +79,7 @@ public:
                      const std::map<std::string, int>& userRolesMap = std::map<std::string, int>());
 
 protected:
+    virtual void showEvent();
     virtual void paint(const Rectangle& rect);
 
     void update();

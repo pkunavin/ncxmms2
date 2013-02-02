@@ -62,7 +62,9 @@ int main(int argc, char **argv)
             }
         }
 
-        ncxmms2::Application::setMainWindow(new ncxmms2::MainWindow(xmmsClient.get()));
+        ncxmms2::Window *mainWindow = new ncxmms2::MainWindow(xmmsClient.get());
+        ncxmms2::Application::setMainWindow(mainWindow);
+        mainWindow->show();
         ncxmms2::Application::run();
         ncxmms2::Application::shutdown();
     }

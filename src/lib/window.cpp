@@ -167,8 +167,7 @@ void Window::show()
 {
     d->isVisible = true;
     paint(Rectangle(0, 0, cols(), lines()));
-    for (auto child : d->childrenWins)
-        child->show();
+    showEvent();
 }
 
 bool Window::isHidden() const
@@ -216,6 +215,12 @@ void Window::loadPalette(const std::string&                className,
         d->palette = newPalette;
 
     assert(d->palette);
+}
+
+void Window::showEvent()
+{
+    for (auto child : d->childrenWins)
+        child->show();
 }
 
 void Window::keyPressedEvent(const KeyEvent& keyEvent)

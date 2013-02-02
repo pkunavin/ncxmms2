@@ -50,16 +50,20 @@ void StackedWindow::addWindow(Window *window)
 
 Window *StackedWindow::window(int index) const
 {
+    assert((size_t)index < d->windows.size());
     return d->windows[index];
 }
 
 void StackedWindow::setCurrentIndex(int index)
 {
+    assert((size_t)index < d->windows.size());
+
     if (d->currentIndex != -1)
         d->windows[d->currentIndex]->hide();
     d->currentIndex = index;
     d->windows[index]->setFocus();
-    d->windows[index]->show();
+    if (!isHidden())
+        d->windows[index]->show();
 }
 
 int StackedWindow::size() const
@@ -74,7 +78,8 @@ int StackedWindow::currentIndex() const
 
 void StackedWindow::keyPressedEvent(const KeyEvent& keyEvent)
 {
-    d->windows[d->currentIndex]->keyPressedEvent(keyEvent);
+    if (d->currentIndex != -1)
+        d->windows[d->currentIndex]->keyPressedEvent(keyEvent);
 }
 
 void StackedWindow::resize(const Size& size)
@@ -83,7 +88,14 @@ void StackedWindow::resize(const Size& size)
     for (Window *win : d->windows)
         win->resize(size);
 
-    d->windows[d->currentIndex]->show();
+    if (d->currentIndex != -1 && !isHidden())
+        d->windows[d->currentIndex]->show();
+}
+
+void StackedWindow::showEvent()
+{
+    if (d->currentIndex != -1)
+        d->windows[d->currentIndex]->show();
 }
 
 StackedWindow::~StackedWindow()
