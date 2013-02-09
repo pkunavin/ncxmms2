@@ -56,6 +56,8 @@ public:
     bool isItemSelected(int item) const;
     void clearSelection();
     void invertSelection();
+    void selectItemsByRegExp(const std::string& pattern);
+    void unselectItemsByRegExp(const std::string& pattern);
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
     virtual void resize(const Size& size);

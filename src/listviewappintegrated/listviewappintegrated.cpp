@@ -47,6 +47,36 @@ void ListViewAppIntegrated::keyPressedEvent(const KeyEvent& keyEvent)
             );
             break;
 
+        case '+': // Select be regexp
+        {
+            auto resultCallback = [this](const std::string& pattern, LineEdit::ResultCode result)
+            {
+                if (result == LineEdit::Accepted) {
+                    selectItemsByRegExp(pattern);
+                    StatusArea::showMessage(
+                        (boost::format("%1% items selected") % selectedItems().size()).str()
+                    );
+                }
+            };
+            StatusArea::askQuestion("Select items: ", resultCallback, ".*");
+            break;
+        }
+
+        case '\\': // Unselect be regexp
+        {
+            auto resultCallback = [this](const std::string& pattern, LineEdit::ResultCode result)
+            {
+                if (result == LineEdit::Accepted) {
+                    unselectItemsByRegExp(pattern);
+                    StatusArea::showMessage(
+                        (boost::format("%1% items selected") % selectedItems().size()).str()
+                    );
+                }
+            };
+            StatusArea::askQuestion("Unselect items: ", resultCallback, ".*");
+            break;
+        }
+
         default: ListView::keyPressedEvent(keyEvent);
     }
 }

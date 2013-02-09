@@ -320,6 +320,57 @@ void ListView::invertSelection()
     update();
 }
 
+void ListView::selectItemsByRegExp(const std::string& pattern)
+{
+    if (!d->model)
+        return;
+
+    ListModel *model = d->model;
+    const int itemsCount = model->itemsCount();
+    ListModelItemData itemData;
+
+    GRegex *regex = g_regex_new(pattern.c_str(), G_REGEX_OPTIMIZE, (GRegexMatchFlags)0, nullptr);
+    if (!regex)
+        return;
+
+    for (int item = 0; item < itemsCount; ++item) {
+        model->data(item, &itemData);
+        if (g_regex_match(regex, itemData.textPtr->c_str(), (GRegexMatchFlags)0, nullptr)) {
+            auto it = std::lower_bound(d->selectedItems.begin(), d->selectedItems.end(), item);
+            if (it != d->selectedItems.end() && *it == item) {
+                continue;
+            }
+            d->selectedItems.insert(it, item);
+        }
+    }
+    update();
+    g_regex_unref(regex);
+}
+
+void ListView::unselectItemsByRegExp(const std::string &pattern)
+{
+    if (!d->model)
+        return;
+
+    ListModel *model = d->model;
+    ListModelItemData itemData;
+
+    GRegex *regex = g_regex_new(pattern.c_str(), G_REGEX_OPTIMIZE, (GRegexMatchFlags)0, nullptr);
+    if (!regex)
+        return;
+
+    std::vector<int> leftSelectedItems;
+    for (int item : d->selectedItems) {
+        model->data(item, &itemData);
+        if (!g_regex_match(regex, itemData.textPtr->c_str(), (GRegexMatchFlags)0, nullptr)) {
+            leftSelectedItems.push_back(item);
+        }
+    }
+    d->selectedItems.swap(leftSelectedItems);
+    update();
+    g_regex_unref(regex);
+}
+
 void ListViewPrivate::disconnectModel()
 {
     for (auto& connection : modelConnections) {
