@@ -7,10 +7,13 @@ Currently supported features:
    - Playback control
    
  - Screens:
+  - Help screen
   - Playlist screen
   - Local file system browser screen
   - Medialib browser screen
   - Playlists browser screen
+  
+For colors customization see ncxmms2.colors .
   
 Hotkeys:
  Screens switching:
@@ -35,6 +38,8 @@ Hotkeys:
   Move cursor to the last item : End
   Toggle selection : insert
   Invert selection : *
+  Select items by regular expression : +
+  Unselect items by regular expression : \
   
  Playlists browser:
   Create new playlist : n
