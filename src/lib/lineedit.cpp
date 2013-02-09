@@ -20,6 +20,7 @@
 #include "lineedit.h"
 #include "utf.h"
 #include "painter.h"
+#include "palette.h"
 #include "application.h"
 #include "keyevent.h"
 #include "size.h"
@@ -30,18 +31,24 @@ namespace ncxmms2 {
 class LineEditPrivate
 {
 public:
-    LineEditPrivate(LineEdit *q_) : q(q_), cursorPosition(0), viewportBegin(0) {}
+    LineEditPrivate(LineEdit *q_) :
+        q(q_),
+        textSelected(false),
+        cursorPosition(0),
+        viewportBegin(0) {}
 
     const LineEdit *q;
 
     LineEdit::ResultCallback resultCallback;
 
     std::u32string text;
+    bool textSelected;
     std::u32string::size_type cursorPosition;
     std::u32string::size_type viewportBegin;
     typedef std::u32string::size_type TextSizeType;
 
     void returnResult(LineEdit::ResultCode result);
+    void clearText();
 
     void keyLeft();
     void keyRight();
@@ -63,8 +70,17 @@ void LineEditPrivate::returnResult(LineEdit::ResultCode result)
     Application::releaseFocus();
 }
 
+void LineEditPrivate::clearText()
+{
+    text.clear();
+    textSelected = false;
+    cursorPosition = 0;
+    viewportBegin = 0;
+}
+
 void LineEditPrivate::keyLeft()
 {
+    textSelected = false;
     if (cursorPosition > 0) {
         if (cursorPosition == viewportBegin)
             --viewportBegin;
@@ -74,6 +90,7 @@ void LineEditPrivate::keyLeft()
 
 void LineEditPrivate::keyRight()
 {
+    textSelected = false;
     if (cursorPosition < text.size()) {
         if (cursorPosition - viewportBegin == (TextSizeType)q->cols() - 1)
             ++viewportBegin;
@@ -83,12 +100,14 @@ void LineEditPrivate::keyRight()
 
 void LineEditPrivate::keyHome()
 {
+    textSelected = false;
     cursorPosition = 0;
     viewportBegin = 0;
 }
 
 void LineEditPrivate::keyEnd()
 {
+    textSelected = false;
     cursorPosition = text.size();
     if (text.size() >= (TextSizeType)q->cols())
         viewportBegin = text.size() - q->cols() + 1;
@@ -96,33 +115,45 @@ void LineEditPrivate::keyEnd()
 
 void LineEditPrivate::keyBackspace()
 {
-    if (cursorPosition > viewportBegin) {
-        if (viewportBegin + q->cols() >= text.size()) {
+    if (textSelected) {
+        clearText();
+    } else {
+        if (cursorPosition > viewportBegin) {
+            if (viewportBegin + q->cols() >= text.size()) {
+                if (viewportBegin > 0) {
+                    --viewportBegin;
+                }
+            }
+        } else {
             if (viewportBegin > 0) {
                 --viewportBegin;
+            } else {
+                return;
             }
         }
-    } else {
-        if (viewportBegin > 0) {
-            --viewportBegin;
-        } else {
-            return;
-        }
+        --cursorPosition;
+        text.erase(cursorPosition, 1);
     }
-    --cursorPosition;
-    text.erase(cursorPosition, 1);
 }
 
 void LineEditPrivate::keyDelete()
 {
-    if (cursorPosition < text.size()) {
-        ++cursorPosition;
-        keyBackspace();
+    if (textSelected) {
+        clearText();
+    } else {
+        if (cursorPosition < text.size()) {
+            ++cursorPosition;
+            keyBackspace();
+        }
     }
 }
 
 void LineEditPrivate::addChar(char32_t ch)
 {
+    if (textSelected) {
+        clearText();
+    }
+
     if (cursorPosition < text.size()) {
         text.insert(cursorPosition, 1, ch);
     } else {
@@ -150,7 +181,9 @@ void LineEdit::edit(const ResultCallback& resultCallback, const std::u32string& 
 {
     d->resultCallback = resultCallback;
     d->text = text;
-    d->cursorPosition = 0;
+    d->cursorPosition = text.size();
+    d->textSelected = !text.empty();
+    setFocus();
     Application::grabFocus(this);
     update();
 }
@@ -203,9 +236,19 @@ void LineEdit::paint(const Rectangle& rect)
 
     Painter painter(this);
     painter.clearLine();
+
+    const Palette::ColorGroup colorGroup = hasFocus()
+                                           ? Palette::GroupActive
+                                           : Palette::GroupInactive;
+    if (d->textSelected) {
+        painter.setBackgroundColor(palette().color(colorGroup, Palette::RoleHighlightedText));
+        painter.setColor(palette().color(colorGroup, Palette::RoleHighlight));
+        painter.setReverse(true);
+    }
     painter.printString(d->text.c_str() + d->viewportBegin, cols());
     const auto cursorPosition = d->cursorPosition;
     painter.move(cursorPosition - d->viewportBegin, 0);
+    painter.setColor(palette().color(colorGroup, Palette::RoleText));
     painter.setReverse(true);
     painter.printChar(cursorPosition < d->text.size() ? d->text[cursorPosition] : char32_t(' '));
     painter.flush();
