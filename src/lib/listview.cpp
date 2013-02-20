@@ -284,6 +284,31 @@ const std::vector<int>& ListView::selectedItems() const
     return d->selectedItems;
 }
 
+void ListView::selectItem(int item)
+{
+    if (!d->model)
+        return;
+
+    auto it = std::lower_bound(d->selectedItems.begin(), d->selectedItems.end(), item);
+    if (it != d->selectedItems.end() && *it == item) {
+        return;
+    }
+    d->selectedItems.insert(it, item);
+    d->itemsChanged(item, item);
+}
+
+void ListView::unselectItem(int item)
+{
+    if (!d->model)
+        return;
+
+    auto it = std::lower_bound(d->selectedItems.begin(), d->selectedItems.end(), item);
+    if (it != d->selectedItems.end() && *it == item) {
+        d->selectedItems.erase(it);
+        d->itemsChanged(item, item);
+    }
+}
+
 bool ListView::isItemSelected(int item) const
 {
     return std::binary_search(d->selectedItems.begin(), d->selectedItems.end(),

@@ -53,6 +53,8 @@ public:
 
     // Returns sorted list of selected items
     const std::vector<int>& selectedItems() const;
+    void selectItem(int item);
+    void unselectItem(int item);
     bool isItemSelected(int item) const;
     void clearSelection();
     void invertSelection();
