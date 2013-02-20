@@ -104,6 +104,25 @@ void LocalFileSystemBrowser::keyPressedEvent(const KeyEvent& keyEvent)
             break;
         }
 
+        case '+': // Select be regexp
+        {
+            auto resultCallback = [this, fsModel](const std::string&   pattern,
+                                                  LineEdit::ResultCode result)
+            {
+                if (result == LineEdit::Accepted) {
+                    selectItemsByRegExp(pattern);
+                    if (fsModel->fileName(0) == "..") { // Do not select .. item
+                        unselectItem(0);
+                    }
+                    StatusArea::showMessage(
+                        (boost::format("%1% items selected") % selectedItems().size()).str()
+                    );
+                }
+            };
+            StatusArea::askQuestion("Select items: ", resultCallback, ".*");
+            break;
+        }
+
         case Hotkeys::Screens::LocalFileSystemBrowser::ReloadDirectory:
             fsModel->refresh();
             break;
