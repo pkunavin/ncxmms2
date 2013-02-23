@@ -104,6 +104,21 @@ void LocalFileSystemBrowser::keyPressedEvent(const KeyEvent& keyEvent)
             break;
         }
 
+        case KeyEvent::KeyInsert: // Toggle selection
+            if (fsModel->fileName(currentItem()) != "..") // Do not select .. item
+                ListViewAppIntegrated::keyPressedEvent(keyEvent);
+            break;
+
+        case '*': // Invert selection
+            ListView::keyPressedEvent(keyEvent);
+            if (fsModel->fileName(0) == "..") { // Do not select .. item
+                unselectItem(0);
+            }
+            StatusArea::showMessage(
+                (boost::format("%1% items selected") % selectedItems().size()).str()
+            );
+            break;
+
         case '+': // Select be regexp
         {
             auto resultCallback = [this, fsModel](const std::string&   pattern,
