@@ -77,6 +77,34 @@ void ListViewAppIntegrated::keyPressedEvent(const KeyEvent& keyEvent)
             break;
         }
 
+        case '.': // Jump to next selected item
+        {
+            if (selectedItems().empty()) {
+                StatusArea::showMessage("No items selected!");
+                return;
+            }
+            const int oldCurrentItem = currentItem();
+            ListView::keyPressedEvent(keyEvent);
+            if (currentItem() == oldCurrentItem) {
+                StatusArea::showMessage("The last selected item reached!");
+            }
+            break;
+        }
+
+        case ',': // Jump to previous selected item
+        {
+            if (selectedItems().empty()) {
+                StatusArea::showMessage("No items selected!");
+                return;
+            }
+            const int oldCurrentItem = currentItem();
+            ListView::keyPressedEvent(keyEvent);
+            if (currentItem() == oldCurrentItem) {
+                StatusArea::showMessage("The first selected item reached!");
+            }
+            break;
+        }
+
         default: ListView::keyPressedEvent(keyEvent);
     }
 }

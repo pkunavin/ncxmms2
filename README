@@ -40,6 +40,8 @@ Hotkeys:
   Invert selection : *
   Select items by regular expression : +
   Unselect items by regular expression : \
+  Jump to next selected item : .
+  Jump to previous selected item : ,
   
  Playlists browser:
   Create new playlist : n

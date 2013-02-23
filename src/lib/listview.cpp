@@ -73,6 +73,8 @@ public:
     void scrollDown();
 
     void toggleSelection(int item);
+    void jumpToNextSelectedItem();
+    void jumpToPreviousSelectedItem();
 
 };
 } // ncxmms2
@@ -454,6 +456,8 @@ void ListView::keyPressedEvent(const KeyEvent& keyEvent)
 
     switch (keyEvent.key()) {
         case KeyEvent::KeyUp:
+            if (d->currentItem == -1)
+                return;
             if (d->currentItemHidden) {
                 d->currentItemHidden = false;
                 update(Rectangle(0, d->itemLine(d->currentItem), cols(), 1));
@@ -465,6 +469,8 @@ void ListView::keyPressedEvent(const KeyEvent& keyEvent)
             break;
 
         case KeyEvent::KeyDown:
+            if (d->currentItem == -1)
+                return;
             if (d->currentItemHidden) {
                 d->currentItemHidden = false;
                 update(Rectangle(0, d->itemLine(d->currentItem), cols(), 1));
@@ -491,6 +497,14 @@ void ListView::keyPressedEvent(const KeyEvent& keyEvent)
 
         case '*':
             invertSelection();
+            break;
+
+        case '.':
+            d->jumpToNextSelectedItem();
+            break;
+
+        case ',':
+            d->jumpToPreviousSelectedItem();
             break;
 
         case KeyEvent::KeyHome:
@@ -725,4 +739,30 @@ void ListViewPrivate::toggleSelection(int item)
         selectedItems.insert(it, item);
     }
     itemsChanged(item, item);
+}
+
+void ListViewPrivate::jumpToNextSelectedItem()
+{
+    if (selectedItems.empty())
+        return;
+
+    auto it = std::upper_bound(selectedItems.begin(), selectedItems.end(), currentItem);
+    if (it != selectedItems.end()) {
+        q->setCurrentItem(*it);
+    } else {
+        q->showCurrentItem();
+    }
+}
+
+void ListViewPrivate::jumpToPreviousSelectedItem()
+{
+    if (selectedItems.empty())
+        return;
+
+    auto it = std::lower_bound(selectedItems.begin(), selectedItems.end(), currentItem);
+    if (it != selectedItems.begin()) {
+        q->setCurrentItem(*(--it));
+    } else {
+        q->showCurrentItem();
+    }
 }

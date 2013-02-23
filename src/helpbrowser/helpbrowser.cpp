@@ -46,6 +46,8 @@ HelpBrowser::HelpBrowser(const Rectangle& rect, Window *parent) :
         {"Invert selection",                     '*'},
         {"Select items by regular expression",   '+'},
         {"Unselect items by regular expression", '\\'},
+        {"Jump to next selected item",           '.'},
+        {"Jump to previous selected item",       ','},
         {nullptr, 0}
     };
 
