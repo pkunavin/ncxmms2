@@ -85,7 +85,7 @@ void ListViewAppIntegrated::keyPressedEvent(const KeyEvent& keyEvent)
             }
             const int oldCurrentItem = currentItem();
             ListView::keyPressedEvent(keyEvent);
-            if (currentItem() == oldCurrentItem) {
+            if (isItemSelected(currentItem()) && currentItem() == oldCurrentItem) {
                 StatusArea::showMessage("The last selected item reached!");
             }
             break;
@@ -99,7 +99,7 @@ void ListViewAppIntegrated::keyPressedEvent(const KeyEvent& keyEvent)
             }
             const int oldCurrentItem = currentItem();
             ListView::keyPressedEvent(keyEvent);
-            if (currentItem() == oldCurrentItem) {
+            if (isItemSelected(currentItem()) && currentItem() == oldCurrentItem) {
                 StatusArea::showMessage("The first selected item reached!");
             }
             break;
