@@ -9,7 +9,7 @@ extern "C" {
 #include <stdlib.h>
 
 #define TERMKEY_VERSION_MAJOR 0
-#define TERMKEY_VERSION_MINOR 15
+#define TERMKEY_VERSION_MINOR 16
 
 #define TERMKEY_CHECK_VERSION \
         termkey_check_version(TERMKEY_VERSION_MAJOR, TERMKEY_VERSION_MINOR)
@@ -96,7 +96,11 @@ typedef enum {
   TERMKEY_TYPE_FUNCTION,
   TERMKEY_TYPE_KEYSYM,
   TERMKEY_TYPE_MOUSE,
-  TERMKEY_TYPE_POSITION
+  TERMKEY_TYPE_POSITION,
+  TERMKEY_TYPE_MODEREPORT,
+  /* add other recognised types here */
+
+  TERMKEY_TYPE_UNKNOWN_CSI = -1
 } TermKeyType;
 
 typedef enum {
@@ -110,7 +114,7 @@ typedef enum {
 typedef enum {
   TERMKEY_MOUSE_UNKNOWN,
   TERMKEY_MOUSE_PRESS,
-    TERMKEY_MOUSE_DRAG,
+  TERMKEY_MOUSE_DRAG,
   TERMKEY_MOUSE_RELEASE
 } TermKeyMouseEvent;
 
@@ -201,6 +205,10 @@ TermKeySym termkey_keyname2sym(TermKey *tk, const char *keyname);
 TermKeyResult termkey_interpret_mouse(TermKey *tk, const TermKeyKey *key, TermKeyMouseEvent *event, int *button, int *line, int *col);
 
 TermKeyResult termkey_interpret_position(TermKey *tk, const TermKeyKey *key, int *line, int *col);
+
+TermKeyResult termkey_interpret_modereport(TermKey *tk, const TermKeyKey *key, int *initial, int *mode, int *value);
+
+TermKeyResult termkey_interpret_csi(TermKey *tk, const TermKeyKey *key, long args[], size_t *nargs, unsigned long *cmd);
 
 typedef enum {
   TERMKEY_FORMAT_LONGMOD     = 1 << 0, /* Shift-... instead of S-... */

@@ -189,6 +189,7 @@ static TermKey *termkey_alloc(void)
   tk->buffstart = 0;
   tk->buffcount = 0;
   tk->buffsize  = 256; /* bytes */
+  tk->hightide  = 0;
 
   tk->restore_termios_valid = 0;
 
@@ -744,6 +745,12 @@ static TermKeyResult peekkey(TermKey *tk, TermKeyKey *key, int force, size_t *nb
   fprintf(stderr, "\n");
 #endif
 
+  if(tk->hightide) {
+    tk->buffstart += tk->hightide;
+    tk->buffcount -= tk->hightide;
+    tk->hightide = 0;
+  }
+
   TermKeyResult ret;
   struct TermKeyDriverNode *p;
   for(p = tk->drivers; p; p = p->next) {
@@ -900,69 +907,6 @@ static TermKeyResult peekkey_mouse(TermKey *tk, TermKeyKey *key, size_t *nbytep)
   key->code.mouse[0] &= ~0x1c;
 
   *nbytep = 3;
-  return TERMKEY_RES_KEY;
-}
-
-TermKeyResult termkey_interpret_mouse(TermKey *tk, const TermKeyKey *key, TermKeyMouseEvent *event, int *button, int *line, int *col)
-{
-  if(key->type != TERMKEY_TYPE_MOUSE)
-    return TERMKEY_RES_NONE;
-
-  if(button)
-    *button = 0;
-
-  termkey_key_get_linecol(key, line, col);
-
-  if(!event)
-    return TERMKEY_RES_KEY;
-
-  int btn = 0;
-
-  int code = key->code.mouse[0];
-
-  int drag = code & 0x20;
-
-  code &= ~0x3c;
-
-  switch(code) {
-  case 0:
-  case 1:
-  case 2:
-    *event = drag ? TERMKEY_MOUSE_DRAG : TERMKEY_MOUSE_PRESS;
-    btn = code + 1;
-    break;
-
-  case 3:
-    *event = TERMKEY_MOUSE_RELEASE;
-    // no button hint
-    break;
-
-  case 64:
-  case 65:
-    *event = drag ? TERMKEY_MOUSE_DRAG : TERMKEY_MOUSE_PRESS;
-    btn = code + 4 - 64;
-    break;
-
-  default:
-    *event = TERMKEY_MOUSE_UNKNOWN;
-  }
-
-  if(button)
-    *button = btn;
-
-  if(key->code.mouse[3] & 0x80)
-    *event = TERMKEY_MOUSE_RELEASE;
-
-  return TERMKEY_RES_KEY;
-}
-
-TermKeyResult termkey_interpret_position(TermKey *tk, const TermKeyKey *key, int *line, int *col)
-{
-  if(key->type != TERMKEY_TYPE_POSITION)
-    return TERMKEY_RES_NONE;
-
-  termkey_key_get_linecol(key, line, col);
-
   return TERMKEY_RES_KEY;
 }
 
@@ -1310,6 +1254,18 @@ size_t termkey_strfkey(TermKey *tk, char *buffer, size_t len, TermKeyKey *key, T
   case TERMKEY_TYPE_POSITION:
     l = snprintf(buffer + pos, len - pos, "Position");
     break;
+  case TERMKEY_TYPE_MODEREPORT:
+    {
+      int initial, mode, value;
+      termkey_interpret_modereport(tk, key, &initial, &mode, &value);
+      if(initial)
+        l = snprintf(buffer + pos, len - pos, "Mode(%c%d=%d)", initial, mode, value);
+      else
+        l = snprintf(buffer + pos, len - pos, "Mode(%d=%d)", mode, value);
+    }
+  case TERMKEY_TYPE_UNKNOWN_CSI:
+    l = snprintf(buffer + pos, len - pos, "CSI %c", key->code.number & 0xff);
+    break;
   }
 
   if(l <= 0) return pos;
@@ -1413,6 +1369,7 @@ int termkey_keycmp(TermKey *tk, const TermKeyKey *key1p, const TermKeyKey *key2p
         return key1.code.sym - key2.code.sym;
       break;
     case TERMKEY_TYPE_FUNCTION:
+    case TERMKEY_TYPE_UNKNOWN_CSI:
       if(key1.code.number != key2.code.number)
         return key1.code.number - key2.code.number;
       break;
@@ -1433,6 +1390,17 @@ int termkey_keycmp(TermKey *tk, const TermKeyKey *key1p, const TermKeyKey *key2p
         return col1 - col2;
       }
       break;
+    case TERMKEY_TYPE_MODEREPORT:
+      {
+        int initial1, initial2, mode1, mode2, value1, value2;
+        termkey_interpret_modereport(tk, &key1, &initial1, &mode1, &value1);
+        termkey_interpret_modereport(tk, &key2, &initial2, &mode2, &value2);
+        if(initial1 != initial2)
+          return initial1 - initial2;
+        if(mode1 != mode2)
+          return mode1 - mode2;
+        return value1 - value2;
+      }
   }
 
   return key1.modifiers - key2.modifiers;

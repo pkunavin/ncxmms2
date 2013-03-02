@@ -134,19 +134,25 @@ static void register_csifunc(TermKeyType type, TermKeySym sym, int number)
  * Handler for CSI u extended Unicode keys
  */
 
-static TermKeyResult handle_csi_unicode(TermKey *tk, TermKeyKey *key, int cmd, long *arg, int args)
+static TermKeyResult handle_csi_u(TermKey *tk, TermKeyKey *key, int cmd, long *arg, int args)
 {
-  if(args > 1 && arg[1] != -1)
-    key->modifiers = arg[1] - 1;
-  else
-    key->modifiers = 0;
+  switch(cmd) {
+    case 'u': {
+      if(args > 1 && arg[1] != -1)
+        key->modifiers = arg[1] - 1;
+      else
+        key->modifiers = 0;
 
-  int mod = key->modifiers;
-  key->type = TERMKEY_TYPE_KEYSYM;
-  (*tk->method.emit_codepoint)(tk, arg[0], key);
-  key->modifiers |= mod;
+      int mod = key->modifiers;
+      key->type = TERMKEY_TYPE_KEYSYM;
+      (*tk->method.emit_codepoint)(tk, arg[0], key);
+      key->modifiers |= mod;
 
-  return TERMKEY_RES_KEY;
+      return TERMKEY_RES_KEY;
+    }
+    default:
+      return TERMKEY_RES_NONE;
+  }
 }
 
 /*
@@ -154,10 +160,18 @@ static TermKeyResult handle_csi_unicode(TermKey *tk, TermKeyKey *key, int cmd, l
  * Note: This does not handle X10 encoding
  */
 
-static TermKeyResult handle_csi_mouse(TermKey *tk, TermKeyKey *key, int cmd, long *arg, int args)
+static TermKeyResult handle_csi_m(TermKey *tk, TermKeyKey *key, int cmd, long *arg, int args)
 {
   int initial = cmd >> 8;
   cmd &= 0xff;
+
+  switch(cmd) {
+    case 'M':
+    case 'm':
+      break;
+    default:
+      return TERMKEY_RES_NONE;
+  }
 
   if(!initial && args >= 3) { // rxvt protocol
     key->type = TERMKEY_TYPE_MOUSE;
@@ -189,19 +203,209 @@ static TermKeyResult handle_csi_mouse(TermKey *tk, TermKeyKey *key, int cmd, lon
   return TERMKEY_RES_NONE;
 }
 
-/*
- * Handler for CSI R position reports
- */
-
-static TermKeyResult handle_csi_position(TermKey *tk, TermKeyKey *key, int cmd, long *arg, int args)
+TermKeyResult termkey_interpret_mouse(TermKey *tk, const TermKeyKey *key, TermKeyMouseEvent *event, int *button, int *line, int *col)
 {
-  if(args < 2)
+  if(key->type != TERMKEY_TYPE_MOUSE)
     return TERMKEY_RES_NONE;
 
-  key->type = TERMKEY_TYPE_POSITION;
-  termkey_key_set_linecol(key, arg[1], arg[0]);
+  if(button)
+    *button = 0;
+
+  termkey_key_get_linecol(key, line, col);
+
+  if(!event)
+    return TERMKEY_RES_KEY;
+
+  int btn = 0;
+
+  int code = key->code.mouse[0];
+
+  int drag = code & 0x20;
+
+  code &= ~0x3c;
+
+  switch(code) {
+  case 0:
+  case 1:
+  case 2:
+    *event = drag ? TERMKEY_MOUSE_DRAG : TERMKEY_MOUSE_PRESS;
+    btn = code + 1;
+    break;
+
+  case 3:
+    *event = TERMKEY_MOUSE_RELEASE;
+    // no button hint
+    break;
+
+  case 64:
+  case 65:
+    *event = drag ? TERMKEY_MOUSE_DRAG : TERMKEY_MOUSE_PRESS;
+    btn = code + 4 - 64;
+    break;
+
+  default:
+    *event = TERMKEY_MOUSE_UNKNOWN;
+  }
+
+  if(button)
+    *button = btn;
+
+  if(key->code.mouse[3] & 0x80)
+    *event = TERMKEY_MOUSE_RELEASE;
 
   return TERMKEY_RES_KEY;
+}
+
+/*
+ * Handler for CSI ? R position reports
+ * A plain CSI R with no arguments is probably actually <F3>
+ */
+
+static TermKeyResult handle_csi_R(TermKey *tk, TermKeyKey *key, int cmd, long *arg, int args)
+{
+  switch(cmd) {
+    case 'R'|'?'<<8:
+      if(args < 2)
+        return TERMKEY_RES_NONE;
+
+      key->type = TERMKEY_TYPE_POSITION;
+      termkey_key_set_linecol(key, arg[1], arg[0]);
+      return TERMKEY_RES_KEY;
+
+    default:
+      return handle_csi_ss3_full(tk, key, cmd, arg, args);
+  }
+}
+
+TermKeyResult termkey_interpret_position(TermKey *tk, const TermKeyKey *key, int *line, int *col)
+{
+  if(key->type != TERMKEY_TYPE_POSITION)
+    return TERMKEY_RES_NONE;
+
+  termkey_key_get_linecol(key, line, col);
+
+  return TERMKEY_RES_KEY;
+}
+
+/*
+ * Handler for CSI $y mode status reports
+ */
+
+static TermKeyResult handle_csi_y(TermKey *tk, TermKeyKey *key, int cmd, long *arg, int args)
+{
+  switch(cmd) {
+    case 'y'|'$'<<16:
+    case 'y'|'$'<<16 | '?'<<8:
+      if(args < 2)
+        return TERMKEY_RES_NONE;
+
+      key->type = TERMKEY_TYPE_MODEREPORT;
+      key->code.mouse[0] = (cmd >> 8);
+      key->code.mouse[1] = arg[0] >> 8;
+      key->code.mouse[2] = arg[0] & 0xff;
+      key->code.mouse[3] = arg[1];
+      return TERMKEY_RES_KEY;
+
+    default:
+      return TERMKEY_RES_NONE;
+  }
+}
+
+TermKeyResult termkey_interpret_modereport(TermKey *tk, const TermKeyKey *key, int *initial, int *mode, int *value)
+{
+  if(key->type != TERMKEY_TYPE_MODEREPORT)
+    return TERMKEY_RES_NONE;
+
+  if(initial)
+    *initial = key->code.mouse[0];
+
+  if(mode)
+    *mode = (key->code.mouse[1] << 8) | key->code.mouse[2];
+
+  if(value)
+    *value = key->code.mouse[3];
+
+  return TERMKEY_RES_KEY;
+}
+
+#define CHARAT(i) (tk->buffer[tk->buffstart + (i)])
+
+static TermKeyResult parse_csi(TermKey *tk, size_t introlen, size_t *csi_len, long args[], size_t *nargs, unsigned long *commandp)
+{
+  size_t csi_end = introlen;
+
+  while(csi_end < tk->buffcount) {
+    if(CHARAT(csi_end) >= 0x40 && CHARAT(csi_end) < 0x80)
+      break;
+    csi_end++;
+  }
+
+  if(csi_end >= tk->buffcount)
+    return TERMKEY_RES_AGAIN;
+
+  unsigned char cmd = CHARAT(csi_end);
+  *commandp = cmd;
+
+  char present = 0;
+  int argi = 0;
+
+  size_t p = introlen;
+
+  // See if there is an initial byte
+  if(CHARAT(p) >= '<' && CHARAT(p) <= '?') {
+    *commandp |= (CHARAT(p) << 8);
+    p++;
+  }
+
+  // Now attempt to parse out up number;number;... separated values
+  while(p < csi_end) {
+    unsigned char c = CHARAT(p);
+
+    if(c >= '0' && c <= '9') {
+      if(!present) {
+        args[argi] = c - '0';
+        present = 1;
+      }
+      else {
+        args[argi] = (args[argi] * 10) + c - '0';
+      }
+    }
+    else if(c == ';') {
+      if(!present)
+        args[argi] = -1;
+      present = 0;
+      argi++;
+
+      if(argi > 16)
+        break;
+    }
+    else if(c >= 0x20 && c <= 0x2f) {
+      *commandp |= c << 16;
+      break;
+    }
+
+    p++;
+  }
+
+  if(present)
+    argi++;
+
+  *nargs = argi;
+  *csi_len = csi_end + 1;
+
+  return TERMKEY_RES_KEY;
+}
+
+TermKeyResult termkey_interpret_csi(TermKey *tk, const TermKeyKey *key, long args[], size_t *nargs, unsigned long *cmd)
+{
+  size_t dummy;
+
+  if(tk->hightide == 0)
+    return TERMKEY_RES_NONE;
+  if(key->type != TERMKEY_TYPE_UNKNOWN_CSI)
+    return TERMKEY_RES_NONE;
+
+  return parse_csi(tk, 0, &dummy, args, nargs, cmd);
 }
 
 static int register_keys(void)
@@ -280,12 +484,14 @@ static int register_keys(void)
   register_csifunc(TERMKEY_TYPE_FUNCTION, 19, 33);
   register_csifunc(TERMKEY_TYPE_FUNCTION, 20, 34);
 
-  csi_handlers['u' - 0x40] = &handle_csi_unicode;
+  csi_handlers['u' - 0x40] = &handle_csi_u;
 
-  csi_handlers['M' - 0x40] = &handle_csi_mouse;
-  csi_handlers['m' - 0x40] = &handle_csi_mouse;
+  csi_handlers['M' - 0x40] = &handle_csi_m;
+  csi_handlers['m' - 0x40] = &handle_csi_m;
 
-  csi_handlers['R' - 0x40] = &handle_csi_position;
+  csi_handlers['R' - 0x40] = &handle_csi_R;
+
+  csi_handlers['y' - 0x40] = &handle_csi_y;
 
   keyinfo_initialised = 1;
   return 1;
@@ -313,19 +519,16 @@ static void free_driver(void *info)
   free(csi);
 }
 
-#define CHARAT(i) (tk->buffer[tk->buffstart + (i)])
-
 static TermKeyResult peekkey_csi(TermKey *tk, TermKeyCsi *csi, size_t introlen, TermKeyKey *key, int force, size_t *nbytep)
 {
-  size_t csi_end = introlen;
+  size_t csi_len;
+  size_t args = 16;
+  long arg[16];
+  unsigned long cmd;
 
-  while(csi_end < tk->buffcount) {
-    if(CHARAT(csi_end) >= 0x40 && CHARAT(csi_end) < 0x80)
-      break;
-    csi_end++;
-  }
+  TermKeyResult ret = parse_csi(tk, introlen, &csi_len, arg, &args, &cmd);
 
-  if(csi_end >= tk->buffcount) {
+  if(ret == TERMKEY_RES_AGAIN) {
     if(!force)
       return TERMKEY_RES_AGAIN;
 
@@ -335,54 +538,7 @@ static TermKeyResult peekkey_csi(TermKey *tk, TermKeyCsi *csi, size_t introlen, 
     return TERMKEY_RES_KEY;
   }
 
-  unsigned char cmd = CHARAT(csi_end);
-  long arg[16];
-  char present = 0;
-  int args = 0;
-  int initial = 0;
-
-  size_t p = introlen;
-
-  // See if there is an initial byte
-  if(CHARAT(p) >= '<' && CHARAT(p) <= '?') {
-    initial = CHARAT(p);
-    p++;
-  }
-
-  // Now attempt to parse out up number;number;... separated values
-  while(p < csi_end) {
-    unsigned char c = CHARAT(p);
-
-    if(c >= '0' && c <= '9') {
-      if(!present) {
-        arg[args] = c - '0';
-        present = 1;
-      }
-      else {
-        arg[args] = (arg[args] * 10) + c - '0';
-      }
-    }
-    else if(c == ';') {
-      if(!present)
-        arg[args] = -1;
-      present = 0;
-      args++;
-
-      if(args > 16)
-        break;
-    }
-
-    p++;
-  }
-
-  if(!present)
-    arg[args] = -1;
-
-  args++;
-
   if(cmd == 'M' && args < 3) { // Mouse in X10 encoding consumes the next 3 bytes also
-    size_t csi_len = csi_end + 1;
-
     tk->buffstart += csi_len;
     tk->buffcount -= csi_len;
 
@@ -400,10 +556,10 @@ static TermKeyResult peekkey_csi(TermKey *tk, TermKeyCsi *csi, size_t introlen, 
   TermKeyResult result = TERMKEY_RES_NONE;
 
   // We know from the logic above that cmd must be >= 0x40 and < 0x80
-  if(csi_handlers[cmd - 0x40])
-    result = (*csi_handlers[cmd - 0x40])(tk, key, (initial<<8)|cmd, arg, args);
+  if(csi_handlers[(cmd & 0xff) - 0x40])
+    result = (*csi_handlers[(cmd & 0xff) - 0x40])(tk, key, cmd, arg, args);
 
-  if(key->code.sym == TERMKEY_SYM_UNKNOWN) {
+  if(result == TERMKEY_RES_NONE) {
 #ifdef DEBUG
     switch(args) {
       case 1:
@@ -420,10 +576,15 @@ static TermKeyResult peekkey_csi(TermKey *tk, TermKeyCsi *csi, size_t introlen, 
         break;
     }
 #endif
-    return TERMKEY_RES_NONE;
+    key->type = TERMKEY_TYPE_UNKNOWN_CSI;
+    key->code.number = cmd;
+
+    tk->hightide = csi_len - introlen;
+    *nbytep = introlen; // Do not yet eat the data bytes
+    return TERMKEY_RES_KEY;
   }
 
-  *nbytep = csi_end + 1;
+  *nbytep = csi_len;
   return result;
 }
 
