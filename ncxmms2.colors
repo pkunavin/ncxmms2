@@ -12,7 +12,7 @@
 //   "Highlight" - color to indicate current item
 //   "HighlightedText" - text color under highlighted current item
 // For custom window classes special roles can be provided.
-//   For each role yuu can use one of the following colors:
+//   For each role you can use one of the following colors:
 // "Black", "Red", "Green", "Yellow", "Blue", "Magenta", "Cyan", "White".
 // Maybe one day ncxmms2 will have 256 colors support...
 //   It's worth to mention, that you don't have to change all roles in some
