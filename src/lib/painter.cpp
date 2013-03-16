@@ -225,7 +225,9 @@ void Painter::squeezedPrint(const std::string& str, std::string::size_type maxLe
 
         if (!maxLength) {
             for (int i = 0; i < 3; ++i) {
-                c_str = g_utf8_prev_char(c_str);
+                c_str = g_utf8_find_prev_char(str.c_str(), c_str);
+                if (!c_str)
+                    return;
             }
             waddnstr(d->cursesWin, str.c_str(), c_str - str.c_str());
             waddstr(d->cursesWin, "...");
