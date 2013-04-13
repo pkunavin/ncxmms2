@@ -223,7 +223,7 @@ void Painter::squeezedPrint(const std::string& str, std::string::size_type maxLe
             --maxLength;
         }
 
-        if (!maxLength) {
+       if (!maxLength && *c_str) {
             for (int i = 0; i < 3; ++i) {
                 c_str = g_utf8_find_prev_char(str.c_str(), c_str);
                 if (!c_str)
