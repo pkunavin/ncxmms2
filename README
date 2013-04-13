@@ -1,6 +1,8 @@
 ncxmms2 is an ncurses xmms2 client. The aim of this project is to write ncmpcpp
 like client for xmms2. 
 
+For customization see ncxmms2.conf and ncxmms2.colors.
+
 Currently supported features:
  - Base features:
    - Display playback status
@@ -12,8 +14,6 @@ Currently supported features:
   - Local file system browser screen
   - Medialib browser screen
   - Playlists browser screen
-  
-For colors customization see ncxmms2.colors .
   
 Hotkeys:
  Screens switching:

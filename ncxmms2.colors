@@ -128,23 +128,5 @@
         {
             "Text" : "White"
         }
-    },
-    
-    "PlaylistView":
-    {
-        "Active":
-        {
-            // Temporary roles, full featured display format setting coming soon...
-            "Artist"   : "Yellow",
-            "Title"    : "Yellow",
-            "Duration" : "Green"
-        },
-        
-        "Inactive":
-        {
-            "Artist"   : "Yellow",
-            "Title"    : "Yellow",
-            "Duration" : "Green"
-        }
     }
 }

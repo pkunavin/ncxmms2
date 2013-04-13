@@ -29,6 +29,8 @@ public:
 
     void setPlaylist(const std::string& playlist);
 
+    void setDisplayFormat(const std::string& format);
+
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
 
 private:

@@ -87,7 +87,7 @@ bool PlaylistModel::getSongInfo(int position, const Xmms::PropDict& info)
         return true;
 
     Song *song = &(*it).second;
-    int durationDiff = -song->duration();
+    int durationDiff = song->duration() > 0 ? -song->duration() : 0;
     song->loadInfo(info);
 
     if (position == -1
@@ -98,7 +98,7 @@ bool PlaylistModel::getSongInfo(int position, const Xmms::PropDict& info)
         itemsChanged(position, position);//redrawItem(position);
     }
 
-    durationDiff += song->duration();
+    durationDiff += song->duration() > 0 ? song->duration() : 0;
     if (durationDiff) {
         m_totalDuration += durationDiff;
         totalDurationChanged();
@@ -271,7 +271,7 @@ void PlaylistModel::data(int item, ListModelItemData *itemData) const
     // Actually, this is never used, PlaylistItemDelegate uses song method instead.
     const Song& s = song(item);
 
-    if (s.id()) {
+    if (s.id() > 0) {
         itemData->text.clear();
         itemData->text.append(s.artist()).append(" - ").append(s.title());
     } else {

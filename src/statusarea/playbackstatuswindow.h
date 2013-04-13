@@ -19,6 +19,7 @@
 
 #include <xmmsclient/xmmsclient++.h>
 #include "../song.h"
+#include "../songdisplayformatparser.h"
 #include "../lib/window.h"
 
 namespace ncxmms2 {
@@ -42,6 +43,7 @@ private:
     Xmms::Playback::Status m_playbackStatus;
     Song m_currentSong;
     int m_playbackPlaytime;
+     SongDisplayFormatParser m_songDisplayFormatter;
 
     // Callbacks
     bool getPlaybackStatus(const Xmms::Playback::Status& status);

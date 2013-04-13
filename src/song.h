@@ -28,22 +28,45 @@ namespace ncxmms2 {
 class Song
 {
 public:
-    Song() : m_id(0), m_durartion(0) {};
+    Song() :
+        m_id(-1),
+        m_durartion(-1),
+        m_trackNumber(-1),
+        m_bitrate(-1),
+        m_samplerate(-1) {}
+
     void loadInfo(const Xmms::PropDict& info);
 
     int id() const                            {return m_id;}
+    int duration() const                      {return m_durartion;}
+    int trackNumber() const                   {return m_trackNumber;}
+    int timesPlayed() const                   {return m_timesPlayed;}
+    int bitrate() const                       {return m_bitrate;}
+    int samplerate() const                    {return m_samplerate;}
     const std::string& title() const          {return m_title;}
     const std::string& artist() const         {return m_artist;}
-    const std::string& durationString() const {return m_durationString;}
-    int duration() const                      {return m_durartion;}
+    const std::string& album() const          {return m_album;}
+    const std::string& performer() const      {return m_performer;}
+    const std::string& date() const           {return m_date;}
+    const std::string& genre() const          {return m_genre;}
+    const std::string& url() const            {return m_url;}
+    const std::string& fileName() const       {return m_fileName;}
 
 private:
     int m_id;
+    int m_durartion;
+    int m_trackNumber;
+    int m_timesPlayed;
+    int m_bitrate;
+    int m_samplerate;
     std::string m_title;
     std::string m_artist;
-    std::string m_durationString;
-    int m_durartion;
-
+    std::string m_album;
+    std::string m_performer;
+    std::string m_date;
+    std::string m_genre;
+    std::string m_url;
+    std::string m_fileName;
 };
 } // ncxmms2
 

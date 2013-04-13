@@ -16,7 +16,6 @@
 
 #include <xmmsclient/xmmsclient++.h>
 #include "song.h"
-#include "utils.h"
 
 using namespace ncxmms2;
 
@@ -24,32 +23,44 @@ void Song::loadInfo(const Xmms::PropDict& info)
 {
     m_id = info.get<int>("id");
 
-    m_title.clear();
-    if (!info.contains("title")) {
-        if (info.contains("url")) {
-            std::string url = Xmms::decodeUrl(info.get<std::string>("url"));
-            const std::string::size_type slashPos = url.rfind('/');
-            if (!(slashPos == std::string::npos || slashPos + 1 >= url.size()))
-                m_title = url.substr(slashPos+1);
-        } else {
-            m_title = "No url: it is strange!";
-        }
-    } else {
-        m_title = info.get<std::string>("title");
+#define INFO_GET_STRING(var, key)             \
+    do {                                      \
+        var.clear();                          \
+        if (info.contains(key))               \
+            var = info.get<std::string>(key); \
+    } while (0)
+
+    INFO_GET_STRING(m_title, "title");
+    INFO_GET_STRING(m_artist, "artist");
+    INFO_GET_STRING(m_album, "album");
+    INFO_GET_STRING(m_performer, "performer");
+    INFO_GET_STRING(m_date, "date");
+    INFO_GET_STRING(m_genre, "genre");
+
+#undef INFO_GET_STRING
+
+    m_url.clear();
+    m_fileName.clear();
+    if (info.contains("url")) {
+        m_url = Xmms::decodeUrl(info.get<std::string>("url"));
+        const std::string::size_type slashPos = m_url.rfind('/');
+        if (!(slashPos == std::string::npos || slashPos + 1 >= m_url.size()))
+            m_fileName = m_url.substr(slashPos + 1);
     }
 
-    if (info.contains("artist")) {
-        m_artist = info.get<std::string>("artist");
-    } else {
-        m_artist.clear();
-    }
+#define INFO_GET_INT(var, key)        \
+    do {                              \
+        var = -1;                     \
+        if (info.contains(key))       \
+            var = info.get<int>(key); \
+    } while (0)
 
-    if (info.contains("duration")) {
-        m_durartion = info.get<int>("duration");
-        m_durationString = Utils::getTimeStringFromInt(m_durartion);
-    } else {
-        m_durartion = 0;
-        m_durationString.clear();
-    }
+    INFO_GET_INT(m_durartion, "duration");
+    INFO_GET_INT(m_trackNumber, "tracknr");
+    INFO_GET_INT(m_timesPlayed, "timesplayed");
+    INFO_GET_INT(m_bitrate, "bitrate");
+    INFO_GET_INT(m_samplerate, "samplerate");
+
+#undef INFO_GET_INT
 }
 

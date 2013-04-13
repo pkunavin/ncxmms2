@@ -17,6 +17,8 @@
 #ifndef PLAYLISTITEMDELEGATE_H
 #define PLAYLISTITEMDELEGATE_H
 
+#include "../songdisplayformatparser.h"
+
 #include "../lib/listmodelitemdelegate.h"
 #include "../lib/palette.h"
 
@@ -29,14 +31,12 @@ class PlaylistItemDelegate : public ListModelItemDelegate
 public:
     PlaylistItemDelegate(const PlaylistModel *model);
 
+    void setDisplayFormat(const std::string& format);
+
     virtual void paint(Painter *painter, const ListItemPaintOptions& options, int item);
 
-    enum
-    {
-        RoleArtist = Palette::RoleUser,
-        RoleTitle,
-        RoleDuration
-    };
+private:
+    SongDisplayFormatParser m_songDisplayFormatter;
 };
 }
 

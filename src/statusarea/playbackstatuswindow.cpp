@@ -14,13 +14,13 @@
  *  GNU General Public License for more details.
  */
 
-#include <boost/format.hpp>
-
 #include "playbackstatuswindow.h"
 #include "../utils.h"
+#include "../settings.h"
 
 #include "../lib/painter.h"
 #include "../lib/rectangle.h"
+#include "../lib/palette.h"
 
 using namespace ncxmms2;
 
@@ -34,6 +34,18 @@ PlaybackStatusWindow::PlaybackStatusWindow(Xmms::Client *client, int xPos, int y
     setMinumumLines(1);
     setMaximumLines(1);
     setMinumumCols(strlen("[Stopped] ...[xx::xx::xx/xx::xx::xx]"));
+
+    std::string defaultDisplayFormat = "[l:1:0]{$a - $t}|{$t}|{$f}";
+    const std::string displayFormat = Settings::value("PlaybackStatusWindow", "displayFormat",
+                                                      defaultDisplayFormat);
+
+    if (!m_songDisplayFormatter.setDisplayFormat(displayFormat)) {
+        throw std::runtime_error(
+            std::string("PlaybackStatusWindow: Parsing format string failed: ").append(
+                m_songDisplayFormatter.errorString()
+            )
+        );
+    }
 
     m_xmmsClient->playback.getStatus()(Xmms::bind(&PlaybackStatusWindow::getPlaybackStatus, this));
     m_xmmsClient->playback.broadcastStatus()(Xmms::bind(&PlaybackStatusWindow::getPlaybackStatus, this));
@@ -86,9 +98,13 @@ void PlaybackStatusWindow::paint(const Rectangle& rect)
 {
     NCXMMS2_UNUSED(rect);
 
+    const Palette::ColorGroup colorGroup = hasFocus()
+                                           ? Palette::GroupActive
+                                           : Palette::GroupInactive;
     Painter painter(this);
     painter.clearLine(0);
 
+    painter.setColor(palette().color(colorGroup, Palette::RoleText));
     painter.setBold(true);
     switch (m_playbackStatus) {
         case Xmms::Playback::PLAYING : painter.printString("Playing: " ); break;
@@ -103,18 +119,16 @@ void PlaybackStatusWindow::paint(const Rectangle& rect)
     timeString.append(Utils::getTimeStringFromInt(m_playbackPlaytime));
     if (m_currentSong.duration() > 0) {
         timeString.push_back('/');
-        timeString.append(m_currentSong.durationString());
+        timeString.append(Utils::getTimeStringFromInt(m_currentSong.duration()));
     }
     timeString.push_back(']');
 
-    if (!m_currentSong.artist().empty()) {
-        painter.squeezedPrint((boost::format("%1% - %2%") % m_currentSong.artist() % m_currentSong.title()).str(),
-                              cols() - painter.x() - timeString.size() - 1);
-    } else {
-        painter.squeezedPrint(m_currentSong.title(), cols() - painter.x() - timeString.size() - 1);
-    }
+    const Rectangle songDisplayRect = Rectangle(painter.x(), painter.y(),
+                                                cols() - painter.x() - timeString.size() - 1, 1);
+    m_songDisplayFormatter.paint(m_currentSong, &painter, songDisplayRect);
 
     painter.move(cols() - timeString.size(), 0);
+    painter.setColor(palette().color(colorGroup, Palette::RoleText));
     painter.setBold(true);
     painter.printString(timeString);
 

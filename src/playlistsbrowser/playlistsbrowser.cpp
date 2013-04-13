@@ -14,9 +14,12 @@
  *  GNU General Public License for more details.
  */
 
+#include <stdexcept>
+
 #include "playlistsbrowser.h"
 #include "playlistslistview.h"
 #include "../playlistview/playlistview.h"
+#include "../settings.h"
 
 #include "../lib/painter.h"
 #include "../lib/keyevent.h"
@@ -31,6 +34,10 @@ PlaylistsBrowser::PlaylistsBrowser(Xmms::Client *xmmsClient, const Rectangle& re
     setName("Playlists browser");
     loadPalette("PlaylistsBrowser");
 
+    std::string defaultDisplayFormat = "[l:1:0]%4c{$a - $t}|{$t}|{$f}[r:0:10]{%3c($l)}";
+    const std::string displayFormat = Settings::value("PlaylistsBrowserScreen", "playlistDisplayFormat",
+                                                      defaultDisplayFormat);
+
     const Rectangle plsListViewRect(0, 0, PlaylistsListViewCols, rect.lines());
     m_plsListView = new PlaylistsListView(xmmsClient, plsListViewRect, this);
     m_plsListView->setMinumumCols(PlaylistsListViewCols);
@@ -40,6 +47,14 @@ PlaylistsBrowser::PlaylistsBrowser(Xmms::Client *xmmsClient, const Rectangle& re
     const Rectangle plsViewerRect(PlaylistsListViewCols + 1, 0,
                                   rect.cols() - PlaylistsListViewCols - 1, rect.lines());
     m_plsViewer = new PlaylistView(xmmsClient, plsViewerRect, this);
+    try
+    {
+        m_plsViewer->setDisplayFormat(displayFormat);
+    }
+    catch (const std::runtime_error& error)
+    {
+        throw std::runtime_error(std::string("PlaylistsBrowser: ").append(error.what()));
+    }
     m_plsViewer->setHideCurrentItemInterval(0);
     m_plsViewer->hideCurrentItem();
 

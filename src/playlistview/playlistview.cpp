@@ -36,13 +36,7 @@ PlaylistView::PlaylistView(Xmms::Client *xmmsClient, const Rectangle& rect, Wind
     m_xmmsClient(xmmsClient),
     m_playbackStatus(Xmms::Playback::STOPPED)
 {
-    static const std::map<std::string, int> playlistItemDelegateColorRoles =
-    {
-        {"Artist",   PlaylistItemDelegate::RoleArtist},
-        {"Title",    PlaylistItemDelegate::RoleTitle},
-        {"Duration", PlaylistItemDelegate::RoleDuration}
-    };
-    loadPalette("PlaylistView", playlistItemDelegateColorRoles);
+    loadPalette("PlaylistView");
 
     PlaylistModel *plsModel = new PlaylistModel(m_xmmsClient, this);
     setModel(plsModel);
@@ -62,6 +56,13 @@ void PlaylistView::setPlaylist(const std::string& playlist)
 {
     PlaylistModel *plsModel = boost::polymorphic_downcast<PlaylistModel*>(model());
     plsModel->setPlaylist(playlist);
+}
+
+void PlaylistView::setDisplayFormat(const std::string& format)
+{
+    PlaylistItemDelegate *plsDelegate =
+            boost::polymorphic_downcast<PlaylistItemDelegate*>(itemDelegate());
+    plsDelegate->setDisplayFormat(format);
 }
 
 void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)

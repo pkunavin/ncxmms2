@@ -7,6 +7,7 @@ set(SOURCES
     settings.cpp
     commandlineoptions.cpp
     song.cpp
+    songdisplayformatparser.cpp
     log.cpp
 
     mainwindow/mainwindow.cpp
@@ -47,6 +48,7 @@ set(HEADERS
     settings.h
     commandlineoptions.h
     song.h
+    songdisplayformatparser.h
     hotkeys.h
     log.h
 

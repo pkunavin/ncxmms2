@@ -15,9 +15,11 @@
  */
 
 #include <boost/lexical_cast.hpp>
+#include <stdexcept>
 
 #include "activeplaylistwindow.h"
 #include "../playlistview/playlistmodel.h"
+
 #include "../settings.h"
 #include "../utils.h"
 
@@ -43,6 +45,18 @@ ActivePlaylistWindow::ActivePlaylistWindow(Xmms::Client *xmmsClient, const Recta
     //Settings
     loadPalette("ActivePlaylistWindow");
     m_autoScrollToActiveSong = Settings::value("ActivePlaylistScreen", "autoScrollToActiveSong", true);
+
+    std::string defaultDisplayFormat = "[l:1:0]%4c{$a - $t}|{$t}|{$f}[r:0:10]{%3c($l)}";
+    const std::string displayFormat = Settings::value("ActivePlaylistScreen", "playlistDisplayFormat",
+                                                      defaultDisplayFormat);
+    try
+    {
+        setDisplayFormat(displayFormat);
+    }
+    catch (const std::runtime_error& error)
+    {
+        throw std::runtime_error(std::string("ActivePlaylistWindow: ").append(error.what()));
+    }
 }
 
 void ActivePlaylistWindow::updateWindowTitle()
