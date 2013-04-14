@@ -16,6 +16,7 @@
 
 #include <stdexcept>
 #include <glib.h>
+#include <boost/version.hpp>
 #include <boost/lexical_cast.hpp>
 
 #include "songdisplayformatparser.h"
@@ -47,7 +48,11 @@ bool SongDisplayFormatParser::setDisplayFormat(const std::string& formatString)
                 throw ParsingError("Unexpected symbol '%c' at position %d, expected digit.",
                                    *numberEnd, numberEnd - str);
         }
+#if BOOST_VERSION < 105200
+        const int result = boost::lexical_cast<int>(std::string(*p, numberEnd - *p));
+#else
         const int result = boost::lexical_cast<int>(*p, numberEnd - *p);
+#endif
         *p = numberEnd;
         return result;
     };
