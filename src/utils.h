@@ -42,15 +42,13 @@ class BoostFormatWrapper
     boost::format m_format;
 
     template <typename T, typename Arg>
-    auto applyArgs(T&& value, Arg&& arg) -> decltype(std::forward<T>(value) % std::forward<Arg>(arg))
+    boost::format& applyArgs(T&& value, Arg&& arg)
     {
         return std::forward<T>(value) % std::forward<Arg>(arg);
     }
 
     template <typename T, typename Arg, typename... Args>
-    auto applyArgs(T&& value, Arg&& arg,  Args&&... args)
-    -> decltype(applyArgs(std::forward<T>(value) % std::forward<Arg>(arg),
-                          std::forward<Args>(args)...))
+    boost::format& applyArgs(T&& value, Arg&& arg,  Args&&... args)
     {
         return  applyArgs(std::forward<T>(value) % std::forward<Arg>(arg),
                           std::forward<Args>(args)...);
@@ -61,13 +59,13 @@ public:
     BoostFormatWrapper(T&& str) :
         m_format(std::forward<T>(str)) {}
 
-    const boost::format& compile()
+    boost::format& compile()
     {
         return m_format;
     }
 
     template <typename... Args>
-    auto compile(Args&&... args) -> decltype(applyArgs(m_format, std::forward<Args>(args)...))
+    boost::format& compile(Args&&... args)
     {
         return applyArgs(m_format, std::forward<Args>(args)...);
     }
