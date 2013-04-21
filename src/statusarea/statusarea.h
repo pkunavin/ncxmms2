@@ -20,6 +20,7 @@
 #include <xmmsclient/xmmsclient++/playback.h>
 
 #include "../song.h"
+#include "../utils.h"
 
 #include "../lib/window.h"
 #include "../lib/lineedit.h"
@@ -37,6 +38,13 @@ public:
     ~StatusArea();
 
     static void showMessage(const std::string& message);
+
+    template <typename T, typename Arg, typename... Args>
+    static void showMessage(T&& str, Arg&& arg, Args&&... args)
+    {
+        showMessage(Utils::format(std::forward<T>(str), std::forward<Arg>(arg), std::forward<Args>(args)...));
+    }
+
     static void askQuestion(const std::string& question,
                             const LineEdit::ResultCallback& answerCallback,
                             const std::string& initialAnswer = std::string());

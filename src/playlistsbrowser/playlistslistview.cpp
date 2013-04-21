@@ -15,7 +15,6 @@
  */
 
 #include <xmmsclient/xmmsclient++.h>
-#include <boost/format.hpp>
 #include <boost/cast.hpp>
 
 #include "playlistslistview.h"
@@ -118,9 +117,7 @@ void PlaylistsListView::createPlaylist(const std::string& playlist)
     }
 
     if (plsModel->playlistExists(playlist)) {
-        StatusArea::showMessage(
-            (boost::format("\"%1%\" playlist already exists!") % playlist).str()
-        );
+        StatusArea::showMessage("\"%1%\" playlist already exists!", playlist);
         return;
     }
 
@@ -149,9 +146,7 @@ void PlaylistsListView::renamePlaylist(const std::string& oldName, const std::st
     }
 
     if (plsModel->playlistExists(newName)) {
-        StatusArea::showMessage(
-            (boost::format("\"%1%\" playlist already exists!") % newName).str()
-        );
+        StatusArea::showMessage("\"%1%\" playlist already exists!", newName);
         return;
     }
 

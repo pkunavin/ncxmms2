@@ -14,8 +14,6 @@
  *  GNU General Public License for more details.
  */
 
-#include <boost/format.hpp>
-
 #include "listviewappintegrated.h"
 #include "../statusarea/statusarea.h"
 #include "../lib/keyevent.h"
@@ -27,24 +25,20 @@ ListViewAppIntegrated::ListViewAppIntegrated(const Rectangle& rect, Window *pare
 {
 
 }
-
+#include "../utils.h"
 void ListViewAppIntegrated::keyPressedEvent(const KeyEvent& keyEvent)
 {
     switch (keyEvent.key()) {
         case KeyEvent::KeyInsert: // Toggle selection
             if (!isCurrentItemHidden()) {
                 ListView::keyPressedEvent(keyEvent);
-                StatusArea::showMessage(
-                    (boost::format("%1% items selected") % selectedItems().size()).str()
-                );
+                StatusArea::showMessage("%1% items selected", selectedItems().size());
             }
             break;
 
         case '*': // Invert selection
             ListView::keyPressedEvent(keyEvent);
-            StatusArea::showMessage(
-                (boost::format("%1% items selected") % selectedItems().size()).str()
-            );
+            StatusArea::showMessage("%1% items selected", selectedItems().size());
             break;
 
         case '+': // Select be regexp
@@ -53,9 +47,7 @@ void ListViewAppIntegrated::keyPressedEvent(const KeyEvent& keyEvent)
             {
                 if (result == LineEdit::Accepted) {
                     selectItemsByRegExp(pattern);
-                    StatusArea::showMessage(
-                        (boost::format("%1% items selected") % selectedItems().size()).str()
-                    );
+                    StatusArea::showMessage("%1% items selected", selectedItems().size());
                 }
             };
             StatusArea::askQuestion("Select items: ", resultCallback, ".*");
@@ -68,9 +60,7 @@ void ListViewAppIntegrated::keyPressedEvent(const KeyEvent& keyEvent)
             {
                 if (result == LineEdit::Accepted) {
                     unselectItemsByRegExp(pattern);
-                    StatusArea::showMessage(
-                        (boost::format("%1% items selected") % selectedItems().size()).str()
-                    );
+                    StatusArea::showMessage("%1% items selected", selectedItems().size());
                 }
             };
             StatusArea::askQuestion("Unselect items: ", resultCallback, ".*");

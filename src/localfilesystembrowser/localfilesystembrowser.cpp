@@ -18,7 +18,6 @@
 #include <unistd.h>
 #include <assert.h>
 #include <boost/cast.hpp>
-#include <boost/format.hpp>
 #include <xmmsclient/xmmsclient++.h>
 
 #include "localfilesystembrowser.h"
@@ -74,10 +73,8 @@ void LocalFileSystemBrowser::keyPressedEvent(const KeyEvent& keyEvent)
                 for (int item : _selectedItems) {
                     activePlaylistAddFileOrDirectory(item, true);
                 }
-                StatusArea::showMessage(
-                    (boost::format("Adding %1% items to active playlist")
-                                    % _selectedItems.size()).str()
-                );
+                StatusArea::showMessage("Adding %1% items to active playlist",
+                                        _selectedItems.size());
                 clearSelection();
             } else {
                 const int item = currentItem();
@@ -114,9 +111,7 @@ void LocalFileSystemBrowser::keyPressedEvent(const KeyEvent& keyEvent)
             if (fsModel->fileName(0) == "..") { // Do not select .. item
                 unselectItem(0);
             }
-            StatusArea::showMessage(
-                (boost::format("%1% items selected") % selectedItems().size()).str()
-            );
+            StatusArea::showMessage("%1% items selected", selectedItems().size());
             break;
 
         case '+': // Select be regexp
@@ -129,9 +124,7 @@ void LocalFileSystemBrowser::keyPressedEvent(const KeyEvent& keyEvent)
                     if (fsModel->fileName(0) == "..") { // Do not select .. item
                         unselectItem(0);
                     }
-                    StatusArea::showMessage(
-                        (boost::format("%1% items selected") % selectedItems().size()).str()
-                    );
+                    StatusArea::showMessage("%1% items selected", selectedItems().size());
                 }
             };
             StatusArea::askQuestion("Select items: ", resultCallback, ".*");
@@ -159,10 +152,7 @@ bool LocalFileSystemBrowser::setDirectory(const Dir& dir)
         return true;
     }
 
-    StatusArea::showMessage(
-        (boost::format("Can't open %1% : %2%") % dir.path()
-                                               % strerror(errno)).str()
-    );
+    StatusArea::showMessage("Can't open %1% : %2%", dir.path(), strerror(errno));
     return false;
 }
 
@@ -233,10 +223,8 @@ void LocalFileSystemBrowser::activePlaylistAddFileOrDirectory(int item, bool beQ
             std::string("file://").append(fsModel->filePath(item))
         );
         if (!beQuiet) {
-            StatusArea::showMessage(
-                (boost::format("Adding \"%1%\" directory to active playlist")
-                                % fsModel->fileName(item)).str()
-            );
+            StatusArea::showMessage("Adding \"%1%\" directory to active playlist",
+                                    fsModel->fileName(item));
         }
      } else if (fsModel->isRegularFile(item)) {
         activePlaylistAddFile(item, beQuiet);
@@ -258,20 +246,15 @@ void LocalFileSystemBrowser::activePlaylistAddFile(int item, bool beQuiet)
                                                XMMS_ACTIVE_PLAYLIST,
                                                filePath);
             if (!beQuiet) {
-                StatusArea::showMessage(
-                    (boost::format("Adding \"%1%\" playlist file to active playlist")
-                                    % fileName).str()
-                );
+                StatusArea::showMessage("Adding \"%1%\" playlist file to active playlist",
+                                        fileName);
             }
             break;
 
         case Utils::MediaFile:
             m_xmmsClient->playlist.addUrl(filePath);
             if (!beQuiet) {
-                StatusArea::showMessage(
-                    (boost::format("Adding \"%1%\" file to active playlist")
-                                    % fileName).str()
-                );
+                StatusArea::showMessage("Adding \"%1%\" file to active playlist", fileName);
             }
             break;
 

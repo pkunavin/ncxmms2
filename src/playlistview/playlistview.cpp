@@ -15,7 +15,6 @@
  */
 
 #include <glib.h>
-#include <boost/format.hpp>
 #include <boost/cast.hpp>
 
 #include "playlistview.h"
@@ -175,10 +174,8 @@ void PlaylistView::addPath(const std::string& path)
         m_xmmsClient->playlist.addRecursive(std::string("file://").append(path),
                                             plsModel->playlist());
         // FIXME: Path may be too long to display
-        StatusArea::showMessage(
-            (boost::format("Adding \"%1%\" directory to \"%2%\" playlist") % path
-                                                                           % plsModel->playlist()).str()
-        );
+        StatusArea::showMessage("Adding \"%1%\" directory to \"%2%\" playlist",
+                                path, plsModel->playlist());
     } else {
         StatusArea::showMessage("File is neither a directory nor regular file!");
     }
@@ -198,20 +195,16 @@ void PlaylistView::addFile(const std::string& path)
         case Utils::MediaFile:
             m_xmmsClient->playlist.addUrl(std::string("file://").append(path),
                                           plsModel->playlist());
-            StatusArea::showMessage(
-                (boost::format("Adding \"%1%\" file to \"%2%\" playlist") % fileName
-                                                                          % plsModel->playlist()).str()
-            );
+            StatusArea::showMessage("Adding \"%1%\" file to \"%2%\" playlist",
+                                    fileName, plsModel->playlist());
             break;
 
         case Utils::PlaylistFile:
             XmmsUtils::playlistAddPlaylistFile(m_xmmsClient,
                                                plsModel->playlist(),
                                                std::string("file://").append(path));
-            StatusArea::showMessage(
-                (boost::format("Adding \"%1%\" playlist to \"%2%\" playlist") % fileName
-                                                                              % plsModel->playlist()).str()
-            );
+            StatusArea::showMessage("Adding \"%1%\" playlist to \"%2%\" playlist",
+                                    fileName, plsModel->playlist());
             break;
 
         case Utils::UnknownFile:
@@ -226,8 +219,5 @@ void PlaylistView::addUrl(const std::string& url)
     m_xmmsClient->playlist.addUrl(url, plsModel->playlist());
 
     // FIXME: Url may be too long to display
-    StatusArea::showMessage(
-        (boost::format("Adding \"%1%\" to \"%2%\" playlist") % url
-                                                             % plsModel->playlist()).str()
-    );
+    StatusArea::showMessage("Adding \"%1%\" to \"%2%\" playlist", url, plsModel->playlist());
 }
