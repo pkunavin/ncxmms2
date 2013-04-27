@@ -49,25 +49,34 @@ void PlaylistItemDelegate::paint(Painter *painter, const ListItemPaintOptions& o
 
     bool displayFormatterIgnoreColors = false;
 
-    if (options.state & ListItemStateCurrent) {
-        if (Application::useColors()) {
+    if (Application::useColors()) {
+        if (options.state & ListItemStateCurrent) {
             painter->setColorPair(palette->color(colorGroup, Palette::RoleHighlightedText),
                                   palette->color(colorGroup, Palette::RoleHighlight));
-            painter->clearLine(options.rect.y());
             displayFormatterIgnoreColors = true;
-        } else {
+        }
+        if (options.state & ListItemStateSelected) {
+            painter->setColor(palette->color(colorGroup, Palette::RoleSelection));
+            painter->setBold(true);
+            displayFormatterIgnoreColors = true;
+        } else if (options.state == ListItemStateRegular) {
+            painter->setColor(palette->color(colorGroup, Palette::RoleText));
+        }
+        painter->clearLine(options.rect.y());
+    } else {
+        displayFormatterIgnoreColors = true;
+        if (options.state & ListItemStateCurrent) {
             painter->fillLine(options.rect.y(), ColorBlack);
             painter->setColor(ColorBlack);
             painter->setReverse(true);
         }
-    } else if (options.state & ListItemStateSelected)  {
-        painter->setColor(palette->color(colorGroup, Palette::RoleSelection));
-        painter->clearLine(options.rect.y());
-        painter->setBold(true);
-        displayFormatterIgnoreColors = true;
-    } else {
-        painter->clearLine(options.rect.y());
+        if (options.state & ListItemStateSelected)
+            painter->setBold(true);
+
+        if (!(options.state & ListItemStateCurrent))
+            painter->clearLine(options.rect.y());
     }
+
 
     const PlaylistModel *plsModel = static_cast<const PlaylistModel*>(model());
     const Song& song = plsModel->song(item);
