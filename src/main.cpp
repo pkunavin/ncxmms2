@@ -15,6 +15,7 @@
  */
 
 #include <glib.h>
+#include <cstdlib>
 #include <xmmsclient/xmmsclient++.h>
 
 #include "config.h"
@@ -35,9 +36,15 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    const std::string ipcPath = options.ipcPath().empty()
-                                ? ncxmms2::Settings::value<std::string>("General", "ipcpath")
-                                : options.ipcPath();
+    std::string ipcPath;
+    if (!options.ipcPath().empty()) {
+        ipcPath = options.ipcPath();
+    } else {
+        const char *xmmsPathEnv = std::getenv("XMMS_PATH");
+        ipcPath = xmmsPathEnv
+                  ? xmmsPathEnv
+                  : ncxmms2::Settings::value<std::string>("General", "ipcpath");
+    }
 
     std::unique_ptr<Xmms::Client> xmmsClient = ncxmms2::XmmsUtils::clientCreateAndConnect(ipcPath);
     if (!xmmsClient)

@@ -38,7 +38,8 @@ std::unique_ptr<Xmms::Client> XmmsUtils::clientCreateAndConnect(const std::strin
     }
     catch (const Xmms::connection_error& error)
     {
-        std::cerr << "Connection failed: " << error.what() << std::endl;
+        std::cerr << "Connection failed: " << error.what()
+                  << " (ipcpath = " << ipcPath << ')' << std::endl;
     }
     catch(...)
     {
