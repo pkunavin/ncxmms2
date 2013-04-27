@@ -26,6 +26,8 @@
 #include "lib/colors.h"
 #include "lib/rectangle.h"
 
+typedef struct _GRegex GRegex;
+
 namespace ncxmms2 {
 
 class Painter;
@@ -91,6 +93,8 @@ public:
 
     void paint(const Song& song, Painter *painter, const Rectangle& rect, bool ignoreColors = false);
 
+    bool matchFormattedString(const Song& song, const GRegex *regex); // Used to select items in PlaylistView
+
 private:
     class Variable
     {
@@ -102,6 +106,7 @@ private:
         bool isEmpty(const Song& song) const;
         int size(const Song& song) const;
         void print(Painter *painter, const Song& song, int maxLength) const;
+        std::string toString(const Song& song) const;
 
     private:
         enum class Type

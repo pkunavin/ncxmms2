@@ -51,8 +51,8 @@ public:
 
     void setViewportFirstItem(int item);
 
-    // Returns sorted list of selected items
-    const std::vector<int>& selectedItems() const;
+    // Selection routines
+    const std::vector<int>& selectedItems() const; // Returns sorted list of selected items
     void selectItem(int item);
     void unselectItem(int item);
     bool isItemSelected(int item) const;
@@ -60,6 +60,8 @@ public:
     void invertSelection();
     void selectItemsByRegExp(const std::string& pattern);
     void unselectItemsByRegExp(const std::string& pattern);
+    void selectItems(const boost::function<bool (int)>& predicate);
+    void unselectItems(const boost::function<bool (int)>& predicate);
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
     virtual void resize(const Size& size);

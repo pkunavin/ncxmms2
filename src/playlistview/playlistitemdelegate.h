@@ -35,6 +35,8 @@ public:
 
     virtual void paint(Painter *painter, const ListItemPaintOptions& options, int item);
 
+    bool matchFormattedString(const Song& song, const GRegex *regex);
+
 private:
     SongDisplayFormatParser m_songDisplayFormatter;
 };

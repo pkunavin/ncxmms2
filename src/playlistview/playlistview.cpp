@@ -120,6 +120,58 @@ void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
             break;
         }
 
+        case '+': // Select be regexp
+        {
+            // We can't use selectItemsByRegExp here, because it matches ListModelItemData::text,
+            // but for PlaylistModel its value doesn't correspond to what actually displyed, as
+            // it uses SongDisplayFormatParser for this job.
+            auto resultCallback = [this, plsModel](const std::string& pattern, LineEdit::ResultCode result)
+            {
+                if (result == LineEdit::Accepted) {
+                    GRegex *regex = g_regex_new(pattern.c_str(), G_REGEX_OPTIMIZE,
+                                                (GRegexMatchFlags)0, nullptr);
+                    if (!regex)
+                        return;
+
+                    PlaylistItemDelegate *delegate =
+                            boost::polymorphic_downcast<PlaylistItemDelegate*>(itemDelegate());
+
+                    selectItems([plsModel, delegate, regex](int item){
+                        return delegate->matchFormattedString(plsModel->song(item), regex);
+                    });
+                    g_regex_unref(regex);
+                    StatusArea::showMessage("%1% items selected", selectedItems().size());
+                }
+            };
+            StatusArea::askQuestion("Select items: ", resultCallback, ".*");
+            break;
+        }
+
+        case '\\': // Unselect be regexp
+        {
+            // The same story here...
+            auto resultCallback = [this, plsModel](const std::string& pattern, LineEdit::ResultCode result)
+            {
+                if (result == LineEdit::Accepted) {
+                    GRegex *regex = g_regex_new(pattern.c_str(), G_REGEX_OPTIMIZE,
+                                                (GRegexMatchFlags)0, nullptr);
+                    if (!regex)
+                        return;
+
+                    PlaylistItemDelegate *delegate =
+                            boost::polymorphic_downcast<PlaylistItemDelegate*>(itemDelegate());
+
+                    unselectItems([plsModel, delegate, regex](int item){
+                        return delegate->matchFormattedString(plsModel->song(item), regex);
+                    });
+                    g_regex_unref(regex);
+                    StatusArea::showMessage("%1% items selected", selectedItems().size());
+                }
+            };
+            StatusArea::askQuestion("Unselect items: ", resultCallback, ".*");
+            break;
+        }
+
         default: ListViewAppIntegrated::keyPressedEvent(keyEvent);
     }
 }

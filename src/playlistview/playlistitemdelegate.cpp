@@ -91,3 +91,8 @@ void PlaylistItemDelegate::paint(Painter *painter, const ListItemPaintOptions& o
         painter->printString("Loading...");
     }
 }
+
+bool PlaylistItemDelegate::matchFormattedString(const Song& song, const GRegex *regex)
+{
+    return m_songDisplayFormatter.matchFormattedString(song, regex);
+}

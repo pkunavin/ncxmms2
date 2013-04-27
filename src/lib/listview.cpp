@@ -398,6 +398,39 @@ void ListView::unselectItemsByRegExp(const std::string &pattern)
     g_regex_unref(regex);
 }
 
+void ListView::selectItems(const boost::function<bool (int)>& predicate)
+{
+    if (!d->model || predicate.empty())
+        return;
+
+    const int itemsCount = d->model->itemsCount();
+    for (int item = 0; item < itemsCount; ++item) {
+        if (predicate(item)) {
+            auto it = std::lower_bound(d->selectedItems.begin(), d->selectedItems.end(), item);
+            if (it != d->selectedItems.end() && *it == item) {
+                continue;
+            }
+            d->selectedItems.insert(it, item);
+        }
+    }
+    update();
+}
+
+void ListView::unselectItems(const boost::function<bool (int)>& predicate)
+{
+    if (!d->model || predicate.empty())
+        return;
+
+    std::vector<int> leftSelectedItems;
+    for (int item : d->selectedItems) {
+        if (!predicate(item)) {
+            leftSelectedItems.push_back(item);
+        }
+    }
+    d->selectedItems.swap(leftSelectedItems);
+    update();
+}
+
 void ListViewPrivate::disconnectModel()
 {
     for (auto& connection : modelConnections) {

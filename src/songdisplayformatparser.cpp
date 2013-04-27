@@ -288,6 +288,36 @@ void SongDisplayFormatParser::paint(const Song& song, Painter *painter, const Re
     }
 }
 
+bool SongDisplayFormatParser::matchFormattedString(const Song& song, const GRegex *regex)
+{
+    for (auto& column : m_columns) {
+        for (auto it = column.getFormatTokenIterator(song); it.isValid(); it.next()) {
+            const auto& token = it.get();
+            switch (token.type()) {
+                case FormatToken::Type::Variable:
+                {
+                    const bool match = g_regex_match(regex, token.variable().toString(song).c_str(),
+                                                     (GRegexMatchFlags)0, nullptr);
+                    if (match)
+                        return true;
+                    break;
+                }
+
+               // NOTE: Current implementation ignores single characters.
+               //       Is it OK ?
+                case FormatToken::Type::Character:
+                case FormatToken::Type::Color:
+                    break;
+
+                case FormatToken::Type::None:
+                    assert(false);
+                    break;
+            }
+        }
+    }
+    return false;
+}
+
 int SongDisplayFormatParser::getColorByKey(char key)
 {
     switch (key) {
@@ -423,6 +453,27 @@ void SongDisplayFormatParser::Variable::print(Painter *painter, const Song& song
             assert(false);
             break;
     }
+}
+
+std::string SongDisplayFormatParser::Variable::toString(const Song& song) const
+{
+    switch (m_type) {
+        case Type::StringRef:
+            return (song.*m_songStrRefFuncPtr)();
+
+        case Type::String:
+            return (*m_stringFuncPtr)(song);
+
+        case Type::Integer:
+        {
+            const int value = (song.*m_songIntFuncPtr)();
+            return value != -1 ? boost::lexical_cast<std::string>(value) : std::string();
+        }
+
+        case Type::None:
+            assert(false);
+    }
+    return std::string();
 }
 
 std::string SongDisplayFormatParser::Variable::durationStringGenerator(const Song& song)
