@@ -23,9 +23,9 @@ using namespace ncxmms2;
 ListViewAppIntegrated::ListViewAppIntegrated(const Rectangle& rect, Window *parent) :
     ListView(rect, parent)
 {
-
+    loadPalette("ListViewAppIntegrated");
 }
-#include "../utils.h"
+
 void ListViewAppIntegrated::keyPressedEvent(const KeyEvent& keyEvent)
 {
     switch (keyEvent.key()) {
