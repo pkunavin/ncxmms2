@@ -65,6 +65,17 @@ bool PlaylistsListModel::playlistExists(const std::string& playlist) const
             != m_playlists.end();
 }
 
+int PlaylistsListModel::indexOf(const std::string& playlist) const
+{
+    auto it = std::find(m_playlists.begin(), m_playlists.end(), playlist);
+    return it != m_playlists.end() ? it - m_playlists.begin() : -1;
+}
+
+const std::string &PlaylistsListModel::currentPlaylist() const
+{
+    return m_currentPlaylist;
+}
+
 bool PlaylistsListModel::getPlaylists(const Xmms::List<std::string>& playlists)
 {
     m_playlists.clear();

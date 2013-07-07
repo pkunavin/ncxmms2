@@ -37,7 +37,9 @@ public:
     virtual int itemsCount() const;
 
     const std::string& playlist(int item) const;
+    const std::string& currentPlaylist() const;
     bool playlistExists(const std::string& playlist) const;
+    int indexOf(const std::string& playlist) const;
 
 private:
     Xmms::Client *m_xmmsClient;

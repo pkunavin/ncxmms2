@@ -91,9 +91,10 @@ HelpBrowser::HelpBrowser(const Rectangle& rect, Window *parent) :
 
     const KeyDescription playlistsBrowserKeys[] =
     {
-        {"Create new playlist", Hotkeys::Screens::PlaylistsBrowser::CreateNewPlaylist},
-        {"Remove playlist",     Hotkeys::Screens::PlaylistsBrowser::RemovePlaylist},
-        {"Rename playlist",     Hotkeys::Screens::PlaylistsBrowser::RenamePlaylist},
+        {"Create new playlist",             Hotkeys::Screens::PlaylistsBrowser::CreateNewPlaylist},
+        {"Remove playlist",                 Hotkeys::Screens::PlaylistsBrowser::RemovePlaylist},
+        {"Rename playlist",                 Hotkeys::Screens::PlaylistsBrowser::RenamePlaylist},
+        {"Go to currently active playlist", Hotkeys::Screens::PlaylistsBrowser::GoToCurrentlyActivePlaylist},
         {nullptr, 0}
     };
 

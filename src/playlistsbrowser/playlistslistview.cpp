@@ -97,6 +97,10 @@ void PlaylistsListView::keyPressedEvent(const KeyEvent& keyEvent)
             break;
         }
 
+        case Hotkeys::Screens::PlaylistsBrowser::GoToCurrentlyActivePlaylist:
+            setCurrentItem(plsModel->indexOf(plsModel->currentPlaylist()));
+            break;
+
         default: ListViewAppIntegrated::keyPressedEvent(keyEvent);
     }
 }

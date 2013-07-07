@@ -94,9 +94,10 @@ enum
 {
     Activate = '6',
 
-    CreateNewPlaylist = 'n',
-    RemovePlaylist    = KeyEvent::KeyDelete,
-    RenamePlaylist    = 'r'
+    CreateNewPlaylist           = 'n',
+    RemovePlaylist              = KeyEvent::KeyDelete,
+    RenamePlaylist              = 'r',
+    GoToCurrentlyActivePlaylist = 'o'
 };
 }
 

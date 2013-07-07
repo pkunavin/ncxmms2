@@ -47,6 +47,7 @@ Hotkeys:
   Create new playlist : n
   Remove playlist : Delete
   Rename playlist : r
+  Go to currently active playlist : o
   
  Playlist window:
   Clear playlist : c
