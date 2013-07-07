@@ -17,6 +17,13 @@
 // Maybe one day ncxmms2 will have 256 colors support...
 //   It's worth to mention, that you don't have to change all roles in some
 // window class, because they are inherited from base window class.
+//
+// List of classes having only standart roles:
+//  "Window", "TextView", "ListView", "LineEdit", "Label",
+//  "ActivePlaylistWindow", "HeaderWindow", "ListViewAppIntegrated",
+//  "LocalFileSystemBrowser", "MedialibBrowser", "PlaylistsBrowser",
+//  "PlaylistsListView", "PlaylistView", "PlaybackProgressBar",
+//  "PlaybackStatusWindow", "QuestionWindow", "StatusMessageWindow".
 {
    "Window":
     {
