@@ -31,7 +31,11 @@ PlaylistsListView::PlaylistsListView(Xmms::Client *xmmsClient, const Rectangle& 
     m_xmmsClient(xmmsClient)
 {
     loadPalette("PlaylistsListView");
-    setModel(new PlaylistsListModel(xmmsClient, this));
+
+    PlaylistsListModel *model = new PlaylistsListModel(xmmsClient, this);
+    setModel(model);
+    model->playlistAdded_Connect(&PlaylistsListView::checkNewPlaylist, this);
+
     itemEntered_Connect(&PlaylistsListView::loadPlaylist, this);
 }
 
@@ -125,6 +129,7 @@ void PlaylistsListView::createPlaylist(const std::string& playlist)
         return;
     }
 
+    m_newPlaylist = playlist;
     m_xmmsClient->playlist.create(playlist);
 }
 
@@ -155,4 +160,15 @@ void PlaylistsListView::renamePlaylist(const std::string& oldName, const std::st
     }
 
     m_xmmsClient->collection.rename(oldName, newName, Xmms::Collection::PLAYLISTS);
+}
+
+void PlaylistsListView::checkNewPlaylist(const std::string& playlist, int item)
+{
+    if (m_newPlaylist.empty())
+        return;
+
+    if (playlist == m_newPlaylist) {
+        setCurrentItem(item);
+        m_newPlaylist.clear();
+    }
 }

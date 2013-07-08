@@ -36,10 +36,12 @@ public:
 
 private:
     Xmms::Client *m_xmmsClient;
+    std::string m_newPlaylist;
 
     void loadPlaylist(int item);
     void createPlaylist(const std::string& playlist);
     void renamePlaylist(const std::string& oldName, const std::string& newName);
+    void checkNewPlaylist(const std::string& playlist, int item);
 };
 } // ncxmms2
 

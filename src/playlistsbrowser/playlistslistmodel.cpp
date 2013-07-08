@@ -114,6 +114,7 @@ bool PlaylistsListModel::handlePlaylistsChange(const Xmms::Dict& change)
         case XMMS_COLLECTION_CHANGED_ADD:
             m_playlists.push_back(change.get<std::string>("name"));
             itemAdded();
+            playlistAdded(m_playlists.back(), m_playlists.size() - 1);
             break;
 
         case XMMS_COLLECTION_CHANGED_RENAME:

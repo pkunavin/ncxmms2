@@ -41,6 +41,9 @@ public:
     bool playlistExists(const std::string& playlist) const;
     int indexOf(const std::string& playlist) const;
 
+    // Signals
+    NCXMMS2_SIGNAL(playlistAdded, const std::string&, int)
+
 private:
     Xmms::Client *m_xmmsClient;
     std::vector<std::string> m_playlists;
