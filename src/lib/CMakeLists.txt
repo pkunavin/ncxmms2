@@ -52,8 +52,10 @@ include_directories(${Boost_INCLUDE_DIRS})
 
 find_package(PkgConfig REQUIRED)
 
-pkg_check_modules(NCURSESW ncursesw REQUIRED)
-include_directories(${NCURSESW_INCLUDE_DIRS})
+set(CURSES_NEED_NCURSES TRUE)
+set(CURSES_NEED_WIDE TRUE)
+find_package(Curses REQUIRED)
+include_directories(${CURSES_INCLUDE_DIR})
 
 pkg_check_modules(GLIB glib-2.0 REQUIRED)
 include_directories(${GLIB_INCLUDE_DIRS})

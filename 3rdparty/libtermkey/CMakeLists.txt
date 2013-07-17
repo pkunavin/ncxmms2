@@ -14,7 +14,9 @@ set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c99")
 
 find_package(PkgConfig REQUIRED)
 
-pkg_check_modules(NCURSESW ncursesw REQUIRED)
-include_directories(${NCURSESW_INCLUDE_DIRS})
+set(CURSES_NEED_NCURSES TRUE)
+set(CURSES_NEED_WIDE TRUE)
+find_package(Curses REQUIRED)
+include_directories(${CURSES_INCLUDE_DIR})
 
 target_link_libraries(libtermkey ${NCURSESW_LIBRARIES})
