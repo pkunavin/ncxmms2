@@ -29,7 +29,8 @@ public:
     Timer(Object *parent = nullptr);
     ~Timer();
 
-    void start(unsigned int interval);
+    void start(unsigned int sec);
+    void startMs(unsigned int msec);
     void stop();
 
     // Signals

@@ -37,10 +37,16 @@ Timer::Timer(Object *parent) :
 
 }
 
-void Timer::start(unsigned int interval)
+void Timer::start(unsigned int sec)
 {
     stop();
-    d->id = g_timeout_add_seconds(interval, TimerPrivate::timeoutCallback, this);
+    d->id = g_timeout_add_seconds(sec, TimerPrivate::timeoutCallback, this);
+}
+
+void Timer::startMs(unsigned int msec)
+{
+    stop();
+    d->id = g_timeout_add(msec, TimerPrivate::timeoutCallback, this);
 }
 
 void Timer::stop()
