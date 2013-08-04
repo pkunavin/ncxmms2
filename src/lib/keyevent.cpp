@@ -23,7 +23,7 @@
 
 using namespace ncxmms2;
 
-KeyEvent::KeyEvent(const TermKeyKey& termKey)
+KeyEvent::KeyEvent(const TermKeyKey& termKey) : m_key(0)
 {
     static const std::map<char32_t, char32_t> keyMap =
     {
