@@ -14,39 +14,48 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef STACKEDWINDOW_H
-#define STACKEDWINDOW_H
-
-#include "window.h"
+#include "mouseevent.h"
 
 namespace ncxmms2 {
 
-class StackedWindowPrivate;
-
-class StackedWindow : public Window
+class MouseEventPrivate
 {
 public:
-    StackedWindow(const Rectangle& rect, Window *parent = nullptr);
-    ~StackedWindow();
+    MouseEventPrivate(MouseEvent::Type type_, const Point& position_, int button_) :
+        type(type_),
+        position(position_),
+        button(button_) {}
 
-    void addWindow(Window *window);
-    Window *window(int index) const;
-    void setCurrentIndex(int index);
-
-    int size() const;
-    int currentIndex() const;
-
-    virtual void keyPressedEvent(const KeyEvent& keyEvent);
-    virtual void mouseEvent(const MouseEvent& ev);
-    virtual void resize(const Size& size);
-
-protected:
-    virtual void showEvent();
-
-private:
-    std::unique_ptr<StackedWindowPrivate> d;
+    MouseEvent::Type type;
+    Point position;
+    int button;
 };
 } // ncxmms2
 
+using namespace ncxmms2;
 
-#endif // STACKEDWINDOW_H
+MouseEvent::MouseEvent(Type type, const Point& position, int button) :
+    d(new MouseEventPrivate(type, position, button))
+{
+
+}
+
+MouseEvent::~MouseEvent()
+{
+
+}
+
+MouseEvent::Type MouseEvent::type() const
+{
+    return d->type;
+}
+
+const Point& MouseEvent::position() const
+{
+    return d->position;
+}
+
+int MouseEvent::button() const
+{
+    return d->button;
+}

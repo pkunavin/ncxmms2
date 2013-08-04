@@ -7,6 +7,7 @@ set(SOURCES
     timer.cpp
     painter.cpp
     keyevent.cpp
+    mouseevent.cpp
     label.cpp
     lineedit.cpp
     listmodel.cpp
@@ -31,6 +32,7 @@ set(HEADERS
     colors.h
     painter.h
     keyevent.h
+    mouseevent.h
     label.h
     lineedit.h
     rectangle.h

@@ -22,6 +22,7 @@
 namespace ncxmms2 {
 
 class KeyEvent;
+class MouseEvent;
 class Point;
 class Size;
 class WindowPrivate;
@@ -35,6 +36,7 @@ public:
     virtual ~Window();
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
+    virtual void mouseEvent(const MouseEvent& ev);
 
     int cols() const;
     int lines() const;
@@ -60,6 +62,8 @@ public:
     int y() const;
     Point position() const;
 
+    Point globalPosition() const;
+
     void move(int x, int y);
     void move(const Point& position);
 
@@ -78,6 +82,13 @@ public:
     void loadPalette(const std::string& className,
                      const std::map<std::string, int>& userRolesMap = std::map<std::string, int>());
 
+    bool pointInWindow(const Point& point) const; // Accepts coordinates relative to parent window (NOT global!)
+    Point toLocalCoordinates(const Point& point) const; // Accepts coordinates relative to parent window (NOT global!)
+
+    // Signals
+    NCXMMS2_SIGNAL(focusAcquired)
+    NCXMMS2_SIGNAL(focusLost)
+
 protected:
     virtual void showEvent();
     virtual void paint(const Rectangle& rect);
@@ -90,6 +101,7 @@ private:
     Window& operator=(const Window& other);
     std::unique_ptr<WindowPrivate> d;
     friend class Painter;
+    friend class Application;
 };
 } // ncxmms2
 

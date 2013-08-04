@@ -30,7 +30,10 @@
 #include "application.h"
 #include "window.h"
 #include "keyevent.h"
+#include "mouseevent.h"
 #include "palette.h"
+#include "timer.h"
+#include "point.h"
 
 #include "../../3rdparty/libtermkey/termkey.h"
 
@@ -44,6 +47,10 @@ public:
         mainLoop(nullptr),
         termKey(nullptr),
         termKeyReadTimeoutId(0),
+        mouseDoubleClickInterval(300),
+        mouseDoubleClickTimeExpired(true),
+        mouseDoubleClickHaveReleaseEvent(false),
+        mouseDoubleClickPosition(-1, -1),
         mainWindow(nullptr),
         grabbedFocusWindow(nullptr) {}
 
@@ -57,6 +64,17 @@ public:
     static gboolean stdinEvent(GIOChannel *iochan, GIOCondition cond, gpointer data);
     static gboolean readKeyAfterTimeout(gpointer data);
     void sendKeyPressedEvent(const TermKeyKey& key);
+
+    bool mouseEnabled;
+    Timer mouseDoubleClickTimer;
+    int mouseDoubleClickInterval;
+    bool mouseDoubleClickTimeExpired;
+    bool mouseDoubleClickHaveReleaseEvent;
+    int mouseDoubleClickButton;
+    Point mouseDoubleClickPosition;
+    void sendMouseEvent(const TermKeyKey& key);
+    void mouseEnable();
+    void mouseDisable();
 
     static void signalHandler(int signal);
     static void resizeSignalHandler(int signal);
@@ -84,10 +102,10 @@ Application *Application::inst = nullptr;
         }                                                                              \
     } while (0)
 
-void Application::init(bool useColors)
+void Application::init(bool useColors, bool mouseEnable)
 {
     delete inst;
-    inst = new Application(useColors);
+    inst = new Application(useColors, mouseEnable);
 }
 
 void Application::shutdown()
@@ -96,9 +114,16 @@ void Application::shutdown()
     inst = nullptr;
 }
 
-Application::Application(bool useColors) : d(new ApplicationPrivate())
+Application::Application(bool useColors, bool mouseEnable) :
+    d(new ApplicationPrivate())
 {
     setlocale(LC_ALL, "");
+
+    // Mouse support
+    if (mouseEnable) {
+        d->mouseEnabled = true;
+        d->mouseEnable();
+    }
 
     // Initialize libtermkey
     d->termKey = termkey_new(STDIN_FILENO, 0);
@@ -130,6 +155,11 @@ Application::Application(bool useColors) : d(new ApplicationPrivate())
     GIOChannel *iochan = g_io_channel_unix_new(STDIN_FILENO);
     d->stdinPollSource = g_io_add_watch(iochan, G_IO_IN, ApplicationPrivate::stdinEvent, NULL);
     g_io_channel_unref(iochan);
+
+    d->mouseDoubleClickTimer.timeout_Connect([this](){
+        d->mouseDoubleClickTimeExpired = true;
+        d->mouseDoubleClickTimer.stop();
+    });
 }
 
 void Application::run()
@@ -152,12 +182,17 @@ void Application::grabFocus(Window *window)
 {
     CHECK_INST;
     inst->d->grabbedFocusWindow = window;
+    window->focusAcquired();
 }
 
 void Application::releaseFocus()
 {
     CHECK_INST;
-    inst->d->grabbedFocusWindow = nullptr;
+    Window *win = inst->d->grabbedFocusWindow;
+    if (win) {
+        inst->d->grabbedFocusWindow = nullptr;
+        win->focusLost();
+    }
 }
 
 bool Application::useColors()
@@ -169,6 +204,12 @@ bool Application::useColors()
 Size Application::terminalSize()
 {
     return Size(COLS, LINES);
+}
+
+void Application::setMouseDoubleClickInterval(int msec)
+{
+    CHECK_INST;
+    inst->d->mouseDoubleClickInterval = msec;
 }
 
 void Application::setColorSchemeFile(const std::string& file)
@@ -288,8 +329,22 @@ gboolean ApplicationPrivate::stdinEvent(GIOChannel *iochan, GIOCondition cond, g
 
     TermKeyResult res;
     TermKeyKey key;
-    while((res = termkey_getkey(p->termKey, &key)) == TERMKEY_RES_KEY)
-        p->sendKeyPressedEvent(key);
+    while((res = termkey_getkey(p->termKey, &key)) == TERMKEY_RES_KEY) {
+        switch (key.type) {
+            case TERMKEY_TYPE_UNICODE:
+            case TERMKEY_TYPE_KEYSYM:
+            case TERMKEY_TYPE_FUNCTION:
+                p->sendKeyPressedEvent(key);
+                break;
+
+            case TERMKEY_TYPE_MOUSE:
+                p->sendMouseEvent(key);
+                break;
+
+            default:
+                break;
+        }
+    }
 
     if(res == TERMKEY_RES_AGAIN)
         p->termKeyReadTimeoutId = g_timeout_add(termkey_get_waittime(p->termKey),
@@ -304,8 +359,22 @@ gboolean ApplicationPrivate::readKeyAfterTimeout(gpointer data)
 
     ApplicationPrivate *p = Application::inst->d.get();
     TermKeyKey key;
-    if(termkey_getkey_force(p->termKey, &key) == TERMKEY_RES_KEY)
-        p->sendKeyPressedEvent(key);
+    if(termkey_getkey_force(p->termKey, &key) == TERMKEY_RES_KEY) {
+        switch (key.type) {
+            case TERMKEY_TYPE_UNICODE:
+            case TERMKEY_TYPE_KEYSYM:
+            case TERMKEY_TYPE_FUNCTION:
+                p->sendKeyPressedEvent(key);
+                break;
+
+            case TERMKEY_TYPE_MOUSE:
+                p->sendMouseEvent(key);
+                break;
+
+            default:
+                break;
+        }
+    }
 
     p->termKeyReadTimeoutId = 0;
     return FALSE;
@@ -315,6 +384,82 @@ void ApplicationPrivate::sendKeyPressedEvent(const TermKeyKey& key)
 {
     Window *win = grabbedFocusWindow ? grabbedFocusWindow : mainWindow;
     win->keyPressedEvent(KeyEvent(key));
+}
+
+void ApplicationPrivate::sendMouseEvent(const TermKeyKey& key)
+{
+    TermKeyMouseEvent event;
+    int button;
+    int x, y;
+
+    termkey_interpret_mouse(termKey, &key, &event, &button, &y, &x);
+    MouseEvent::Type eventType;
+    switch (event) {
+        case TERMKEY_MOUSE_PRESS:
+            if (   !mouseDoubleClickTimeExpired && mouseDoubleClickHaveReleaseEvent
+                && button == mouseDoubleClickButton
+                && mouseDoubleClickPosition.x() == x && mouseDoubleClickPosition.y() == y) {
+                eventType = MouseEvent::Type::ButtonDoubleClick;
+                mouseDoubleClickTimer.stop();
+                mouseDoubleClickTimeExpired = true;
+            } else {
+                eventType = MouseEvent::Type::ButtonPress;
+                mouseDoubleClickTimer.startMs(mouseDoubleClickInterval);
+                mouseDoubleClickTimeExpired = false;
+                mouseDoubleClickHaveReleaseEvent = false;
+                mouseDoubleClickButton = button;
+                mouseDoubleClickPosition.setX(x);
+                mouseDoubleClickPosition.setY(y);
+            }
+            break;
+
+        case TERMKEY_MOUSE_RELEASE:
+            eventType = MouseEvent::Type::ButtonRelease;
+            if (!mouseDoubleClickTimeExpired)
+                mouseDoubleClickHaveReleaseEvent = true;
+            break;
+
+        default:
+            return;
+    }
+
+    // It seems that the minimum coordinates are (1,1), not (0,0).
+    // Fix that before sending MouseEvent to main window.
+    --x;
+    --y;
+
+    if (grabbedFocusWindow) {
+        // If mouse is over the window which grabbed focus, send MouseEvent to it doing global
+        // to local coordinates translation, else release focus.
+        Point grabbedWindowPosition = grabbedFocusWindow->globalPosition();
+        if (   x >= grabbedWindowPosition.x() && x < grabbedWindowPosition.x() + grabbedFocusWindow->cols()
+            && y >= grabbedWindowPosition.y() && y < grabbedWindowPosition.y() + grabbedFocusWindow->lines()) {
+            grabbedFocusWindow->mouseEvent(
+                MouseEvent(eventType,
+                           Point(x - grabbedWindowPosition.x(), y - grabbedWindowPosition.y()),
+                           button)
+            );
+        } else {
+            Application::releaseFocus();
+            mainWindow->mouseEvent(MouseEvent(eventType, mainWindow->toLocalCoordinates(Point(x, y)), button));
+        }
+    } else {
+        mainWindow->mouseEvent(MouseEvent(eventType, mainWindow->toLocalCoordinates(Point(x, y)), button));
+    }
+}
+
+void ApplicationPrivate::mouseEnable()
+{
+    // XTerm control sequence for enabling mouse support,
+    // see http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
+    printf("\033[?1000h");
+    fflush(stdout);
+}
+
+void ApplicationPrivate::mouseDisable()
+{
+    printf("\033[?1000l");
+    fflush(stdout);
 }
 
 void ApplicationPrivate::signalHandler(int signal)
@@ -359,5 +504,7 @@ Application::~Application()
 
     endwin();
     termkey_destroy(d->termKey);
+    if (d->mouseEnabled)
+        d->mouseDisable();
 }
 

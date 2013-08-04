@@ -31,7 +31,7 @@ class Palette;
 class Application
 {
 public:
-    static void init(bool useColors = true);
+    static void init(bool useColors = true, bool mouseEnable = false);
     static void run();
     static void shutdown();
     static void setMainWindow(Window *window);
@@ -42,6 +42,8 @@ public:
     static bool useColors();
     static Size terminalSize();
 
+    static void setMouseDoubleClickInterval(int msec);
+
     static void setColorSchemeFile(const std::string& file);
     static std::shared_ptr<Palette> getPalette(const std::string&                className,
                                                const std::shared_ptr<Palette>&   oldPalette,
@@ -49,7 +51,7 @@ public:
                                                                     std::map<std::string, int>());
 
 private:
-    Application(bool useColors);
+    Application(bool useColors, bool mouseEnable);
     ~Application();
     Application(const Application& other);
     Application& operator=(const Application& other);

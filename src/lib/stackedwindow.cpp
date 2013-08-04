@@ -82,6 +82,12 @@ void StackedWindow::keyPressedEvent(const KeyEvent& keyEvent)
         d->windows[d->currentIndex]->keyPressedEvent(keyEvent);
 }
 
+void StackedWindow::mouseEvent(const MouseEvent& ev)
+{
+    if (d->currentIndex != -1)
+        d->windows[d->currentIndex]->mouseEvent(ev);
+}
+
 void StackedWindow::resize(const Size& size)
 {
     Window::resize(size);

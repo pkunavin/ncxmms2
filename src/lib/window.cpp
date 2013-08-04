@@ -24,6 +24,7 @@
 #include "rectangle.h"
 #include "exceptions.h"
 #include "application.h"
+#include "mouseevent.h"
 
 using namespace ncxmms2;
 
@@ -136,6 +137,17 @@ Point Window::position() const
     return d->position;
 }
 
+Point Window::globalPosition() const
+{
+    Point result(position());
+    Window *win = static_cast<Window *>(parent());
+    for (; win; win = static_cast<Window *>(win->parent())) {
+        result.setX(result.x() + win->x());
+        result.setY(result.y() + win->y());
+    }
+    return result;
+}
+
 void Window::move(int x, int y)
 {
     d->position.setX(x);
@@ -181,10 +193,16 @@ void Window::setFocus()
         return;
 
     Window *old = d->parent->d->focusedWindow;
+    if (old == this)
+        return;
+
     d->parent->d->focusedWindow = this;
-    if (old)
+    if (old) {
         old->update();
+        old->focusLost();
+    }
     update();
+    focusAcquired();
 }
 
 bool Window::hasFocus() const
@@ -217,6 +235,17 @@ void Window::loadPalette(const std::string&                className,
     assert(d->palette);
 }
 
+bool Window::pointInWindow(const Point& point) const
+{
+    return point.x() >= x() && point.x() < x() + cols()
+        && point.y() >= y() && point.y() < y() + lines();
+}
+
+Point Window::toLocalCoordinates(const Point& point) const
+{
+    return Point(point.x() - x(), point.y() - y());
+}
+
 void Window::showEvent()
 {
     for (auto child : d->childrenWins)
@@ -227,6 +256,20 @@ void Window::keyPressedEvent(const KeyEvent& keyEvent)
 {
     if (d->focusedWindow)
         d->focusedWindow->keyPressedEvent(keyEvent);
+}
+
+void Window::mouseEvent(const MouseEvent& ev)
+{
+    auto it = std::find_if(d->childrenWins.begin(), d->childrenWins.end(), [&ev](Window *win){
+        return win->pointInWindow(ev.position());
+    });
+    if (it != d->childrenWins.end()) {
+        if (!(*it)->hasFocus())
+            (*it)->setFocus();
+        (*it)->mouseEvent(MouseEvent(ev.type(),
+                                     (*it)->toLocalCoordinates(ev.position()),
+                                     ev.button()));
+    }
 }
 
 void Window::resize(const Size& size)
