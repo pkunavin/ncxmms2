@@ -30,6 +30,7 @@
 #include "../lib/application.h"
 #include "../lib/rectangle.h"
 #include "../lib/keyevent.h"
+#include "../lib/mouseevent.h"
 #include "../lib/stackedwindow.h"
 
 using namespace ncxmms2;
@@ -126,6 +127,19 @@ void MainWindow::keyPressedEvent(const KeyEvent& keyEvent)
             break;
 
         default : Window::keyPressedEvent(keyEvent);
+    }
+}
+
+void MainWindow::mouseEvent(const MouseEvent& ev)
+{
+    if (m_stackedWindow->pointInWindow(ev.position())) {
+        m_stackedWindow->mouseEvent(MouseEvent(ev.type(),
+                                               m_stackedWindow->toLocalCoordinates(ev.position()),
+                                               ev.button()));
+    } else if (m_statusArea->pointInWindow(ev.position())) {
+        m_statusArea->mouseEvent(MouseEvent(ev.type(),
+                                            m_statusArea->toLocalCoordinates(ev.position()),
+                                            ev.button()));
     }
 }
 
