@@ -64,6 +64,7 @@ public:
     void unselectItems(const boost::function<bool (int)>& predicate);
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
+    virtual void mouseEvent(const MouseEvent& ev);
     virtual void resize(const Size& size);
 
     // Signals

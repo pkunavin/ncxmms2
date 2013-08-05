@@ -19,6 +19,7 @@
 
 #include "size.h"
 #include "keyevent.h"
+#include "mouseevent.h"
 #include "listview.h"
 #include "listmodel.h"
 #include "listmodelitemdata.h"
@@ -71,6 +72,9 @@ public:
     void changeCurrentItem(int item);
     void scrollUp();
     void scrollDown();
+
+    void cursorUp();
+    void cursorDown();
 
     void toggleSelection(int item);
     void jumpToNextSelectedItem();
@@ -489,29 +493,11 @@ void ListView::keyPressedEvent(const KeyEvent& keyEvent)
 
     switch (keyEvent.key()) {
         case KeyEvent::KeyUp:
-            if (d->currentItem == -1)
-                return;
-            if (d->currentItemHidden) {
-                d->currentItemHidden = false;
-                update(Rectangle(0, d->itemLine(d->currentItem), cols(), 1));
-            } else {
-                d->scrollUp();
-            }
-            if (d->hideCurrentItemSelectionInterval)
-                d->hideSelectionTimer.start(d->hideCurrentItemSelectionInterval);
+            d->cursorUp();
             break;
 
         case KeyEvent::KeyDown:
-            if (d->currentItem == -1)
-                return;
-            if (d->currentItemHidden) {
-                d->currentItemHidden = false;
-                update(Rectangle(0, d->itemLine(d->currentItem), cols(), 1));
-            } else {
-                d->scrollDown();
-            }
-            if (d->hideCurrentItemSelectionInterval)
-                d->hideSelectionTimer.start(d->hideCurrentItemSelectionInterval);
+            d->cursorDown();
             break;
 
         case KeyEvent::KeyEnter:
@@ -546,6 +532,51 @@ void ListView::keyPressedEvent(const KeyEvent& keyEvent)
 
         case KeyEvent::KeyEnd:
             setCurrentItem(d->model->itemsCount() - 1);
+            break;
+
+        default:
+            break;
+    }
+}
+
+void ListView::mouseEvent(const MouseEvent& ev)
+{
+    if (!d->model)
+        return;
+
+    switch (ev.type()) {
+        case MouseEvent::Type::ButtonPress:
+            switch (ev.button()) {
+                case MouseEvent::ButtonLeft:
+                    setCurrentItem(d->viewportBeginItem + ev.position().y());
+                    break;
+
+                case MouseEvent::ButtonRight:
+                    // FIXME: With this simple implementation selection may flicker.
+                    setCurrentItem(d->viewportBeginItem + ev.position().y());
+                    if (d->currentItem != -1) {
+                        d->toggleSelection(d->currentItem);
+                    }
+                    break;
+
+                case MouseEvent::WheelUp:
+                    d->cursorUp();
+                    break;
+
+                case MouseEvent::WheelDown:
+                    d->cursorDown();
+                    break;
+            }
+            break;
+
+        case MouseEvent::Type::ButtonDoubleClick:
+            // Assume here that item under mouse is already current item,
+            // that is true because ButtonDoubleClick always happens after ButtonPress
+            // at the same point.
+            if (ev.button() == MouseEvent::ButtonLeft) {
+                if (d->currentItem != -1 && !d->currentItemHidden)
+                    itemEntered(d->currentItem);
+            }
             break;
 
         default:
@@ -760,6 +791,36 @@ void ListViewPrivate::scrollDown()
             q->update(Rectangle(0, itemLine(currentItem - 1), q->cols(), 2));
         }
     }
+}
+
+void ListViewPrivate::cursorUp()
+{
+    if (currentItem == -1)
+        return;
+
+    if (currentItemHidden) {
+        currentItemHidden = false;
+        q->update(Rectangle(0, itemLine(currentItem), q->cols(), 1));
+    } else {
+        scrollUp();
+    }
+    if (hideCurrentItemSelectionInterval)
+        hideSelectionTimer.start(hideCurrentItemSelectionInterval);
+}
+
+void ListViewPrivate::cursorDown()
+{
+    if (currentItem == -1)
+        return;
+
+    if (currentItemHidden) {
+        currentItemHidden = false;
+        q->update(Rectangle(0, itemLine(currentItem), q->cols(), 1));
+    } else {
+        scrollDown();
+    }
+    if (hideCurrentItemSelectionInterval)
+        hideSelectionTimer.start(hideCurrentItemSelectionInterval);
 }
 
 void ListViewPrivate::toggleSelection(int item)
