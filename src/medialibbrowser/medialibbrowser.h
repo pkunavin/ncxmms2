@@ -46,7 +46,6 @@ private:
     ListView *m_artistsListView;
     ListView *m_albumsListView;
     ListView *m_songsListView;
-    ListView *m_activeListView;
 
     void setAlbumsListViewArtist(int item);
     void setSongsListViewAlbum(int item);

@@ -50,7 +50,6 @@ MedialibBrowser::MedialibBrowser(Xmms::Client *xmmsClient, const Rectangle& rect
     m_artistsListView->setModel(new ArtistsListModel(xmmsClient, this));
     m_artistsListView->currentItemChanged_Connect(&MedialibBrowser::setAlbumsListViewArtist, this);
     m_artistsListView->itemEntered_Connect(&MedialibBrowser::activePlaylistAddArtist, this,  _1, false); //TODO: Play artist
-    m_activeListView = m_artistsListView;
     m_artistsListView->setFocus();
 
     const int albumsListViewCols = artistsListViewCols;
@@ -80,53 +79,36 @@ MedialibBrowser::MedialibBrowser(Xmms::Client *xmmsClient, const Rectangle& rect
 
 void MedialibBrowser::keyPressedEvent(const KeyEvent& keyEvent)
 {
+    ListView *listViewSwitchOrder[] =
+    {
+        nullptr,
+        m_artistsListView,
+        m_albumsListView,
+        m_songsListView,
+        nullptr
+    };
+
+    auto activeListViewIt = std::find_if(std::begin(listViewSwitchOrder) + 1,
+                                         std::end(listViewSwitchOrder) - 1,
+                                         [](ListView *view){return view->hasFocus();});
+    assert(activeListViewIt != std::end(listViewSwitchOrder) - 1);
+    ListView *activeListView = *activeListViewIt;
+
     switch (keyEvent.key()) {
         case KeyEvent::KeyRight:
-        {
-            ListView *rightSwitchOrder[] =
-            {
-                m_artistsListView,
-                m_albumsListView,
-                m_songsListView,
-                nullptr
-            };
-
-            auto it = std::find(std::begin(rightSwitchOrder), std::end(rightSwitchOrder),
-                                m_activeListView);
-            assert(it != std::end(rightSwitchOrder));
-            if (*(++it)) {
-                m_activeListView = *it;
-                m_activeListView->setFocus();
-            }
-
+            if (*(++activeListViewIt))
+                (*activeListViewIt)->setFocus();
             break;
-        }
 
         case KeyEvent::KeyLeft:
-        {
-            ListView *leftSwitchOrder[] =
-            {
-                nullptr,
-                m_artistsListView,
-                m_albumsListView,
-                m_songsListView
-            };
-
-            auto it = std::find(std::begin(leftSwitchOrder), std::end(leftSwitchOrder),
-                                m_activeListView);
-            assert(it != std::end(leftSwitchOrder));
-            if (*(--it)) {
-                m_activeListView = *it;
-                m_activeListView->setFocus();
-            }
-
+            if (*(--activeListViewIt))
+                (*activeListViewIt)->setFocus();
             break;
-        }
 
         case Hotkeys::Screens::MedialibBrowser::AddItemToActivePlaylist:
         {
-            const int currentItem = m_activeListView->currentItem();
-            const std::vector<int>& selectedItems = m_activeListView->selectedItems();
+            const int currentItem = activeListView->currentItem();
+            const std::vector<int>& selectedItems = activeListView->selectedItems();
 
 #define ADD_ITEMS_TO_ACTIVE_PLAYLIST(addFunction, itemDescription)                       \
     do {                                                                                 \
@@ -136,18 +118,18 @@ void MedialibBrowser::keyPressedEvent(const KeyEvent& keyEvent)
             }                                                                            \
             StatusArea::showMessage("Adding %1% " itemDescription " to active playlist", \
                                     selectedItems.size());                               \
-            m_activeListView->clearSelection();                                          \
+            activeListView->clearSelection();                                          \
         } else {                                                                         \
             if (currentItem != -1)                                                       \
                 addFunction(currentItem);                                                \
         }                                                                                \
     } while (0)
 
-            if (m_activeListView == m_songsListView) {
+            if (activeListView == m_songsListView) {
                 ADD_ITEMS_TO_ACTIVE_PLAYLIST(activePlaylistAddSong, "songs");
-            } else if (m_activeListView == m_albumsListView) {
+            } else if (activeListView == m_albumsListView) {
                 ADD_ITEMS_TO_ACTIVE_PLAYLIST(activePlaylistAddAlbum, "albums");
-            } else if (m_activeListView == m_artistsListView) {
+            } else if (activeListView == m_artistsListView) {
                 ADD_ITEMS_TO_ACTIVE_PLAYLIST(activePlaylistAddArtist, "artists");
             }
 
@@ -156,8 +138,7 @@ void MedialibBrowser::keyPressedEvent(const KeyEvent& keyEvent)
         }
 
         case Hotkeys::Screens::MedialibBrowser::Refresh:
-            assert(m_activeListView);
-            m_activeListView->model()->refresh();
+            activeListView->model()->refresh();
             break;
 
         default: Window::keyPressedEvent(keyEvent);
