@@ -57,6 +57,12 @@ PlaylistsBrowser::PlaylistsBrowser(Xmms::Client *xmmsClient, const Rectangle& re
     }
     m_plsViewer->setHideCurrentItemInterval(0);
     m_plsViewer->hideCurrentItem();
+    m_plsViewer->focusLost_Connect([this](){
+        m_plsViewer->hideCurrentItem();
+    });
+    m_plsViewer->focusAcquired_Connect([this](){
+        m_plsViewer->showCurrentItem();
+    });
 
     m_plsListView->currentItemChanged_Connect(&PlaylistsBrowser::setPlsViewerPlaylist, this);
 }
@@ -88,17 +94,13 @@ void PlaylistsBrowser::keyPressedEvent(const KeyEvent& keyEvent)
 {
     switch (keyEvent.key()) {
         case KeyEvent::KeyRight:
-            if (!m_plsViewer->hasFocus()) {
+            if (!m_plsViewer->hasFocus())
                 m_plsViewer->setFocus();
-                m_plsViewer->showCurrentItem();
-            }
             break;
 
         case KeyEvent::KeyLeft:
-            if (!m_plsListView->hasFocus()) {
+            if (!m_plsListView->hasFocus())
                 m_plsListView->setFocus();
-                m_plsViewer->hideCurrentItem();
-            }
             break;
 
         default: Window::keyPressedEvent(keyEvent);
