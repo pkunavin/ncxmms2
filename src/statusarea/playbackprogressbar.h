@@ -29,6 +29,10 @@ public:
     void setValue(int value);
     void setMaxValue(int maxValue);
 
+    virtual void mouseEvent(const MouseEvent& ev);
+
+    NCXMMS2_SIGNAL(progressChangeRequested, int)
+
 protected:
     void paint(const Rectangle& rect);
 

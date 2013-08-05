@@ -18,6 +18,7 @@
 
 #include "../lib/painter.h"
 #include "../lib/rectangle.h"
+#include "../lib/mouseevent.h"
 
 using namespace ncxmms2;
 
@@ -41,6 +42,14 @@ void PlaybackProgressBar::setMaxValue(int maxValue)
 {
     m_maxValue = maxValue;
     update();
+}
+
+void PlaybackProgressBar::mouseEvent(const MouseEvent& ev)
+{
+    if (ev.button() == MouseEvent::ButtonLeft && ev.type() == MouseEvent::Type::ButtonPress) {
+        if (m_maxValue > 0)
+            progressChangeRequested(((double)ev.position().x() / (double)cols()) * m_maxValue);
+    }
 }
 
 void PlaybackProgressBar::paint(const Rectangle& rect)

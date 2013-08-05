@@ -62,6 +62,9 @@ StatusArea::StatusArea(Xmms::Client *client, int xPos, int yPos, int cols, Windo
     m_stackedWindow->window(StackedMessageWindow)->loadPalette("StatusMessageWindow");
 
     m_playbackProgressBar = new PlaybackProgressBar(0, 0, cols, this);
+    m_playbackProgressBar->progressChangeRequested_Connect([client](int value){
+        client->playback.seekMs(value);
+    });
     auto *playbackStatusWin = static_cast<PlaybackStatusWindow*>(m_stackedWindow->window(StackedPlaybackStatusWindow));
     playbackStatusWin->playtimeChanged_Connect(&PlaybackProgressBar::setValue, m_playbackProgressBar);
     playbackStatusWin->currentSongChanged_Connect([this](const Song& song)
