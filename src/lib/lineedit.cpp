@@ -170,6 +170,7 @@ LineEdit::LineEdit(int xPos, int yPos, int cols, Window *parent) :
     d(new LineEditPrivate(this))
 {
     loadPalette("LineEdit");
+    focusLost_Connect([this](){d->returnResult(Rejected);});
 }
 
 void LineEdit::edit(const ResultCallback& resultCallback, const std::string& text)
