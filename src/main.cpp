@@ -50,9 +50,14 @@ int main(int argc, char **argv)
     if (!xmmsClient)
         return EXIT_FAILURE;
 
+    const bool mouseEnable = ncxmms2::Settings::value("General", "mouseEnable", false);
+    const int mouseDoubleClickInterval = ncxmms2::Settings::value("General",
+                                                                  "mouseDoubleClickInterval", 300);
+
     try
     {
-        ncxmms2::Application::init(options.useColors());
+        ncxmms2::Application::init(options.useColors(), mouseEnable);
+        ncxmms2::Application::setMouseDoubleClickInterval(mouseDoubleClickInterval);
         if (options.useColors()) {
             // Try user color scheme config
             const std::string userColorSchemeFilePath =
