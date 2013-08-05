@@ -20,6 +20,7 @@
 #include "textview.h"
 #include "painter.h"
 #include "keyevent.h"
+#include "mouseevent.h"
 #include "size.h"
 
 namespace ncxmms2 {
@@ -82,6 +83,18 @@ void TextView::keyPressedEvent(const KeyEvent& keyEvent)
     switch (keyEvent.key()) {
         case KeyEvent::KeyUp:   d->scrollUp();   break;
         case KeyEvent::KeyDown: d->scrollDown(); break;
+        default: break;
+    }
+}
+
+void TextView::mouseEvent(const MouseEvent &ev)
+{
+    if (ev.type() != MouseEvent::Type::ButtonPress)
+        return;
+
+    switch (ev.button()) {
+        case MouseEvent::WheelUp:   d->scrollUp();   break;
+        case MouseEvent::WheelDown: d->scrollDown(); break;
         default: break;
     }
 }

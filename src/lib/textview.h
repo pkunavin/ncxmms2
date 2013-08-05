@@ -33,6 +33,7 @@ public:
     void appendLine(const std::string& line = std::string());
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
+    virtual void mouseEvent(const MouseEvent& ev);
     virtual void resize(const Size& size);
 
 protected:
