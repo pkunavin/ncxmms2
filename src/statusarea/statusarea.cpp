@@ -72,9 +72,8 @@ StatusArea::StatusArea(Xmms::Client *client, int xPos, int yPos, int cols, Windo
         m_playbackProgressBar->setMaxValue(song.duration());
     });
 
-    m_timer.timeout_Connect([this]()
-    {
-        m_timer.stop();
+    m_timer.setSingleShot(true);
+    m_timer.timeout_Connect([this](){
         m_stackedWindow->setCurrentIndex(StackedPlaybackStatusWindow);
     });
 }

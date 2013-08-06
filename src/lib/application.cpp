@@ -156,6 +156,7 @@ Application::Application(bool useColors, bool mouseEnable) :
     d->stdinPollSource = g_io_add_watch(iochan, G_IO_IN, ApplicationPrivate::stdinEvent, NULL);
     g_io_channel_unref(iochan);
 
+    d->mouseDoubleClickTimer.setSingleShot(true);
     d->mouseDoubleClickTimer.timeout_Connect([this](){
         d->mouseDoubleClickTimeExpired = true;
         d->mouseDoubleClickTimer.stop();
@@ -400,7 +401,6 @@ void ApplicationPrivate::sendMouseEvent(const TermKeyKey& key)
                 && button == mouseDoubleClickButton
                 && mouseDoubleClickPosition.x() == x && mouseDoubleClickPosition.y() == y) {
                 eventType = MouseEvent::Type::ButtonDoubleClick;
-                mouseDoubleClickTimer.stop();
                 mouseDoubleClickTimeExpired = true;
             } else {
                 eventType = MouseEvent::Type::ButtonPress;

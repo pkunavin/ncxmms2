@@ -90,6 +90,7 @@ ListView::ListView(const Rectangle& rect, Window *parent) :
     d(new ListViewPrivate(this))
 {
     loadPalette("ListView");
+    d->hideSelectionTimer.setSingleShot(true);
     d->hideSelectionTimer.timeout_Connect(&ListView::hideCurrentItem, this);
 }
 
@@ -225,7 +226,6 @@ void ListView::hideCurrentItem()
     if (!d->model)
         return;
 
-    d->hideSelectionTimer.stop();
     d->currentItemHidden = true;
     d->itemsChanged(d->currentItem, d->currentItem);
 }
