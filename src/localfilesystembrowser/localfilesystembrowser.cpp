@@ -92,9 +92,9 @@ void LocalFileSystemBrowser::keyPressedEvent(const KeyEvent& keyEvent)
         case Hotkeys::Screens::LocalFileSystemBrowser::ChangeDirectory:
         {
             auto resultCallback = [this](const std::string& path,
-                                         LineEdit::ResultCode result)
+                                         LineEdit::Result result)
             {
-                if (result == LineEdit::Accepted)
+                if (result == LineEdit::Result::Accepted)
                     cd(path);
             };
             StatusArea::askQuestion("Change directory: ", resultCallback);
@@ -117,9 +117,9 @@ void LocalFileSystemBrowser::keyPressedEvent(const KeyEvent& keyEvent)
         case '+': // Select be regexp
         {
             auto resultCallback = [this, fsModel](const std::string&   pattern,
-                                                  LineEdit::ResultCode result)
+                                                  LineEdit::Result result)
             {
-                if (result == LineEdit::Accepted) {
+                if (result == LineEdit::Result::Accepted) {
                     selectItemsByRegExp(pattern);
                     if (fsModel->fileName(0) == "..") { // Do not select .. item
                         unselectItem(0);
@@ -241,7 +241,7 @@ void LocalFileSystemBrowser::activePlaylistAddFile(int item, bool beQuiet)
     const std::string filePath = std::string("file://").append(fsModel->filePath(item));
 
     switch (Utils::getFileType(fileName)) {
-        case Utils::PlaylistFile:
+        case Utils::FileType::Playlist:
             XmmsUtils::playlistAddPlaylistFile(m_xmmsClient,
                                                XMMS_ACTIVE_PLAYLIST,
                                                filePath);
@@ -251,14 +251,14 @@ void LocalFileSystemBrowser::activePlaylistAddFile(int item, bool beQuiet)
             }
             break;
 
-        case Utils::MediaFile:
+        case Utils::FileType::Media:
             m_xmmsClient->playlist.addUrl(filePath);
             if (!beQuiet) {
                 StatusArea::showMessage("Adding \"%1%\" file to active playlist", fileName);
             }
             break;
 
-        case Utils::UnknownFile:
+        case Utils::FileType::Unknown:
             if (!beQuiet)
                 StatusArea::showMessage("Unknown file type!");
             break;

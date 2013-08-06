@@ -43,9 +43,9 @@ void ListViewAppIntegrated::keyPressedEvent(const KeyEvent& keyEvent)
 
         case '+': // Select be regexp
         {
-            auto resultCallback = [this](const std::string& pattern, LineEdit::ResultCode result)
+            auto resultCallback = [this](const std::string& pattern, LineEdit::Result result)
             {
-                if (result == LineEdit::Accepted) {
+                if (result == LineEdit::Result::Accepted) {
                     selectItemsByRegExp(pattern);
                     StatusArea::showMessage("%1% items selected", selectedItems().size());
                 }
@@ -56,9 +56,9 @@ void ListViewAppIntegrated::keyPressedEvent(const KeyEvent& keyEvent)
 
         case '\\': // Unselect be regexp
         {
-            auto resultCallback = [this](const std::string& pattern, LineEdit::ResultCode result)
+            auto resultCallback = [this](const std::string& pattern, LineEdit::Result result)
             {
-                if (result == LineEdit::Accepted) {
+                if (result == LineEdit::Result::Accepted) {
                     unselectItemsByRegExp(pattern);
                     StatusArea::showMessage("%1% items selected", selectedItems().size());
                 }

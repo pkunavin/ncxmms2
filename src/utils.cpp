@@ -67,7 +67,7 @@ Utils::FileType Utils::getFileType(const std::string& path)
 {
     const std::string::size_type dotPos = path.rfind('.');
     if (dotPos == std::string::npos || dotPos + 1 >= path.size() || dotPos == 0)
-        return Utils::UnknownFile;
+        return Utils::FileType::Unknown;
 
     std::string suffix = path.substr(dotPos + 1);
     boost::to_lower(suffix);
@@ -88,10 +88,10 @@ Utils::FileType Utils::getFileType(const std::string& path)
                                                          "alac"};
 
     if (mediaFileSuffixes.find(suffix) != mediaFileSuffixes.end())
-        return Utils::MediaFile;
+        return Utils::FileType::Media;
 
     if (playlistFileSuffixes.find(suffix) != playlistFileSuffixes.end())
-        return Utils::PlaylistFile;
+        return Utils::FileType::Playlist;
 
-     return Utils::UnknownFile;
+     return Utils::FileType::Unknown;
 }

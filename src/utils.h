@@ -26,11 +26,11 @@ namespace Utils {
 
 std::string getTimeStringFromInt(int msec);
 
-enum FileType
+enum class FileType
 {
-    MediaFile,
-    PlaylistFile,
-    UnknownFile
+    Media,
+    Playlist,
+    Unknown
 };
 
 FileType getFileType(const std::string& path);

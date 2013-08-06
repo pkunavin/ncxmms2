@@ -100,9 +100,9 @@ void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
 
         case Hotkeys::PlaylistView::AddFileOrDirectory:
         {
-            auto resultCallback = [this](const std::string& path, LineEdit::ResultCode result)
+            auto resultCallback = [this](const std::string& path, LineEdit::Result result)
             {
-                if (result == LineEdit::Accepted)
+                if (result == LineEdit::Result::Accepted)
                     addPath(path);
             };
             StatusArea::askQuestion("Add path: ", resultCallback);
@@ -111,9 +111,9 @@ void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
 
         case Hotkeys::PlaylistView::AddUrl:
         {
-            auto resultCallback = [this](const std::string& url, LineEdit::ResultCode result)
+            auto resultCallback = [this](const std::string& url, LineEdit::Result result)
             {
-                if (result == LineEdit::Accepted)
+                if (result == LineEdit::Result::Accepted)
                     addUrl(url);
             };
             StatusArea::askQuestion("Add url: ", resultCallback);
@@ -125,9 +125,9 @@ void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
             // We can't use selectItemsByRegExp here, because it matches ListModelItemData::text,
             // but for PlaylistModel its value doesn't correspond to what actually displyed, as
             // it uses SongDisplayFormatParser for this job.
-            auto resultCallback = [this, plsModel](const std::string& pattern, LineEdit::ResultCode result)
+            auto resultCallback = [this, plsModel](const std::string& pattern, LineEdit::Result result)
             {
-                if (result == LineEdit::Accepted) {
+                if (result == LineEdit::Result::Accepted) {
                     GRegex *regex = g_regex_new(pattern.c_str(), G_REGEX_OPTIMIZE,
                                                 (GRegexMatchFlags)0, nullptr);
                     if (!regex)
@@ -150,9 +150,9 @@ void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
         case '\\': // Unselect be regexp
         {
             // The same story here...
-            auto resultCallback = [this, plsModel](const std::string& pattern, LineEdit::ResultCode result)
+            auto resultCallback = [this, plsModel](const std::string& pattern, LineEdit::Result result)
             {
-                if (result == LineEdit::Accepted) {
+                if (result == LineEdit::Result::Accepted) {
                     GRegex *regex = g_regex_new(pattern.c_str(), G_REGEX_OPTIMIZE,
                                                 (GRegexMatchFlags)0, nullptr);
                     if (!regex)
@@ -244,14 +244,14 @@ void PlaylistView::addFile(const std::string& path)
 
     const Utils::FileType fileType = Utils::getFileType(path);
     switch (fileType) {
-        case Utils::MediaFile:
+        case Utils::FileType::Media:
             m_xmmsClient->playlist.addUrl(std::string("file://").append(path),
                                           plsModel->playlist());
             StatusArea::showMessage("Adding \"%1%\" file to \"%2%\" playlist",
                                     fileName, plsModel->playlist());
             break;
 
-        case Utils::PlaylistFile:
+        case Utils::FileType::Playlist:
             XmmsUtils::playlistAddPlaylistFile(m_xmmsClient,
                                                plsModel->playlist(),
                                                std::string("file://").append(path));
@@ -259,7 +259,7 @@ void PlaylistView::addFile(const std::string& path)
                                     fileName, plsModel->playlist());
             break;
 
-        case Utils::UnknownFile:
+        case Utils::FileType::Unknown:
             StatusArea::showMessage("Unknown file type!");
             break;
     }

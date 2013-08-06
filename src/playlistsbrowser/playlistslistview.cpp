@@ -78,9 +78,9 @@ void PlaylistsListView::keyPressedEvent(const KeyEvent& keyEvent)
 
         case Hotkeys::Screens::PlaylistsBrowser::CreateNewPlaylist:
         {
-            auto resultCallback = [this](const std::string& playlist, LineEdit::ResultCode result)
+            auto resultCallback = [this](const std::string& playlist, LineEdit::Result result)
             {
-                if (result == LineEdit::Accepted)
+                if (result == LineEdit::Result::Accepted)
                     createPlaylist(playlist);
             };
 
@@ -91,9 +91,9 @@ void PlaylistsListView::keyPressedEvent(const KeyEvent& keyEvent)
         case Hotkeys::Screens::PlaylistsBrowser::RenamePlaylist:
         {
             const std::string playlist = plsModel->playlist(currentItem());
-            auto resultCallback = [this, playlist](const std::string& newName, LineEdit::ResultCode result)
+            auto resultCallback = [this, playlist](const std::string& newName, LineEdit::Result result)
             {
-                if (result == LineEdit::Accepted)
+                if (result == LineEdit::Result::Accepted)
                     renamePlaylist(playlist, newName);
             };
 

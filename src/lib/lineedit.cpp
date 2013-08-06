@@ -47,7 +47,7 @@ public:
     std::u32string::size_type viewportBegin;
     typedef std::u32string::size_type TextSizeType;
 
-    void returnResult(LineEdit::ResultCode result);
+    void returnResult(LineEdit::Result result);
     void clearText();
 
     void keyLeft();
@@ -63,7 +63,7 @@ public:
 
 using namespace ncxmms2;
 
-void LineEditPrivate::returnResult(LineEdit::ResultCode result)
+void LineEditPrivate::returnResult(LineEdit::Result result)
 {
     if (!resultCallback.empty())
         resultCallback(u32stringToUtf8(text), result);
@@ -170,7 +170,7 @@ LineEdit::LineEdit(int xPos, int yPos, int cols, Window *parent) :
     d(new LineEditPrivate(this))
 {
     loadPalette("LineEdit");
-    focusLost_Connect([this](){d->returnResult(Rejected);});
+    focusLost_Connect([this](){d->returnResult(Result::Rejected);});
 }
 
 void LineEdit::edit(const ResultCallback& resultCallback, const std::string& text)
@@ -193,14 +193,14 @@ void LineEdit::keyPressedEvent(const KeyEvent& keyEvent)
 {
     if (keyEvent.isFunctionKey()) {
         switch(keyEvent.key()) {
-            case KeyEvent::KeyEscape:    d->returnResult(Rejected); return;
-            case KeyEvent::KeyEnter:     d->returnResult(Accepted); return;
-            case KeyEvent::KeyLeft:      d->keyLeft();              break;
-            case KeyEvent::KeyRight:     d->keyRight();             break;
-            case KeyEvent::KeyHome:      d->keyHome();              break;
-            case KeyEvent::KeyEnd:       d->keyEnd();               break;
-            case KeyEvent::KeyBackspace: d->keyBackspace();         break;
-            case KeyEvent::KeyDelete:    d->keyDelete();            break;
+            case KeyEvent::KeyEscape:    d->returnResult(Result::Rejected); return;
+            case KeyEvent::KeyEnter:     d->returnResult(Result::Accepted); return;
+            case KeyEvent::KeyLeft:      d->keyLeft();                      break;
+            case KeyEvent::KeyRight:     d->keyRight();                     break;
+            case KeyEvent::KeyHome:      d->keyHome();                      break;
+            case KeyEvent::KeyEnd:       d->keyEnd();                       break;
+            case KeyEvent::KeyBackspace: d->keyBackspace();                 break;
+            case KeyEvent::KeyDelete:    d->keyDelete();                    break;
         }
     } else if (g_unichar_isprint(keyEvent.key())) {
         d->addChar(keyEvent.key());

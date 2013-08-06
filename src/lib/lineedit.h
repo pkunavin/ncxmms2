@@ -29,12 +29,12 @@ class LineEdit : public Window
 public:
     LineEdit(int xPos, int yPos, int cols, Window *parent = nullptr);
 
-    enum ResultCode
+    enum class Result
     {
         Rejected,
         Accepted
     };
-    typedef boost::function<void (const std::string&, ResultCode)> ResultCallback;
+    typedef boost::function<void (const std::string&, Result)> ResultCallback;
 
     void edit(const ResultCallback& resultCallback, const std::string& text = std::string());
     void edit(const ResultCallback& resultCallback, const std::u32string& text = std::u32string());
