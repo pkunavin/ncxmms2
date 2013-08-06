@@ -22,8 +22,12 @@ namespace ncxmms2 {
 class TimerPrivate
 {
 public:
-    TimerPrivate() : id(0) {}
+    TimerPrivate() :
+        id(0),
+        isSingleShot(false) {}
+
     guint id;
+    bool isSingleShot;
     static gboolean timeoutCallback(gpointer data);
 };
 } // ncxmms2
@@ -57,10 +61,24 @@ void Timer::stop()
     }
 }
 
+void Timer::setSingleShot(bool singleShot)
+{
+    d->isSingleShot = singleShot;
+}
+
+bool Timer::isSingleShot() const
+{
+    return d->isSingleShot;
+}
+
 gboolean TimerPrivate::timeoutCallback(gpointer data)
 {
     Timer *q = static_cast<Timer*>(data);
     q->timeout();
+    if (q->isSingleShot()) {
+        q->d->id = 0;
+        return FALSE;
+    }
     return TRUE;
 }
 

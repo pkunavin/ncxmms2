@@ -33,6 +33,9 @@ public:
     void startMs(unsigned int msec);
     void stop();
 
+    void setSingleShot(bool singleShot);
+    bool isSingleShot() const;
+
     // Signals
     NCXMMS2_SIGNAL(timeout)
 
