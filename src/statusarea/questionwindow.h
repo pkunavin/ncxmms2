@@ -33,9 +33,8 @@ public:
                      const LineEdit::ResultCallback& answerCallback,
                      const std::string& initialAnswer=std::string());
 
-    virtual void resize(const Size &size);
-
 protected:
+    virtual void resizeChildren(const Size &size);
     virtual void paint(const Rectangle& rect);
 
 private:

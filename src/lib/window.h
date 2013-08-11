@@ -90,6 +90,7 @@ public:
     NCXMMS2_SIGNAL(focusLost)
 
 protected:
+    virtual void resizeChildren(const Size& size);
     virtual void showEvent();
     virtual void paint(const Rectangle& rect);
 

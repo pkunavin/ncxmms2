@@ -143,9 +143,8 @@ void MainWindow::mouseEvent(const MouseEvent& ev)
     }
 }
 
-void MainWindow::resize(const Size& size)
+void MainWindow::resizeChildren(const Size& size)
 {
-    Window::resize(size);
     m_headerWindow->resize(Size(size.cols(), m_headerWindow->lines()));
     m_stackedWindow->resize(Size(size.cols(), size.lines() - m_statusArea->lines() - m_headerWindow->lines()));
     m_statusArea->move(0, size.lines() - m_statusArea->lines());

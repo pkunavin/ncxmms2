@@ -66,6 +66,7 @@ public:
 
     std::shared_ptr<Palette> palette;
 
+    static bool doingResize;
     void checkSize(const Size& size);
 };
 } // ncxmms2

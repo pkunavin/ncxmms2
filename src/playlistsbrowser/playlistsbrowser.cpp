@@ -83,13 +83,6 @@ void PlaylistsBrowser::setPlsViewerPlaylist(int item)
                              : std::string());
 }
 
-void PlaylistsBrowser::resize(const Size& size)
-{
-    Window::resize(size);
-    m_plsListView->resize(Size(PlaylistsListViewCols, size.lines()));
-    m_plsViewer->resize(Size(size.cols() - PlaylistsListViewCols - 1, size.lines()));
-}
-
 void PlaylistsBrowser::keyPressedEvent(const KeyEvent& keyEvent)
 {
     switch (keyEvent.key()) {
@@ -105,4 +98,10 @@ void PlaylistsBrowser::keyPressedEvent(const KeyEvent& keyEvent)
 
         default: Window::keyPressedEvent(keyEvent);
     }
+}
+
+void PlaylistsBrowser::resizeChildren(const Size& size)
+{
+    m_plsListView->resize(Size(PlaylistsListViewCols, size.lines()));
+    m_plsViewer->resize(Size(size.cols() - PlaylistsListViewCols - 1, size.lines()));
 }

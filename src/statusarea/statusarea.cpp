@@ -127,14 +127,13 @@ void StatusArea::_askQuestion(const std::string& question,
     m_timer.stop();
 }
 
-void StatusArea::resize(const Size &size)
-{
-    Window::resize(size);
-    m_playbackProgressBar->resize(Size(size.cols(), m_playbackProgressBar->lines()));
-    m_stackedWindow->resize(Size(size.cols(), m_stackedWindow->lines()));
-}
-
 Xmms::Playback::Status StatusArea::playbackStatus() const
 {
     return static_cast<PlaybackStatusWindow*>(m_stackedWindow->window(StackedPlaybackStatusWindow))->playbackStatus();
+}
+
+void StatusArea::resizeChildren(const Size& size)
+{
+    m_playbackProgressBar->resize(Size(size.cols(), m_playbackProgressBar->lines()));
+    m_stackedWindow->resize(Size(size.cols(), m_stackedWindow->lines()));
 }

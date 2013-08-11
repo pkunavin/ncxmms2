@@ -41,16 +41,16 @@ void QuestionWindow::askQuestion(const std::string &question,
     adjustSize();
 }
 
+void QuestionWindow::resizeChildren(const Size& size)
+{
+    NCXMMS2_UNUSED(size);
+    adjustSize();
+}
+
 void QuestionWindow::adjustSize()
 {
     m_answerEdit->resize(Size(cols() - m_question.size(), lines()));
     m_answerEdit->move(m_question.size(), 0);
-}
-
-void QuestionWindow::resize(const Size &size)
-{
-    Window::resize(size);
-    adjustSize();
 }
 
 void QuestionWindow::paint(const Rectangle &rect)

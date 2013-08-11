@@ -38,9 +38,9 @@ public:
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
     virtual void mouseEvent(const MouseEvent& ev);
-    virtual void resize(const Size& size);
 
 protected:
+    virtual void resizeChildren(const Size& size);
     virtual void showEvent();
 
 private:

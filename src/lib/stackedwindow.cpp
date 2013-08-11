@@ -88,14 +88,10 @@ void StackedWindow::mouseEvent(const MouseEvent& ev)
         d->windows[d->currentIndex]->mouseEvent(ev);
 }
 
-void StackedWindow::resize(const Size& size)
+void StackedWindow::resizeChildren(const Size& size)
 {
-    Window::resize(size);
     for (Window *win : d->windows)
         win->resize(size);
-
-    if (d->currentIndex != -1 && !isHidden())
-        d->windows[d->currentIndex]->show();
 }
 
 void StackedWindow::showEvent()

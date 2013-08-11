@@ -34,9 +34,9 @@ public:
     PlaylistsBrowser(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
-    virtual void resize(const Size& size);
 
 protected:
+    virtual void resizeChildren(const Size& size);
     virtual void paint(const Rectangle& rect);
 
 private:

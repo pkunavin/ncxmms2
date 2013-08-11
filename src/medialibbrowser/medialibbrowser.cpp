@@ -145,18 +145,8 @@ void MedialibBrowser::keyPressedEvent(const KeyEvent& keyEvent)
     }
 }
 
-void MedialibBrowser::resize(const Size& size)
+void MedialibBrowser::resizeChildren(const Size &size)
 {
-    // We do not want to update on every move and resize, juct show
-    // final result, also there is some bug in move and resize routines,
-    // which leads to Segmentation fault
-    // TODO: find this bug.
-    const bool needHide = !isHidden();
-    if (needHide)
-        hide();
-
-    Window::resize(size);
-
     const int headerLines = 2;
     const int artistsListViewCols = (cols() - 2) / 3;
     m_artistsListView->resize(Size(artistsListViewCols, size.lines() - headerLines));
@@ -168,9 +158,6 @@ void MedialibBrowser::resize(const Size& size)
     const int songsListViewCols = size.cols() - artistsListViewCols - albumsListViewCols - 2;
     m_songsListView->resize(Size(songsListViewCols, size.lines() - headerLines));
     m_songsListView->move(size.cols() - songsListViewCols, headerLines);
-
-    if (needHide)
-        show();
 }
 
 void MedialibBrowser::paint(const Rectangle& rect)

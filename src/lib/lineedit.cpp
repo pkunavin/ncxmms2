@@ -208,7 +208,7 @@ void LineEdit::keyPressedEvent(const KeyEvent& keyEvent)
     update();
 }
 
-void LineEdit::resize(const Size &size)
+void LineEdit::resize(const Size& size)
 {
     if (size.cols() > cols()) {
         int extraSize = size.cols() - cols();

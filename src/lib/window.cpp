@@ -28,6 +28,8 @@
 
 using namespace ncxmms2;
 
+bool WindowPrivate::doingResize = false;
+
 Window::Window(const Rectangle& rect, Window *parent) :
     Object(parent),
     d(new WindowPrivate(rect.position(), rect.size(), parent))
@@ -157,7 +159,8 @@ void Window::move(int x, int y)
                    ? derwin(d->parent->d->cursesWin, lines(), cols(), y, x)
                    : newwin(lines(), cols(), y, x);
 
-    update();
+    if (!WindowPrivate::doingResize)
+        update();
 
     for (auto child : d->childrenWins)
         child->move(child->x(), child->y());
@@ -246,6 +249,11 @@ Point Window::toLocalCoordinates(const Point& point) const
     return Point(point.x() - x(), point.y() - y());
 }
 
+void Window::resizeChildren(const Size& size)
+{
+    NCXMMS2_UNUSED(size);
+}
+
 void Window::showEvent()
 {
     for (auto child : d->childrenWins)
@@ -277,12 +285,23 @@ void Window::resize(const Size& size)
     d->checkSize(size);
     d->size = size;
 
+     bool needToShowResult = false;
+     if (!WindowPrivate::doingResize && !isHidden()) {
+         needToShowResult = true;
+         WindowPrivate::doingResize = true;
+     }
+
     delwin(d->cursesWin);
     d->cursesWin = d->parent
-                   ? derwin(d->parent->d->cursesWin, lines(), cols(), y(), x())
-                   : newwin(lines(), cols(), y(), x());
+                   ? derwin(d->parent->d->cursesWin, size.lines(), size.cols(), y(), x())
+                   : newwin(size.lines(), size.cols(), y(), x());
 
-    update();
+    resizeChildren(size);
+
+    if (needToShowResult)
+        show();
+
+    WindowPrivate::doingResize = false;
 }
 
 void Window::paint(const Rectangle& rect)

@@ -51,8 +51,6 @@ public:
 
     Xmms::Playback::Status playbackStatus() const;
 
-    virtual void resize(const Size& size);
-
     enum
     {
         PlaybackProgressLine,
@@ -60,6 +58,9 @@ public:
 
         LinesNumber
     };
+
+protected:
+    virtual void resizeChildren(const Size& size);
 
 private:
     static StatusArea *inst;
