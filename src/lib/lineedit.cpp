@@ -47,6 +47,8 @@ public:
     std::u32string::size_type viewportBegin;
     typedef std::u32string::size_type TextSizeType;
 
+    Signals::connection focusLostSlotConnection;
+
     void returnResult(LineEdit::Result result);
     void clearText();
 
@@ -65,6 +67,7 @@ using namespace ncxmms2;
 
 void LineEditPrivate::returnResult(LineEdit::Result result)
 {
+    Signals::shared_connection_block block(focusLostSlotConnection);
     if (!resultCallback.empty())
         resultCallback(u32stringToUtf8(text), result);
     Application::releaseFocus();
@@ -170,7 +173,7 @@ LineEdit::LineEdit(int xPos, int yPos, int cols, Window *parent) :
     d(new LineEditPrivate(this))
 {
     loadPalette("LineEdit");
-    focusLost_Connect([this](){d->returnResult(Result::Rejected);});
+    d->focusLostSlotConnection = focusLost_Connect([this](){d->returnResult(Result::Rejected);});
 }
 
 void LineEdit::edit(const ResultCallback& resultCallback, const std::string& text)
