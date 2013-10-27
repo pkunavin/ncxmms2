@@ -283,6 +283,7 @@ void ApplicationPrivate::parseColorSchemeTree(const boost::property_tree::ptree&
 
     static const std::map<std::string, Color> colorNamesMap =
     {
+        {"Default", ColorDefault},
         {"Black",   ColorBlack},
         {"Red",     ColorRed},
         {"Green",   ColorGreen},

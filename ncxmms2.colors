@@ -14,6 +14,7 @@
 // For custom window classes special roles can be provided.
 //   For each role you can use one of the following colors:
 // "Black", "Red", "Green", "Yellow", "Blue", "Magenta", "Cyan", "White".
+// Use "Default" for terminal default color.
 // Maybe one day ncxmms2 will have 256 colors support...
 //   It's worth to mention, that you don't have to change all roles in some
 // window class, because they are inherited from base window class.
@@ -30,18 +31,18 @@
         "Active":
         {
             "Text"            : "Yellow",
-            "Background"      : "Black",
-            "Selection"       : "Magenta",
-            "Highlight"       : "Yellow",
+            "Background"      : "Default",
+            "Selection"       : "Blue",
+            "Highlight"       : "Green",
             "HighlightedText" : "Black"
         },
         
         "Inactive":
         {
             "Text"            : "Yellow",
-            "Background"      : "Black",
-            "Selection"       : "Magenta",
-            "Highlight"       : "White",
+            "Background"      : "Default",
+            "Selection"       : "Blue",
+            "Highlight"       : "Yellow",
             "HighlightedText" : "Black"
         }
     },
@@ -50,12 +51,12 @@
     {
         "Active":
         {
-            "Text" : "White"
+            "Text" : "Default"
         },
         
         "Inactive":
         {
-            "Text" : "White"
+            "Text" : "Default"
         }
     },
     
@@ -63,12 +64,12 @@
     {
         "Active":
         {
-            "Text" : "White"
+            "Text" : "Default"
         },
         
         "Inactive":
         {
-            "Text" : "White"
+            "Text" : "Default"
         }
     },
     
@@ -76,12 +77,12 @@
     {
         "Active":
         {
-            "Text" : "White"
+            "Text" : "Default"
         },
         
         "Inactive":
         {
-            "Text" : "White"
+            "Text" : "Default"
         }
     },
     
@@ -89,12 +90,12 @@
     {
         "Active":
         {
-            "Text" : "White"
+            "Text" : "Default"
         },
         
         "Inactive":
         {
-            "Text" : "White"
+            "Text" : "Default"
         }
     },
     
@@ -102,12 +103,12 @@
     {
         "Active":
         {
-            "Text" : "White"
+            "Text" : "Default"
         },
         
         "Inactive":
         {
-            "Text" : "White"
+            "Text" : "Default"
         }
     },
     
@@ -115,12 +116,12 @@
     {
         "Active":
         {
-            "Text" : "White"
+            "Text" : "Default"
         },
         
         "Inactive":
         {
-            "Text" : "White"
+            "Text" : "Default"
         }
     },
     
@@ -128,12 +129,12 @@
     {
         "Active":
         {
-            "Text" : "White"
+            "Text" : "Default"
         },
         
         "Inactive":
         {
-            "Text" : "White"
+            "Text" : "Default"
         }
     }
 }
