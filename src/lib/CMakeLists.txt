@@ -16,7 +16,8 @@ set(SOURCES
     utf.cpp
     textview.cpp
     iniparser.cpp
-    palette.cpp)
+    palette.cpp
+    checkbox.cpp)
 
 set(HEADERS
     signals.h
@@ -43,7 +44,8 @@ set(HEADERS
     utf.h
     textview.h
     iniparser.h
-    palette.h)
+    palette.h
+    checkbox.h)
 
 add_library(ncxmms2-lib ${SOURCES})
 
