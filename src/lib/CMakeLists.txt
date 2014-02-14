@@ -17,7 +17,8 @@ set(SOURCES
     textview.cpp
     iniparser.cpp
     palette.cpp
-    checkbox.cpp)
+    checkbox.cpp
+    radiobuttongroupbox.cpp)
 
 set(HEADERS
     signals.h
@@ -45,7 +46,8 @@ set(HEADERS
     textview.h
     iniparser.h
     palette.h
-    checkbox.h)
+    checkbox.h
+    radiobuttongroupbox.h)
 
 add_library(ncxmms2-lib ${SOURCES})
 
