@@ -32,17 +32,17 @@
         {
             "Text"            : "Yellow",
             "Background"      : "Default",
-            "Selection"       : "Blue",
-            "Highlight"       : "Green",
-            "HighlightedText" : "Black"
+            "Selection"       : "Magenta",
+            "Highlight"       : "Blue",
+            "HighlightedText" : "White"
         },
         
         "Inactive":
         {
             "Text"            : "Yellow",
             "Background"      : "Default",
-            "Selection"       : "Blue",
-            "Highlight"       : "Yellow",
+            "Selection"       : "Magenta",
+            "Highlight"       : "White",
             "HighlightedText" : "Black"
         }
     },

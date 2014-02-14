@@ -28,14 +28,14 @@ Palette::Palette()
     // Default colors
     setColor(Palette::GroupActive, Palette::RoleText,            ColorDefault);
     setColor(Palette::GroupActive, Palette::RoleBackground,      ColorDefault);
-    setColor(Palette::GroupActive, Palette::RoleSelection,       ColorBlue);
-    setColor(Palette::GroupActive, Palette::RoleHighlight,       ColorGreen);
-    setColor(Palette::GroupActive, Palette::RoleHighlightedText, ColorBlack);
+    setColor(Palette::GroupActive, Palette::RoleSelection,       ColorMagenta);
+    setColor(Palette::GroupActive, Palette::RoleHighlight,       ColorBlue);
+    setColor(Palette::GroupActive, Palette::RoleHighlightedText, ColorWhite);
 
     setColor(Palette::GroupInactive, Palette::RoleText,            ColorDefault);
     setColor(Palette::GroupInactive, Palette::RoleBackground,      ColorDefault);
-    setColor(Palette::GroupInactive, Palette::RoleSelection,       ColorBlue);
-    setColor(Palette::GroupInactive, Palette::RoleHighlight,       ColorYellow);
+    setColor(Palette::GroupInactive, Palette::RoleSelection,       ColorMagenta);
+    setColor(Palette::GroupInactive, Palette::RoleHighlight,       ColorWhite);
     setColor(Palette::GroupInactive, Palette::RoleHighlightedText, ColorBlack);
 }
 
