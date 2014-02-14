@@ -273,6 +273,24 @@ void Painter::drawVLine(int startX, int startY, int length, int symbol)
     mvwvline(d->cursesWin, startY, startX, symbol, length);
 }
 
+void Painter::drawRect(int x, int y, int cols, int lines)
+{
+    mvwvline(d->cursesWin, y, x, 0, lines);
+    mvwvline(d->cursesWin, y, x + cols - 1, 0, lines);
+    mvwhline(d->cursesWin, y, x, 0, cols);
+    mvwhline(d->cursesWin, y + lines - 1, x, 0, cols);
+    
+    mvwaddch(d->cursesWin, y, x, ACS_ULCORNER);
+    mvwaddch(d->cursesWin, y, x + cols - 1, ACS_URCORNER);
+    mvwaddch(d->cursesWin, y + lines - 1, x, ACS_LLCORNER);
+    mvwaddch(d->cursesWin, y + lines - 1, x + cols - 1, ACS_LRCORNER);
+}
+
+void Painter::drawBox(int vSymbol, int hSymbol)
+{
+    box(d->cursesWin, vSymbol, hSymbol);
+}
+
 void Painter::flush()
 {
     wrefresh(d->cursesWin);

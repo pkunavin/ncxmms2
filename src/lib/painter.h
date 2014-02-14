@@ -58,6 +58,8 @@ public:
 
     void drawHLine(int startX, int startY, int length, int symbol = 0);
     void drawVLine(int startX, int startY, int length, int symbol = 0);
+    void drawRect(int x, int y, int cols, int lines);
+    void drawBox(int vSymbol = 0, int hSymbol = 0);
 
     void flush();
 
