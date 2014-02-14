@@ -19,9 +19,13 @@
 
 #include <string>
 #include <memory>
+#include <unordered_map>
+
+#include "lib/object.h"
 
 namespace Xmms {
 class Client;
+class Dict;
 }
 
 namespace ncxmms2 {
@@ -31,6 +35,29 @@ std::unique_ptr<Xmms::Client> clientCreateAndConnect(const std::string& ipcPath)
 
 void playlistAddPlaylistFile(Xmms::Client *xmmsClient,
                              const std::string& playlist, const std::string& file);
+
+
+//FIXME: Current implementation of XmmsConfig doesn't have any sharing mechanism
+// which means that every instance will have a copy of xmms2 config.
+class XmmsConfig : public Object
+{
+public:
+    XmmsConfig(Xmms::Client *xmmsClient);
+
+    std::string getValue(const std::string& key, const std::string& defaultValue = std::string()) const;
+    void setValue(const std::string& key, const std::string& value);
+
+    // Signals
+    NCXMMS2_SIGNAL(configLoaded)
+    NCXMMS2_SIGNAL(valueChanged, const std::string&, const std::string&)
+
+private:
+    bool getConfig(const Xmms::Dict& dict);
+    bool handleConfigChange(const Xmms::Dict& dict);
+
+    Xmms::Client *m_xmmsClient;
+    std::unordered_map<std::string, std::string> m_config;
+};
 
 } // XmmsUtils
 } // ncxmms2

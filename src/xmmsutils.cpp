@@ -60,3 +60,57 @@ void XmmsUtils::playlistAddPlaylistFile(Xmms::Client *xmmsClient,
 
     xmmsClient->collection.idlistFromPlaylistFile(file)(getIdList);
 }
+
+
+XmmsUtils::XmmsConfig::XmmsConfig(Xmms::Client *xmmsClient) :
+    Object(nullptr),
+    m_xmmsClient(xmmsClient)
+{
+    m_xmmsClient->config.valueList()(Xmms::bind(&XmmsConfig::getConfig, this));
+    m_xmmsClient->config.broadcastValueChanged()(Xmms::bind(&XmmsConfig::handleConfigChange, this));
+}
+
+std::string XmmsUtils::XmmsConfig::getValue(const std::string& key, const std::string& defaultValue) const
+{
+    auto it = m_config.find(key);
+    return it != m_config.end() ? it->second : defaultValue;
+}
+
+void XmmsUtils::XmmsConfig::setValue(const std::string& key, const std::string& value)
+{
+    m_xmmsClient->config.valueSet(key, value);
+}
+
+namespace {
+class XmmsConfigVariantVisitor : public boost::static_visitor<std::string>
+{
+public:
+    std::string operator()(const int32_t& i) const
+    {
+        return boost::lexical_cast<std::string>(i);
+    }
+
+    std::string operator()(const std::string& str) const
+    {
+        return str;
+    }
+};
+}
+
+bool XmmsUtils::XmmsConfig::getConfig(const Xmms::Dict& dict)
+{
+    for (const Xmms::Dict::Pair& pair : dict) {
+        m_config[pair.first] = boost::apply_visitor(XmmsConfigVariantVisitor(), pair.second);
+    }
+    configLoaded();
+    return true;
+}
+
+bool XmmsUtils::XmmsConfig::handleConfigChange(const Xmms::Dict &dict)
+{
+    for (const Xmms::Dict::Pair& pair : dict) {
+        valueChanged(pair.first,
+                     m_config[pair.first] = boost::apply_visitor(XmmsConfigVariantVisitor(), pair.second));
+    }
+    return true;
+}
