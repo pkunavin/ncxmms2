@@ -216,6 +216,11 @@ bool Window::hasFocus() const
     return d->parent->d->focusedWindow == this;
 }
 
+Window *Window::focusedWindow() const
+{
+    return d->focusedWindow;
+}
+
 void Window::setPalette(const std::shared_ptr<Palette>& palette)
 {
     d->palette = palette;
