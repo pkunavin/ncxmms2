@@ -100,6 +100,12 @@ enum
     GoToCurrentlyActivePlaylist = 'o'
 };
 }
+namespace Equalizer {
+enum
+{
+    Activate = '7'
+};
+}
 
 } // Screens
 } // Hotkeys

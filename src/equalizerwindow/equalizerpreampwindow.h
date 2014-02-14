@@ -14,53 +14,32 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef EQUALIZERPREAMPWINDOW_H
+#define EQUALIZERPREAMPWINDOW_H
 
 #include "../lib/window.h"
 
-namespace Xmms {
-class Client;
-}
-
 namespace ncxmms2 {
 
-class HeaderWindow;
-class StackedWindow;
-class StatusArea;
-
-class MainWindow : public Window
+class EqualizerPreampWindow : public Window
 {
 public:
-    MainWindow(Xmms::Client *xmmsClient);
-    ~MainWindow();
-
-    enum StackedWindows
-    {
-        StackedHelpBrowser,
-        StackedPlaylistWindow,
-        StackedLocalFileBrowserWindow,
-        StackedMedialibBrowser,
-        StackedPlaylistsBrowser,
-        StackedEqualizerWindow
-    };
-
+    EqualizerPreampWindow(int x, int y, int lines, Window *parent = nullptr);
+    
+    void setPreamp(int preamp);
+    
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
     virtual void mouseEvent(const MouseEvent& ev);
-
+    
+    // Signals
+    NCXMMS2_SIGNAL(preampChangeRequested, int)
+    
 protected:
-    virtual void resizeChildren(const Size& size);
-
+    virtual void paint(const Rectangle& rect);
+    
 private:
-    HeaderWindow *m_headerWindow;
-    StackedWindow *m_stackedWindow;
-    StatusArea *m_statusArea;
-    Xmms::Client *m_xmmsClient;
-
-    void setVisibleWindow(StackedWindows win);
-    void handleStackedWindowNameChanged(StackedWindows win, const std::string& title);
+    int m_preamp;
 };
 } // ncxmms2
 
-
-#endif // MAINWINDOW_H
+#endif // EQUALIZERPREAMPWINDOW_H

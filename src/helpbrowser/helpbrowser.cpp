@@ -28,11 +28,12 @@ HelpBrowser::HelpBrowser(const Rectangle& rect, Window *parent) :
 
     const KeyDescription screensSwitchingKeys[] =
     {
-        {"Help screen",                       Hotkeys::Screens::Help::Activate},
-        {"Active playlist screen",            Hotkeys::Screens::ActivePlaylist::Activate},
-        {"Local file system browser screen ", Hotkeys::Screens::LocalFileSystemBrowser::Activate},
-        {"Medialib browser screen",           Hotkeys::Screens::MedialibBrowser::Activate},
-        {"Playlists browser screen",          Hotkeys::Screens::PlaylistsBrowser::Activate},
+        {"Help",                      Hotkeys::Screens::Help::Activate},
+        {"Active playlist",           Hotkeys::Screens::ActivePlaylist::Activate},
+        {"Local file system browser", Hotkeys::Screens::LocalFileSystemBrowser::Activate},
+        {"Medialib browser",          Hotkeys::Screens::MedialibBrowser::Activate},
+        {"Playlists browser",         Hotkeys::Screens::PlaylistsBrowser::Activate},
+        {"Equalizer",                 Hotkeys::Screens::Equalizer::Activate},
         {nullptr, 0}
     };
 

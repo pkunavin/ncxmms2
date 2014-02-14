@@ -22,6 +22,7 @@
 #include "../helpbrowser/helpbrowser.h"
 #include "../activeplaylistwindow/activeplaylistwindow.h"
 #include "../localfilesystembrowser/localfilesystembrowser.h"
+#include "../equalizerwindow/equalizerwindow.h"
 #include "../medialibbrowser/medialibbrowser.h"
 #include "../playlistsbrowser/playlistsbrowser.h"
 #include "../headerwindow/headerwindow.h"
@@ -57,7 +58,8 @@ MainWindow::MainWindow(Xmms::Client *xmmsClient) :
         {StackedPlaylistWindow,         new ActivePlaylistWindow  (xmmsClient, stackedSubWinRect, m_stackedWindow)},
         {StackedLocalFileBrowserWindow, new LocalFileSystemBrowser(xmmsClient, stackedSubWinRect, m_stackedWindow)},
         {StackedMedialibBrowser,        new MedialibBrowser       (xmmsClient, stackedSubWinRect, m_stackedWindow)},
-        {StackedPlaylistsBrowser,       new PlaylistsBrowser      (xmmsClient, stackedSubWinRect, m_stackedWindow)}
+        {StackedPlaylistsBrowser,       new PlaylistsBrowser      (xmmsClient, stackedSubWinRect, m_stackedWindow)},
+        {StackedEqualizerWindow,        new EqualizerWindow       (xmmsClient, stackedSubWinRect, m_stackedWindow)},
     };
 
     for (auto it = stakedWindows.begin(), it_end = stakedWindows.end(); it != it_end; ++it) {
@@ -82,6 +84,10 @@ void MainWindow::keyPressedEvent(const KeyEvent& keyEvent)
 
         case Hotkeys::Screens::LocalFileSystemBrowser::Activate:
             setVisibleWindow(StackedLocalFileBrowserWindow);
+            break;
+
+        case Hotkeys::Screens::Equalizer::Activate:
+            setVisibleWindow(StackedEqualizerWindow);
             break;
 
         case Hotkeys::Screens::MedialibBrowser::Activate:

@@ -40,7 +40,11 @@ set(SOURCES
     medialibbrowser/medialibbrowser.cpp
     medialibbrowser/artistslistmodel.cpp
     medialibbrowser/albumslistmodel.cpp
-    medialibbrowser/songslistmodel.cpp)
+    medialibbrowser/songslistmodel.cpp
+
+    equalizerwindow/equalizerwindow.cpp
+    equalizerwindow/equalizerbandswindow.cpp
+    equalizerwindow/equalizerpreampwindow.cpp)
 
 set(HEADERS
     utils.h
@@ -82,7 +86,11 @@ set(HEADERS
     medialibbrowser/medialibbrowser.h
     medialibbrowser/artistslistmodel.h
     medialibbrowser/albumslistmodel.h
-    medialibbrowser/songslistmodel.h)
+    medialibbrowser/songslistmodel.h
+
+    equalizerwindow/equalizerwindow.h
+    equalizerwindow/equalizerbandswindow.h
+    equalizerwindow/equalizerpreampwindow.h)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/config.h)

@@ -14,6 +14,7 @@ Currently supported features:
   - Local file system browser screen
   - Medialib browser screen
   - Playlists browser screen
+  - Equalizer screen
   
 Hotkeys:
  Screens switching:
@@ -22,6 +23,7 @@ Hotkeys:
   Local file system browser screen : 3
   Medialib browser screen : 5
   Playlists browser screen : 6
+  Equalizer screen : 7
   
  Playback control:
   Toggle : P

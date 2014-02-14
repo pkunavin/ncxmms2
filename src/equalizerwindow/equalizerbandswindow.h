@@ -14,53 +14,49 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef EQUALIZERBANDSWINDOW_H
+#define EQUALIZERBANDSWINDOW_H
 
+#include <vector>
 #include "../lib/window.h"
-
-namespace Xmms {
-class Client;
-}
 
 namespace ncxmms2 {
 
-class HeaderWindow;
-class StackedWindow;
-class StatusArea;
-
-class MainWindow : public Window
+class EqualizerBandsWindow : public Window
 {
 public:
-    MainWindow(Xmms::Client *xmmsClient);
-    ~MainWindow();
+    EqualizerBandsWindow(const Rectangle& rect, Window *parent = nullptr);
 
-    enum StackedWindows
-    {
-        StackedHelpBrowser,
-        StackedPlaylistWindow,
-        StackedLocalFileBrowserWindow,
-        StackedMedialibBrowser,
-        StackedPlaylistsBrowser,
-        StackedEqualizerWindow
+    int bandsNumber() const;
+    void setBandsNumber(int number);
+    void setBandGain(int band, int gain);
+    
+    bool legacyModeEnabled() const;
+    void setLegacyModeEnabled();
+    
+    int selectedBand() const;
+    
+    enum {
+        LegacyBandsNumber = 10
     };
-
+    
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
     virtual void mouseEvent(const MouseEvent& ev);
+    
+    // Signals
+    NCXMMS2_SIGNAL(bandGainChangeRequested, int, int)
 
 protected:
-    virtual void resizeChildren(const Size& size);
+    virtual void paint(const Rectangle& rect);
 
 private:
-    HeaderWindow *m_headerWindow;
-    StackedWindow *m_stackedWindow;
-    StatusArea *m_statusArea;
-    Xmms::Client *m_xmmsClient;
-
-    void setVisibleWindow(StackedWindows win);
-    void handleStackedWindowNameChanged(StackedWindows win, const std::string& title);
+    std::vector<int> m_bandsGain;
+    int m_selectedBand;
+    bool m_legacyModeEnabled;
+    bool m_terminalTooSmall;
+    
+    const char *bandFrequency(int band) const;
 };
 } // ncxmms2
 
-
-#endif // MAINWINDOW_H
+#endif // EQUALIZERBANDSWINDOW_H
