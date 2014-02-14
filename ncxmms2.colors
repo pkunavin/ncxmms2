@@ -20,11 +20,13 @@
 // window class, because they are inherited from base window class.
 //
 // List of classes having only standart roles:
-//  "Window", "TextView", "ListView", "LineEdit", "Label",
+//  "Window", "TextView", "ListView", "LineEdit", "Label", "CheckBox",
+//  "RadioButtonGroupBox",
 //  "ActivePlaylistWindow", "HeaderWindow", "ListViewAppIntegrated",
 //  "LocalFileSystemBrowser", "MedialibBrowser", "PlaylistsBrowser",
 //  "PlaylistsListView", "PlaylistView", "PlaybackProgressBar",
-//  "PlaybackStatusWindow", "QuestionWindow", "StatusMessageWindow".
+//  "PlaybackStatusWindow", "QuestionWindow", "StatusMessageWindow",
+//  "EqualizerBandsWindow", "EqualizerPreampWindow".
 {
    "Window":
     {
