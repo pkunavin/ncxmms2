@@ -16,6 +16,7 @@
 
 #include <xmmsclient/xmmsclient++.h>
 #include <xmmsclient/xmmsclient++-glib.h>
+#include <boost/lexical_cast.hpp>
 
 #include "xmmsutils.h"
 #include "lib/application.h"
