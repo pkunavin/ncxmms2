@@ -1,6 +1,6 @@
 //               ncxmms2 color scheme file
 //   This file is typically stored in /usr/share/ncxmms2 (according to INSTALL_PREFIX)
-// and provides default system wide color settinngs for xmms2. Of course, you can
+// and provides default system wide color settinngs for ncxmms2. Of course, you can
 // modify it, but it is much better to copy this file into ncxmms2 user config
 // directory (typically ~/.config/ncxmms2) and use it as a starting point.
 //   You can set colors for any window class. Any window class can be in two states:
