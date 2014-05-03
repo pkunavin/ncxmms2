@@ -139,12 +139,35 @@ void Painter::clearWindow()
     werase(d->cursesWin);
 }
 
+void Painter::setNormal()
+{
+    wattrset(d->cursesWin, A_NORMAL);
+}
+
 void Painter::setBold(bool bold)
 {
     if (bold) {
         wattron(d->cursesWin, A_BOLD);
     } else {
         wattroff(d->cursesWin, A_BOLD);
+    }
+}
+
+void Painter::setUnderline(bool underline)
+{
+    if (underline) {
+        wattron(d->cursesWin, A_UNDERLINE);
+    } else {
+        wattroff(d->cursesWin, A_UNDERLINE);
+    }
+}
+
+void Painter::setBlink(bool blink)
+{
+    if (blink) {
+        wattron(d->cursesWin, A_BLINK);
+    } else {
+        wattroff(d->cursesWin, A_BLINK);
     }
 }
 
@@ -210,6 +233,11 @@ void Painter::printString(const std::string& str, std::string::size_type maxLeng
 void Painter::printString(const char *str)
 {
     waddstr(d->cursesWin, str);
+}
+
+void Painter::printString(const char *begin, const char *end)
+{
+    waddnstr(d->cursesWin, begin, end - begin);
 }
 
 void Painter::squeezedPrint(const std::string& str, std::string::size_type maxLength)

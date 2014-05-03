@@ -17,8 +17,25 @@
 #ifndef NCXMMS2_H
 #define NCXMMS2_H
 
+#include <utility>
+#include <memory>
+
 // Put global stuff here
 
 #define NCXMMS2_UNUSED(x) (void)x
+
+#if defined(__GNUC__) && __GNUC__ >= 4
+#define NCXMMS2_LIKELY(x)   (__builtin_expect((x), 1))
+#define NCXMMS2_UNLIKELY(x) (__builtin_expect((x), 0))
+#else
+#define NCXMMS2_LIKELY(x)   (x)
+#define NCXMMS2_UNLIKELY(x) (x)
+#endif
+
+template<typename T, typename... Args>
+std::unique_ptr<T> make_unique(Args&&... args)
+{
+    return std::unique_ptr<T>(new T(std::forward<Args>(args)... ));
+}
 
 #endif // NCXMMS2_H

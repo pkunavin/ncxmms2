@@ -38,7 +38,12 @@ public:
     void fillLine(int line, Color color);
     void setReverse(bool reverse);
     void clearWindow();
+    
+    void setNormal();
     void setBold(bool bold);
+    void setUnderline(bool underline);
+    void setBlink(bool blink);
+    
     void setColor(Color color);
     void setBackgroundColor(Color color);
     void setColorPair(Color foreground, Color background);
@@ -50,6 +55,7 @@ public:
     void printString(const std::string& str);
     void printString(const std::string& str, std::string::size_type maxLength);
     void printString(const char *str);
+    void printString(const char *begin, const char *end);
     void printString(const std::wstring& str);
     void printString(const wchar_t *str, size_t maxLength);
     void printString(const std::u32string& str);

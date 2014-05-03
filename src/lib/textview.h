@@ -23,15 +23,26 @@ namespace ncxmms2 {
 
 class TextViewPrivate;
 
+/*   TextView class is capable of displaying plain and rich text.
+ * In rich text mode it can display a small subset of HTML.
+ */ 
 class TextView : public Window
 {
 public:
     TextView(const Rectangle& rect, Window *parent = nullptr);
     ~TextView();
-
+    
+    enum class Mode
+    {
+        PlainText,
+        RichText
+    };
+    
+    void setMode(Mode mode);
+    Mode mode() const;
+    
     void setText(const std::string& text);
-    void appendLine(const std::string& line = std::string());
-
+    
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
     virtual void mouseEvent(const MouseEvent& ev);
     virtual void resize(const Size& size);

@@ -18,7 +18,8 @@ set(SOURCES
     iniparser.cpp
     palette.cpp
     checkbox.cpp
-    radiobuttongroupbox.cpp)
+    radiobuttongroupbox.cpp
+    htmlparser.cpp)
 
 set(HEADERS
     signals.h
@@ -47,7 +48,11 @@ set(HEADERS
     iniparser.h
     palette.h
     checkbox.h
-    radiobuttongroupbox.h)
+    radiobuttongroupbox.h
+    htmlparser.h
+    stringptr.h
+    stringref.h
+    stringalgo.h)
 
 add_library(ncxmms2-lib ${SOURCES})
 
