@@ -17,102 +17,110 @@
 #include "helpbrowser.h"
 #include "../hotkeys.h"
 
+#include "../lib/htmlparser.h"
+
 using namespace ncxmms2;
 
 HelpBrowser::HelpBrowser(const Rectangle& rect, Window *parent) :
     TextView(rect, parent)
 {
+    loadPalette("HelpBrowser");
     setName("Help");
-
+    
     struct KeyDescription {const char *description; KeyEvent::key_t key;};
 
     const KeyDescription screensSwitchingKeys[] =
     {
-        {"Help",                      Hotkeys::Screens::Help::Activate},
-        {"Active playlist",           Hotkeys::Screens::ActivePlaylist::Activate},
+        {"Help",                      Hotkeys::Screens::Help::Activate                  },
+        {"Active playlist",           Hotkeys::Screens::ActivePlaylist::Activate        },
         {"Local file system browser", Hotkeys::Screens::LocalFileSystemBrowser::Activate},
-        {"Medialib browser",          Hotkeys::Screens::MedialibBrowser::Activate},
-        {"Playlists browser",         Hotkeys::Screens::PlaylistsBrowser::Activate},
-        {"Equalizer",                 Hotkeys::Screens::Equalizer::Activate},
+        {"Medialib browser",          Hotkeys::Screens::MedialibBrowser::Activate       },
+        {"Playlists browser",         Hotkeys::Screens::PlaylistsBrowser::Activate      },
+        {"Equalizer",                 Hotkeys::Screens::Equalizer::Activate             },
         {nullptr, 0}
     };
 
     const KeyDescription listViewKeys[] =
     {
-        {"Move cursor up",                       KeyEvent::KeyUp},
-        {"Move cursor down",                     KeyEvent::KeyDown},
-        {"Move cursor to the first item",        KeyEvent::KeyHome},
-        {"Move cursor to the last item",         KeyEvent::KeyEnd},
+        {"Move cursor up",                       KeyEvent::KeyUp    },
+        {"Move cursor down",                     KeyEvent::KeyDown  },
+        {"Move cursor to the first item",        KeyEvent::KeyHome  },
+        {"Move cursor to the last item",         KeyEvent::KeyEnd   },
         {"Toggle selection",                     KeyEvent::KeyInsert},
-        {"Invert selection",                     '*'},
-        {"Select items by regular expression",   '+'},
-        {"Unselect items by regular expression", '\\'},
-        {"Jump to next selected item",           '.'},
-        {"Jump to previous selected item",       ','},
+        {"Invert selection",                     '*'                },
+        {"Select items by regular expression",   '+'                },
+        {"Unselect items by regular expression", '\\'               },
+        {"Jump to next selected item",           '.'                },
+        {"Jump to previous selected item",       ','                },
         {nullptr, 0}
     };
 
     const KeyDescription playbackControlKeys[] =
     {
-        {"Toggle playback", Hotkeys::Playback::Toggle},
-        {"Stop",            Hotkeys::Playback::Stop},
-        {"Next track",      Hotkeys::Playback::Next},
-        {"Previous track",  Hotkeys::Playback::Prev},
-        {"Seek forward",    Hotkeys::Playback::SeekForward},
+        {"Toggle playback", Hotkeys::Playback::Toggle      },
+        {"Stop",            Hotkeys::Playback::Stop        },
+        {"Next track",      Hotkeys::Playback::Next        },
+        {"Previous track",  Hotkeys::Playback::Prev        },
+        {"Seek forward",    Hotkeys::Playback::SeekForward },
         {"Seek backward",   Hotkeys::Playback::SeekBackward},
         {nullptr, 0}
     };
 
     const KeyDescription playlistViewKeys[] =
     {
-        {"Remove entry",                 Hotkeys::PlaylistView::RemoveEntry},
-        {"Clear playlist",               Hotkeys::PlaylistView::ClearPlaylist},
-        {"Shuffle playlist",             Hotkeys::PlaylistView::ShufflePlaylist},
+        {"Remove entry",                 Hotkeys::PlaylistView::RemoveEntry             },
+        {"Clear playlist",               Hotkeys::PlaylistView::ClearPlaylist           },
+        {"Shuffle playlist",             Hotkeys::PlaylistView::ShufflePlaylist         },
         {"Go to currently playing song", Hotkeys::PlaylistView::GoToCurrentlyPlayingSong},
-        {"Add file or directory",        Hotkeys::PlaylistView::AddFileOrDirectory},
-        {"Add url",                      Hotkeys::PlaylistView::AddUrl},
+        {"Add file or directory",        Hotkeys::PlaylistView::AddFileOrDirectory      },
+        {"Add url",                      Hotkeys::PlaylistView::AddUrl                  },
         {nullptr, 0}
     };
 
+    namespace LocalFileSystemBrowser = Hotkeys::Screens::LocalFileSystemBrowser;
     const KeyDescription localFileSystemBrowserKeys[] =
     {
-        {"Add file or directory to active playlist", Hotkeys::Screens::LocalFileSystemBrowser::AddFileOrDirectoryToActivePlaylist},
-        {"Go up",                                    Hotkeys::Screens::LocalFileSystemBrowser::GoUp},
-        {"Change directory",                         Hotkeys::Screens::LocalFileSystemBrowser::ChangeDirectory},
-        {"Reload directory",                         Hotkeys::Screens::LocalFileSystemBrowser::ReloadDirectory},
+        {"Add file or directory to active playlist", LocalFileSystemBrowser::AddFileOrDirectoryToActivePlaylist},
+        {"Go up",                                    LocalFileSystemBrowser::GoUp                              },
+        {"Change directory",                         LocalFileSystemBrowser::ChangeDirectory                   },
+        {"Reload directory",                         LocalFileSystemBrowser::ReloadDirectory                   },
         {nullptr, 0}
     };
 
+    namespace MedialibBrowser = Hotkeys::Screens::MedialibBrowser;
     const KeyDescription medialibBrowserKeys[] =
     {
-        {"Add item to active playlist", Hotkeys::Screens::MedialibBrowser::AddItemToActivePlaylist},
-        {"Refresh",                     Hotkeys::Screens::MedialibBrowser::Refresh},
+        {"Add item to active playlist", MedialibBrowser::AddItemToActivePlaylist},
+        {"Refresh",                     MedialibBrowser::Refresh                },
         {nullptr, 0}
     };
 
+    namespace PlaylistsBrowser = Hotkeys::Screens::PlaylistsBrowser;
     const KeyDescription playlistsBrowserKeys[] =
     {
-        {"Create new playlist",             Hotkeys::Screens::PlaylistsBrowser::CreateNewPlaylist},
-        {"Remove playlist",                 Hotkeys::Screens::PlaylistsBrowser::RemovePlaylist},
-        {"Rename playlist",                 Hotkeys::Screens::PlaylistsBrowser::RenamePlaylist},
-        {"Go to currently active playlist", Hotkeys::Screens::PlaylistsBrowser::GoToCurrentlyActivePlaylist},
+        {"Create new playlist",             PlaylistsBrowser::CreateNewPlaylist          },
+        {"Remove playlist",                 PlaylistsBrowser::RemovePlaylist             },
+        {"Rename playlist",                 PlaylistsBrowser::RenamePlaylist             },
+        {"Go to currently active playlist", PlaylistsBrowser::GoToCurrentlyActivePlaylist},
         {nullptr, 0}
     };
 
     const struct Section {const char *name; const KeyDescription *keys;} help[] =
     {
-        {"Screens switching",         screensSwitchingKeys},
-        {"Playback control",          playbackControlKeys},
-        {"List view",                 listViewKeys},
-        {"Playlist view",             playlistViewKeys},
+        {"Screens switching",         screensSwitchingKeys      },
+        {"Playback control",          playbackControlKeys       },
+        {"List view",                 listViewKeys              },
+        {"Playlist view",             playlistViewKeys          },
         {"Local file system browser", localFileSystemBrowserKeys},
-        {"Medialib browser",          medialibBrowserKeys},
-        {"Playlists browser",         playlistsBrowserKeys}
+        {"Medialib browser",          medialibBrowserKeys       },
+        {"Playlists browser",         playlistsBrowserKeys      }
     };
 
+    std::string text;
+    text.append("<pre>");
     for (const Section& section : help) {
-        appendLine(std::string("      ").append(section.name));
-        appendLine("---------------------------------");
+        text.append("<b>      ").append(section.name).append("\n");
+        text.append("---------------------------------</b>\n");
         const KeyDescription *keyDesc = section.keys;
         while (keyDesc->description) {
             std::string line(5, ' ');
@@ -120,9 +128,14 @@ HelpBrowser::HelpBrowser(const Rectangle& rect, Window *parent) :
             line.resize(15, ' ');
             line.append(" : ");
             line.append(keyDesc->description);
-            appendLine(line);
+            line.append("\n");
+            text.append(HtmlParser::encodeEntities(line));
             ++keyDesc;
         }
-        appendLine();
+        text.append("\n");
     }
+    text.append("</pre>");
+    
+    setMode(Mode::RichText);
+    setText(text);
 }
