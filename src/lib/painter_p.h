@@ -23,6 +23,8 @@
 
 #include "colors.h"
 
+#include "../../3rdparty/folly/sorted_vector_types.h"
+
 namespace ncxmms2 {
 
 class Window;
@@ -41,7 +43,7 @@ public:
     WINDOW *cursesWin;
 
     static int colorPairsNumber;
-    static std::map<uint32_t, int> colorPairsMap;
+    static folly::sorted_vector_map<uint32_t, int> colorPairsMap;
     static int getColorPair(Color foreground, Color background);
     static int getCursesColor(Color color);
 };

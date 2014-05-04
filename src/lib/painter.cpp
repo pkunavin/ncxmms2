@@ -30,7 +30,7 @@ using namespace ncxmms2;
 
 int PainterPrivate::colorPairsNumber = 1;
 
-std::map<uint32_t, int> PainterPrivate::colorPairsMap;
+folly::sorted_vector_map<uint32_t, int> PainterPrivate::colorPairsMap;
 
 int PainterPrivate::getColorPair(Color foreground, Color background)
 {

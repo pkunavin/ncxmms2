@@ -14,7 +14,6 @@
  *  GNU General Public License for more details.
  */
 
-#include <map>
 #include <algorithm>
 #include <stdexcept>
 
@@ -27,6 +26,8 @@
 #include "../lib/stackedwindow.h"
 #include "../lib/size.h"
 #include "../lib/rectangle.h"
+
+#include "../../3rdparty/folly/sorted_vector_types.h"
 
 using namespace ncxmms2;
 
@@ -46,17 +47,16 @@ StatusArea::StatusArea(Xmms::Client *client, int xPos, int yPos, int cols, Windo
 
     m_stackedWindow = new StackedWindow(Rectangle(0, InformationLine, cols, 1), this);
 
-    const std::map<StackedWindows, Window*> stackedWins =
+    const folly::sorted_vector_map<StackedWindows, Window*> stackedWins
     {
         {StackedPlaybackStatusWindow, new PlaybackStatusWindow(client, 0, 0, cols, m_stackedWindow)},
-        {StackedMessageWindow,        new Label(0, 0, cols, m_stackedWindow)},
-        {StackedQuestionWindow,       new QuestionWindow(0, 0, cols, m_stackedWindow)}
+        {StackedMessageWindow,        new Label(0, 0, cols, m_stackedWindow)                       },
+        {StackedQuestionWindow,       new QuestionWindow(0, 0, cols, m_stackedWindow)              }
     };
-
-    std::for_each(stackedWins.begin(), stackedWins.end(), [this](const std::pair<StackedWindows, Window*>& value)
-    {
-        m_stackedWindow->addWindow(value.second);
-    });
+    for (const auto& pair : stackedWins) {
+        m_stackedWindow->addWindow(pair.second);
+    }
+    
     m_stackedWindow->setFocus();
     m_stackedWindow->setCurrentIndex(StackedPlaybackStatusWindow);
     m_stackedWindow->window(StackedMessageWindow)->loadPalette("StatusMessageWindow");

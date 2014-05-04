@@ -16,9 +16,11 @@
 
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
-#include <set>
 
 #include "utils.h"
+#include "lib/stringref.h"
+
+#include "../3rdparty/folly/sorted_vector_types.h"
 
 using namespace ncxmms2;
 
@@ -72,25 +74,16 @@ Utils::FileType Utils::getFileType(const std::string& path)
     std::string suffix = path.substr(dotPos + 1);
     boost::to_lower(suffix);
 
-    static const std::set<std::string> playlistFileSuffixes{"cue",
-                                                            "m3u",
-                                                            "pls",
-                                                            "asx"};
+    static const folly::sorted_vector_set<StringRef> playlistFileSuffixes
+    {"cue", "m3u", "pls", "asx"};
 
-    static const std::set<std::string> mediaFileSuffixes{"mp3",
-                                                         "flac",
-                                                         "ape",
-                                                         "ogg",
-                                                         "wma",
-                                                         "wav",
-                                                         "mp4",
-                                                         "aac",
-                                                         "alac"};
+    static const folly::sorted_vector_set<StringRef> mediaFileSuffixes
+    {"mp3", "flac", "ape", "ogg", "wma", "wav", "mp4", "aac", "alac"};
 
-    if (mediaFileSuffixes.find(suffix) != mediaFileSuffixes.end())
+    if (mediaFileSuffixes.find(suffix.c_str()) != mediaFileSuffixes.end())
         return Utils::FileType::Media;
 
-    if (playlistFileSuffixes.find(suffix) != playlistFileSuffixes.end())
+    if (playlistFileSuffixes.find(suffix.c_str()) != playlistFileSuffixes.end())
         return Utils::FileType::Playlist;
 
      return Utils::FileType::Unknown;

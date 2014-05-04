@@ -34,8 +34,10 @@
 #include "palette.h"
 #include "timer.h"
 #include "point.h"
+#include "stringref.h"
 
 #include "../../3rdparty/libtermkey/termkey.h"
+#include "../../3rdparty/folly/sorted_vector_types.h"
 
 namespace ncxmms2 {
 
@@ -258,10 +260,10 @@ std::shared_ptr<Palette> Application::getPalette(const std::string&             
 
     static const std::map<std::string, int> standartRolesMap =
     {
-        {"Text",            Palette::RoleText},
-        {"Background",      Palette::RoleBackground},
-        {"Selection",       Palette::RoleSelection},
-        {"Highlight",       Palette::RoleHighlight},
+        {"Text",            Palette::RoleText           },
+        {"Background",      Palette::RoleBackground     },
+        {"Selection",       Palette::RoleSelection      },
+        {"Highlight",       Palette::RoleHighlight      },
         {"HighlightedText", Palette::RoleHighlightedText}
     };
     p->parseColorSchemeTree(classPalette->second, palette.get(), standartRolesMap);
@@ -276,22 +278,22 @@ void ApplicationPrivate::parseColorSchemeTree(const boost::property_tree::ptree&
 {
     static const struct PaletteGroup {const char *name; int group;} paletteGroupes[] =
     {
-        {"Active",   Palette::GroupActive},
+        {"Active",   Palette::GroupActive  },
         {"Inactive", Palette::GroupInactive},
         {nullptr, -1}
     };
 
-    static const std::map<std::string, Color> colorNamesMap =
+    static const folly::sorted_vector_map<StringRef, Color> colorNamesMap
     {
         {"Default", ColorDefault},
-        {"Black",   ColorBlack},
-        {"Red",     ColorRed},
-        {"Green",   ColorGreen},
-        {"Yellow",  ColorYellow},
-        {"Blue",    ColorBlue},
+        {"Black",   ColorBlack  },
+        {"Red",     ColorRed    },
+        {"Green",   ColorGreen  },
+        {"Yellow",  ColorYellow },
+        {"Blue",    ColorBlue   },
         {"Magenta", ColorMagenta},
-        {"Cyan",    ColorCyan},
-        {"White",   ColorWhite}
+        {"Cyan",    ColorCyan   },
+        {"White",   ColorWhite  }
     };
 
     const PaletteGroup *paletteGroup = paletteGroupes;
@@ -303,7 +305,7 @@ void ApplicationPrivate::parseColorSchemeTree(const boost::property_tree::ptree&
             key.resize(keyStrSize);
             key.append(roleIt->first);
             std::string colorName = colorSchemeTree.get(key, std::string());
-            auto it = colorNamesMap.find(colorName);
+            auto it = colorNamesMap.find(colorName.c_str());
             if (it != colorNamesMap.end()) {
                 palette->setColor((Palette::ColorGroup)paletteGroup->group,
                                   roleIt->second,

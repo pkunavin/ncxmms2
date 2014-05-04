@@ -20,31 +20,32 @@
 
 #include "keyevent.h"
 #include "../../3rdparty/libtermkey/termkey.h"
+#include "../../3rdparty/folly/sorted_vector_types.h"
 
 using namespace ncxmms2;
 
 KeyEvent::KeyEvent(const TermKeyKey& termKey) : m_key(0)
 {
-    static const std::map<char32_t, char32_t> keyMap =
+    static const folly::sorted_vector_map<char32_t, char32_t> keyMap
     {
-        {TERMKEY_SYM_ENTER,     KeyEvent::KeyEnter},
-        {TERMKEY_SYM_ESCAPE,    KeyEvent::KeyEscape},
+        {TERMKEY_SYM_ENTER,     KeyEvent::KeyEnter    },
+        {TERMKEY_SYM_ESCAPE,    KeyEvent::KeyEscape   },
 
         {TERMKEY_SYM_BACKSPACE, KeyEvent::KeyBackspace},
         {TERMKEY_SYM_DEL,       KeyEvent::KeyBackspace},
-        {TERMKEY_SYM_DELETE,    KeyEvent::KeyDelete},
-        {TERMKEY_SYM_INSERT,    KeyEvent::KeyInsert},
+        {TERMKEY_SYM_DELETE,    KeyEvent::KeyDelete   },
+        {TERMKEY_SYM_INSERT,    KeyEvent::KeyInsert   },
 
-        {TERMKEY_SYM_UP,        KeyEvent::KeyUp},
-        {TERMKEY_SYM_DOWN,      KeyEvent::KeyDown},
-        {TERMKEY_SYM_LEFT,      KeyEvent::KeyLeft},
-        {TERMKEY_SYM_RIGHT,     KeyEvent::KeyRight},
-        {TERMKEY_SYM_TAB,       KeyEvent::KeyTab},
+        {TERMKEY_SYM_UP,        KeyEvent::KeyUp       },
+        {TERMKEY_SYM_DOWN,      KeyEvent::KeyDown     },
+        {TERMKEY_SYM_LEFT,      KeyEvent::KeyLeft     },
+        {TERMKEY_SYM_RIGHT,     KeyEvent::KeyRight    },
+        {TERMKEY_SYM_TAB,       KeyEvent::KeyTab      },
 
-        {TERMKEY_SYM_HOME,      KeyEvent::KeyHome},
-        {TERMKEY_SYM_END,       KeyEvent::KeyEnd},
-        {TERMKEY_SYM_PAGEUP,    KeyEvent::KeyPageUp},
-        {TERMKEY_SYM_PAGEDOWN,  KeyEvent::KeyPageDown}
+        {TERMKEY_SYM_HOME,      KeyEvent::KeyHome     },
+        {TERMKEY_SYM_END,       KeyEvent::KeyEnd      },
+        {TERMKEY_SYM_PAGEUP,    KeyEvent::KeyPageUp   },
+        {TERMKEY_SYM_PAGEDOWN,  KeyEvent::KeyPageDown }
     };
 
     switch (termKey.type) {
@@ -78,22 +79,22 @@ KeyEvent::KeyEvent(const TermKeyKey& termKey) : m_key(0)
 
 std::string KeyEvent::keyName() const
 {
-    static const std::map<key_t, std::string> keyNames =
+    static const folly::sorted_vector_map<key_t, const char*> keyNames
     {
-        {KeyEnter,     "Enter"},
-        {KeyEscape,    "Escape"},
-        {KeyBackspace, "Backspace"},
-        {KeyDelete,    "Delete"},
-        {KeyInsert,    "Insert"},
-        {KeyUp,        "Up arrow"},
-        {KeyDown,      "Down arrow"},
-        {KeyLeft,      "Left arrow"},
+        {KeyEnter,     "Enter"      },
+        {KeyEscape,    "Escape"     },
+        {KeyBackspace, "Backspace"  },
+        {KeyDelete,    "Delete"     },
+        {KeyInsert,    "Insert"     },
+        {KeyUp,        "Up arrow"   },
+        {KeyDown,      "Down arrow" },
+        {KeyLeft,      "Left arrow" },
         {KeyRight,     "Right arrow"},
-        {KeyTab,       "Tab"},
-        {KeyHome,      "Home"},
-        {KeyEnd,       "End"},
-        {KeyPageUp,    "PageUp"},
-        {KeyPageDown,  "PageDown"}
+        {KeyTab,       "Tab"        },
+        {KeyHome,      "Home"       },
+        {KeyEnd,       "End"        },
+        {KeyPageUp,    "PageUp"     },
+        {KeyPageDown,  "PageDown"   }
     };
 
     std::string name;

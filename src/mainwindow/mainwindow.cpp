@@ -34,6 +34,8 @@
 #include "../lib/mouseevent.h"
 #include "../lib/stackedwindow.h"
 
+#include "../../3rdparty/folly/sorted_vector_types.h"
+
 using namespace ncxmms2;
 
 MainWindow::MainWindow(Xmms::Client *xmmsClient) :
@@ -52,19 +54,19 @@ MainWindow::MainWindow(Xmms::Client *xmmsClient) :
     m_stackedWindow->setFocus();
 
     const Rectangle stackedSubWinRect(0, 0, stackedWindowRect.cols(), stackedWindowRect.lines());
-    const std::map<StackedWindows, Window*> stakedWindows =
+    const folly::sorted_vector_map<StackedWindows, Window*> stakedWindows
     {
         {StackedHelpBrowser,            new HelpBrowser           (            stackedSubWinRect, m_stackedWindow)},
         {StackedPlaylistWindow,         new ActivePlaylistWindow  (xmmsClient, stackedSubWinRect, m_stackedWindow)},
         {StackedLocalFileBrowserWindow, new LocalFileSystemBrowser(xmmsClient, stackedSubWinRect, m_stackedWindow)},
         {StackedMedialibBrowser,        new MedialibBrowser       (xmmsClient, stackedSubWinRect, m_stackedWindow)},
         {StackedPlaylistsBrowser,       new PlaylistsBrowser      (xmmsClient, stackedSubWinRect, m_stackedWindow)},
-        {StackedEqualizerWindow,        new EqualizerWindow       (xmmsClient, stackedSubWinRect, m_stackedWindow)},
+        {StackedEqualizerWindow,        new EqualizerWindow       (xmmsClient, stackedSubWinRect, m_stackedWindow)}
     };
 
-    for (auto it = stakedWindows.begin(), it_end = stakedWindows.end(); it != it_end; ++it) {
-        StackedWindows stackedWindow = (*it).first;
-        Window *window = (*it).second;
+    for (const auto& pair : stakedWindows) {
+        StackedWindows stackedWindow = pair.first;
+        Window *window = pair.second;
         m_stackedWindow->addWindow(window);
         window->nameChanged_Connect(&MainWindow::handleStackedWindowNameChanged, this, stackedWindow, _1);
     }
@@ -97,7 +99,7 @@ void MainWindow::keyPressedEvent(const KeyEvent& keyEvent)
         case Hotkeys::Screens::PlaylistsBrowser::Activate:
             setVisibleWindow(StackedPlaylistsBrowser);
             break;
-
+            
         case Hotkeys::Playback::Toggle:
             if (m_statusArea->playbackStatus() == Xmms::Playback::PLAYING) {
                 m_xmmsClient->playback.pause();
