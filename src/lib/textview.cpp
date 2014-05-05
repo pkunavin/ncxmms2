@@ -111,6 +111,11 @@ public:
     void compilePlainText(const std::string& text);
     
     void viewportInit();
+    
+    bool canScrollDown() const;
+    int lineSizeBytes(int line) const;
+    int lineLength(int line) const;
+    
     void scrollUp();
     void scrollDown();
     void scrollHome();
@@ -590,6 +595,57 @@ void TextViewPrivate::viewportInit()
     q->update();
 }
 
+bool TextViewPrivate::canScrollDown() const
+{
+    // We should take into account that a line of text may not
+    // fit into one line, i.e. we can't assume that:
+    // viewportEndLine = viewportBeginLine + q->lines() , in fact
+    // it can be less.
+    int y = 0;
+    int item = viewportBeginLine + 1;
+    while (item < (int)textLines.size() && y < q->lines()) {
+        // For utf8 encoded string real length is less or
+        // equal to its size in bytes, thus if size in bytes
+        // is less than q->cols() it is also true for real length
+        // and we don't have to calculate it.
+        if (lineSizeBytes(item) > q->cols()) {
+            int extraLength = lineLength(item) - q->cols();
+            while (extraLength > 0) {
+                ++y;
+                extraLength -= q->cols();
+            }
+        }
+        ++y;
+        ++item;
+    }
+    // We basically check if any space left at the bottom of the window
+    return y >= q->lines();
+}
+
+int TextViewPrivate::lineSizeBytes(int line) const
+{
+    assert((size_t)line < textLines.size());
+    int result = 0;
+    const TextChunk *chunk = &textLines[line];
+    do {
+        result += chunk->text.size();
+        chunk = chunk->next.get();
+    } while (chunk);
+    return result;
+}
+
+int TextViewPrivate::lineLength(int line) const
+{
+    assert((size_t)line < textLines.size());
+    int result = 0;
+    const TextChunk *chunk = &textLines[line];
+    do {
+        result += g_utf8_strlen(chunk->text.begin(), chunk->text.size());
+        chunk = chunk->next.get();
+    } while (chunk);
+    return result;
+}
+
 void TextViewPrivate::scrollUp()
 {
     if (viewportBeginLine > 0) {
@@ -603,7 +659,7 @@ void TextViewPrivate::scrollDown()
     if (textLines.empty())
         return;
 
-    if ((size_t)viewportBeginLine + q->lines() < textLines.size() ) {
+    if (canScrollDown()) {
         ++viewportBeginLine;
         q->update();
     }
@@ -618,6 +674,8 @@ void TextViewPrivate::scrollEnd()
 {
     if (textLines.size() > (size_t)q->lines()) {
         viewportBeginLine = textLines.size() - q->lines();
+        while (canScrollDown())
+            ++viewportBeginLine;
         q->update();
     }
 }
