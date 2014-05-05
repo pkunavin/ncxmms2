@@ -14,43 +14,36 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef PLAYLISTSBROWSER_H
-#define PLAYLISTSBROWSER_H
+#ifndef SONGINFOWINDOW_H
+#define SONGINFOWINDOW_H
 
-#include "../lib/window.h"
+#include "../lib/textview.h"
 
 namespace Xmms {
-class Client;
+    class Client;
 }
 
 namespace ncxmms2 {
 
-class PlaylistsListView;
-class PlaylistView;
-
-class PlaylistsBrowser : public Window
+class SongInfoWindow : public TextView
 {
 public:
-    PlaylistsBrowser(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
-
+    SongInfoWindow(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
+    
+    void showSongInfo(int id);
+    
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
-
+    
     // Signals:
-    NCXMMS2_SIGNAL(showSongInfo, int)
+    NCXMMS2_SIGNAL(hideRequested)
     
-protected:
-    virtual void resizeChildren(const Size& size);
-    virtual void paint(const Rectangle& rect);
-
 private:
-    enum {PlaylistsListViewCols = 20};
-
-    PlaylistsListView *m_plsListView;
-    PlaylistView *m_plsViewer;
+    Xmms::Client *m_xmmsClient;
+    int m_id;
     
-    void setPlsViewerPlaylist(int item);
-    void emitShowSongInfo(int id);
+    bool getSongInfo(const Xmms::PropDict& info);
+    bool handleSongInfoUpdate(const int& id);
 };
 } // ncxmms2
 
-#endif // PLAYLISTSBROWSER_H
+#endif // SONGINFOWINDOW_H

@@ -42,7 +42,8 @@ public:
         StackedLocalFileBrowserWindow,
         StackedMedialibBrowser,
         StackedPlaylistsBrowser,
-        StackedEqualizerWindow
+        StackedEqualizerWindow,
+        StackedSongInfoWindow
     };
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
@@ -56,9 +57,12 @@ private:
     StackedWindow *m_stackedWindow;
     StatusArea *m_statusArea;
     Xmms::Client *m_xmmsClient;
+    StackedWindows m_lastVisibleScreen;
 
-    void setVisibleWindow(StackedWindows win);
+    void setVisibleScreen(StackedWindows win);
     void handleStackedWindowNameChanged(StackedWindows win, const std::string& title);
+    void showSongInfo(int id);
+    void showLastVisibleScreen();
 };
 } // ncxmms2
 

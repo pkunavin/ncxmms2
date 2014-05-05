@@ -33,6 +33,9 @@ public:
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
 
+    // Signals:
+    NCXMMS2_SIGNAL(showSongInfo, int)
+    
 private:
     Xmms::Client *m_xmmsClient;
     std::string m_activePlaylist;

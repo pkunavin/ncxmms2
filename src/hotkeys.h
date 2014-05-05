@@ -47,7 +47,8 @@ enum
     ShufflePlaylist          = 'S',
     GoToCurrentlyPlayingSong = 'o',
     AddFileOrDirectory       = KeyEvent::ModifierCtrl | 'o',
-    AddUrl                   = KeyEvent::ModifierCtrl | 'u'
+    AddUrl                   = KeyEvent::ModifierCtrl | 'u',
+    ShowSongInfo             = 'i'
 };
 }
 
@@ -85,7 +86,8 @@ enum
     Activate = '5',
 
     AddItemToActivePlaylist = ' ',
-    Refresh                 = 'R'
+    Refresh                 = 'R',
+    ShowSongInfo            = 'i'
 };
 }
 

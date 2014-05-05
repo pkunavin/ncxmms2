@@ -9,21 +9,21 @@ Currently supported features:
    - Playback control
    
  - Screens:
-  - Help screen
-  - Playlist screen
-  - Local file system browser screen
-  - Medialib browser screen
-  - Playlists browser screen
-  - Equalizer screen
+  - Help
+  - Active playlist
+  - Local file system browser
+  - Medialib browser
+  - Playlists browser
+  - Equalizer
   
 Hotkeys:
  Screens switching:
-  Help screen : 1
-  Playlist screen : 2
-  Local file system browser screen : 3
-  Medialib browser screen : 5
-  Playlists browser screen : 6
-  Equalizer screen : 7
+  Help : 1
+  Active playlist : 2
+  Local file system browser : 3
+  Medialib browser : 5
+  Playlists browser : 6
+  Equalizer : 7
   
  Playback control:
   Toggle : P
@@ -57,6 +57,7 @@ Hotkeys:
   Go to currently playing song : o
   Add file / directory : Ctrl+O
   Add url : Ctrl+U
+  Show song info : i
   
  Local file system browser:
   Add file or directory to active playlist : space
@@ -68,4 +69,5 @@ Hotkeys:
   Medialib browser:
    Refresh : R
    Add artist / album / song to active playlist: space, enter
+   Show song info : i
   

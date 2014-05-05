@@ -44,7 +44,9 @@ set(SOURCES
 
     equalizerwindow/equalizerwindow.cpp
     equalizerwindow/equalizerbandswindow.cpp
-    equalizerwindow/equalizerpreampwindow.cpp)
+    equalizerwindow/equalizerpreampwindow.cpp
+
+    songinfowindow/songinfowindow.cpp)
 
 set(HEADERS
     utils.h
@@ -90,7 +92,9 @@ set(HEADERS
 
     equalizerwindow/equalizerwindow.h
     equalizerwindow/equalizerbandswindow.h
-    equalizerwindow/equalizerpreampwindow.h)
+    equalizerwindow/equalizerpreampwindow.h
+
+    songinfowindow/songinfowindow.h)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/config.h)

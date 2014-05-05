@@ -94,6 +94,9 @@ public:
     void paint(const Song& song, Painter *painter, const Rectangle& rect, bool ignoreColors = false);
 
     bool matchFormattedString(const Song& song, const GRegex *regex); // Used to select items in PlaylistView
+    
+    static const char * getSongVariableName(char var);
+    static std::string getSongVariableValue(const Song& song, char var);
 
 private:
     class Variable

@@ -74,6 +74,7 @@ HelpBrowser::HelpBrowser(const Rectangle& rect, Window *parent) :
         {"Go to currently playing song", Hotkeys::PlaylistView::GoToCurrentlyPlayingSong},
         {"Add file or directory",        Hotkeys::PlaylistView::AddFileOrDirectory      },
         {"Add url",                      Hotkeys::PlaylistView::AddUrl                  },
+        {"Show song info",               Hotkeys::PlaylistView::ShowSongInfo            },
         {nullptr, 0}
     };
 
@@ -92,6 +93,7 @@ HelpBrowser::HelpBrowser(const Rectangle& rect, Window *parent) :
     {
         {"Add item to active playlist", MedialibBrowser::AddItemToActivePlaylist},
         {"Refresh",                     MedialibBrowser::Refresh                },
+        {"Show song info",              MedialibBrowser::ShowSongInfo           },
         {nullptr, 0}
     };
 

@@ -35,6 +35,9 @@ public:
     MedialibBrowser(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
+    
+    // Signals:
+    NCXMMS2_SIGNAL(showSongInfo, int)
 
 protected:
     virtual void resizeChildren(const Size& size);

@@ -119,7 +119,15 @@ void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
             StatusArea::askQuestion("Add url: ", resultCallback);
             break;
         }
-
+        
+        case Hotkeys::PlaylistView::ShowSongInfo:
+            if (plsModel->itemsCount() && !isCurrentItemHidden()) {
+                int id = plsModel->song(currentItem()).id();
+                if (id > 0)
+                    showSongInfo(id);
+            }
+            break;
+            
         case '+': // Select be regexp
         {
             // We can't use selectItemsByRegExp here, because it matches ListModelItemData::text,

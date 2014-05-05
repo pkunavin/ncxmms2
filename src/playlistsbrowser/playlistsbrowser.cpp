@@ -65,6 +65,7 @@ PlaylistsBrowser::PlaylistsBrowser(Xmms::Client *xmmsClient, const Rectangle& re
     });
 
     m_plsListView->currentItemChanged_Connect(&PlaylistsBrowser::setPlsViewerPlaylist, this);
+    m_plsViewer->showSongInfo_Connect(&PlaylistsBrowser::emitShowSongInfo, this);
 }
 
 void PlaylistsBrowser::paint(const Rectangle& rect)
@@ -81,6 +82,11 @@ void PlaylistsBrowser::setPlsViewerPlaylist(int item)
     m_plsViewer->setPlaylist(item != -1
                              ? m_plsListView->playlist(item)
                              : std::string());
+}
+
+void PlaylistsBrowser::emitShowSongInfo(int id)
+{
+    showSongInfo(id);
 }
 
 void PlaylistsBrowser::keyPressedEvent(const KeyEvent& keyEvent)

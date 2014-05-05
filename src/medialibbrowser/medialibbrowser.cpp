@@ -137,6 +137,16 @@ void MedialibBrowser::keyPressedEvent(const KeyEvent& keyEvent)
             break;
         }
 
+        case Hotkeys::Screens::MedialibBrowser::ShowSongInfo:
+            if (activeListView == m_songsListView) {
+                SongsListModel *songsModel =
+                        static_cast<SongsListModel*>(m_songsListView->model());
+                const int currentItem = m_songsListView->currentItem();
+                if (currentItem != -1)
+                    showSongInfo(songsModel->id(currentItem));
+            }
+            break;
+            
         case Hotkeys::Screens::MedialibBrowser::Refresh:
             activeListView->model()->refresh();
             break;

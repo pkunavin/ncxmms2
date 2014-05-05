@@ -26,7 +26,8 @@
 //  "LocalFileSystemBrowser", "MedialibBrowser", "PlaylistsBrowser",
 //  "PlaylistsListView", "PlaylistView", "PlaybackProgressBar",
 //  "PlaybackStatusWindow", "QuestionWindow", "StatusMessageWindow",
-//  "EqualizerBandsWindow", "EqualizerPreampWindow", "HelpBrowser".
+//  "EqualizerBandsWindow", "EqualizerPreampWindow", "HelpBrowser",
+//  "SongInfoWindow".
 {
    "Window":
     {

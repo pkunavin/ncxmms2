@@ -16,6 +16,7 @@
 
 #include <map>
 #include <stdexcept>
+#include <boost/cast.hpp>
 
 #include "mainwindow.h"
 #include "../statusarea/statusarea.h"
@@ -25,6 +26,7 @@
 #include "../equalizerwindow/equalizerwindow.h"
 #include "../medialibbrowser/medialibbrowser.h"
 #include "../playlistsbrowser/playlistsbrowser.h"
+#include "../songinfowindow/songinfowindow.h"
 #include "../headerwindow/headerwindow.h"
 #include "../hotkeys.h"
 
@@ -61,7 +63,8 @@ MainWindow::MainWindow(Xmms::Client *xmmsClient) :
         {StackedLocalFileBrowserWindow, new LocalFileSystemBrowser(xmmsClient, stackedSubWinRect, m_stackedWindow)},
         {StackedMedialibBrowser,        new MedialibBrowser       (xmmsClient, stackedSubWinRect, m_stackedWindow)},
         {StackedPlaylistsBrowser,       new PlaylistsBrowser      (xmmsClient, stackedSubWinRect, m_stackedWindow)},
-        {StackedEqualizerWindow,        new EqualizerWindow       (xmmsClient, stackedSubWinRect, m_stackedWindow)}
+        {StackedEqualizerWindow,        new EqualizerWindow       (xmmsClient, stackedSubWinRect, m_stackedWindow)},
+        {StackedSongInfoWindow,         new SongInfoWindow        (xmmsClient, stackedSubWinRect, m_stackedWindow)}
     };
 
     for (const auto& pair : stakedWindows) {
@@ -70,34 +73,50 @@ MainWindow::MainWindow(Xmms::Client *xmmsClient) :
         m_stackedWindow->addWindow(window);
         window->nameChanged_Connect(&MainWindow::handleStackedWindowNameChanged, this, stackedWindow, _1);
     }
-    setVisibleWindow(StackedPlaylistWindow);
+    setVisibleScreen(StackedPlaylistWindow);
+    
+    PlaylistView *plsView =
+             boost::polymorphic_downcast<PlaylistView*>(m_stackedWindow->window(StackedPlaylistWindow));
+    plsView->showSongInfo_Connect(&MainWindow::showSongInfo, this);
+    
+    PlaylistsBrowser *plsBrowser =
+             boost::polymorphic_downcast<PlaylistsBrowser*>(m_stackedWindow->window(StackedPlaylistsBrowser));
+    plsBrowser->showSongInfo_Connect(&MainWindow::showSongInfo, this);
+    
+    MedialibBrowser *medialibBrowser =
+             boost::polymorphic_downcast<MedialibBrowser*>(m_stackedWindow->window(StackedMedialibBrowser));
+    medialibBrowser->showSongInfo_Connect(&MainWindow::showSongInfo, this);
+    
+    SongInfoWindow *songInfoWin =
+            boost::polymorphic_downcast<SongInfoWindow*>(m_stackedWindow->window(StackedSongInfoWindow));
+    songInfoWin->hideRequested_Connect(&MainWindow::showLastVisibleScreen, this);
 }
 
 void MainWindow::keyPressedEvent(const KeyEvent& keyEvent)
 {
     switch (keyEvent.key()) {
         case Hotkeys::Screens::Help::Activate:
-            setVisibleWindow(StackedHelpBrowser);
+            setVisibleScreen(StackedHelpBrowser);
             break;
 
         case Hotkeys::Screens::ActivePlaylist::Activate:
-            setVisibleWindow(StackedPlaylistWindow);
+            setVisibleScreen(StackedPlaylistWindow);
             break;
 
         case Hotkeys::Screens::LocalFileSystemBrowser::Activate:
-            setVisibleWindow(StackedLocalFileBrowserWindow);
+            setVisibleScreen(StackedLocalFileBrowserWindow);
             break;
 
         case Hotkeys::Screens::Equalizer::Activate:
-            setVisibleWindow(StackedEqualizerWindow);
+            setVisibleScreen(StackedEqualizerWindow);
             break;
 
         case Hotkeys::Screens::MedialibBrowser::Activate:
-            setVisibleWindow(StackedMedialibBrowser);
+            setVisibleScreen(StackedMedialibBrowser);
             break;
 
         case Hotkeys::Screens::PlaylistsBrowser::Activate:
-            setVisibleWindow(StackedPlaylistsBrowser);
+            setVisibleScreen(StackedPlaylistsBrowser);
             break;
             
         case Hotkeys::Playback::Toggle:
@@ -159,16 +178,31 @@ void MainWindow::resizeChildren(const Size& size)
     m_statusArea->resize(Size(size.cols(), m_statusArea->lines()));
 }
 
-void MainWindow::setVisibleWindow(StackedWindows win)
+void MainWindow::setVisibleScreen(StackedWindows win)
 {
     m_stackedWindow->setCurrentIndex(win);
     m_headerWindow->setHeaderTitle(m_stackedWindow->window(win)->name());
+    m_lastVisibleScreen = win;
 }
 
 void MainWindow::handleStackedWindowNameChanged(StackedWindows win, const std::string& title)
 {
     if (m_stackedWindow->currentIndex() == win)
         m_headerWindow->setHeaderTitle(title);
+}
+
+void MainWindow::showSongInfo(int id)
+{
+    SongInfoWindow *songInfoWin =
+            boost::polymorphic_downcast<SongInfoWindow*>(m_stackedWindow->window(StackedSongInfoWindow));
+    songInfoWin->showSongInfo(id);
+    m_stackedWindow->setCurrentIndex(StackedSongInfoWindow);
+    m_headerWindow->setHeaderTitle(songInfoWin->name());
+}
+
+void MainWindow::showLastVisibleScreen()
+{
+    setVisibleScreen(m_lastVisibleScreen);
 }
 
 MainWindow::~MainWindow()

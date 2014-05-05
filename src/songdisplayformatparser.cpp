@@ -318,6 +318,35 @@ bool SongDisplayFormatParser::matchFormattedString(const Song& song, const GRege
     return false;
 }
 
+const char * SongDisplayFormatParser::getSongVariableName(char var)
+{
+    switch (var) {
+        case 'a' : return "Artist";
+        case 't' : return "Title";
+        case 'b' : return "Album";
+        case 'p' : return "Performer";
+        case 'y' : return "Date";
+        case 'g' : return "Genre";
+        case 'f' : return "File name";
+        case 'F' : return "File path";
+        case 'i' : return "Id";
+        case 'n' : return "Track number";
+        case 'N' : return "Times played";
+        case 'l' : return "Length";
+        case 'B' : return "Bitrate";
+        case 'S' : return "Samplerate";
+        default:
+            assert(false);
+            return "Unknown variable";
+    }
+}
+
+std::string SongDisplayFormatParser::getSongVariableValue(const Song& song, char var)
+{
+    Variable variable;
+    return variable.init(var) ? variable.toString(song) : std::string();
+}
+
 int SongDisplayFormatParser::getColorByKey(char key)
 {
     switch (key) {
