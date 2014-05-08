@@ -14,8 +14,6 @@
  *  GNU General Public License for more details.
  */
 
-#include <cmath>
-
 #include "equalizerpreampwindow.h"
 #include "../utils.h"
 

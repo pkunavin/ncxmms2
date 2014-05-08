@@ -80,8 +80,8 @@ public:
     void setPalette(const std::shared_ptr<Palette>& palette);
     const Palette& palette() const;
 
-    void loadPalette(const std::string& className,
-                     const std::map<std::string, int>& userRolesMap = std::map<std::string, int>());
+    void loadPalette(const std::string& className);
+    void loadPalette(const std::string& className, const std::map<std::string, int>& userRolesMap);
 
     bool pointInWindow(const Point& point) const; // Accepts coordinates relative to parent window (NOT global!)
     Point toLocalCoordinates(const Point& point) const; // Accepts coordinates relative to parent window (NOT global!)

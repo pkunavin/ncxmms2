@@ -14,7 +14,7 @@
  *  GNU General Public License for more details.
  */
 
-#include <map>
+#include <string>
 #include <glib.h>
 #include <boost/lexical_cast.hpp>
 

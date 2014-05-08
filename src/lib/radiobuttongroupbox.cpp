@@ -15,6 +15,7 @@
  */
 
 #include <vector>
+#include <assert.h>
 
 #include "radiobuttongroupbox.h"
 #include "application.h"

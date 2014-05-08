@@ -15,7 +15,7 @@
  */
 
 #include <xmmsclient/xmmsclient++.h>
-#include <boost/cast.hpp>
+#include <vector>
 #include <algorithm>
 #include <iterator>
 #include <assert.h>

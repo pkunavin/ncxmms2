@@ -14,6 +14,8 @@
  *  GNU General Public License for more details.
  */
 
+#include <vector>
+
 #include "listviewappintegrated.h"
 #include "../statusarea/statusarea.h"
 #include "../lib/keyevent.h"

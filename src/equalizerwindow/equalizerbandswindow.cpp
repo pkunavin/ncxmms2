@@ -14,7 +14,8 @@
  *  GNU General Public License for more details.
  */
 
-#include <map>
+#include <cstring>
+#include <assert.h>
 
 #include "equalizerbandswindow.h"
 #include "../utils.h"
@@ -169,7 +170,7 @@ void EqualizerBandsWindow::paint(const Rectangle& rect)
     m_terminalTooSmall = false;
     if (bandWidth == 0) {
         const char *message = "Terminal too small!";
-        painter.move((cols() - strlen(message)) / 2, lines() / 2);
+        painter.move((cols() - std::strlen(message)) / 2, lines() / 2);
         painter.printString(message);
         painter.flush();
         m_terminalTooSmall = true;

@@ -18,7 +18,7 @@
 #define UTILS_H
 
 #include <string>
-#include <functional>
+#include <utility>
 #include <boost/format.hpp>
 
 namespace ncxmms2 {

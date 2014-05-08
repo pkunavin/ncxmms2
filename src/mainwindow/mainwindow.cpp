@@ -14,7 +14,6 @@
  *  GNU General Public License for more details.
  */
 
-#include <map>
 #include <stdexcept>
 #include <boost/cast.hpp>
 

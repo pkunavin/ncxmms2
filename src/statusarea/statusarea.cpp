@@ -14,7 +14,6 @@
  *  GNU General Public License for more details.
  */
 
-#include <algorithm>
 #include <stdexcept>
 
 #include "statusarea.h"

@@ -17,8 +17,8 @@
 #ifndef HTMLPARSER_H
 #define HTMLPARSER_H
 
-#include <memory>
 #include <string>
+#include <cstring>
 #include <vector>
 #include <utility>
 #include <assert.h>
@@ -135,13 +135,13 @@ public:
         TokenEntity(TokenEntity&& other) :
             m_character(other.m_character)
         {
-            strcpy(m_utf8, other.m_utf8);
+            std::strcpy(m_utf8, other.m_utf8);
         }
         TokenEntity& operator=(TokenEntity&& other)
         {
             if (this != &other) {
                  m_character = other.m_character;
-                 strcpy(m_utf8, other.m_utf8);
+                 std::strcpy(m_utf8, other.m_utf8);
             }
             return *this;
         }

@@ -21,9 +21,11 @@
 #include <sys/ioctl.h>
 
 #include <map>
+#include <memory>
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>
+#include <cstdio>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 
@@ -228,6 +230,11 @@ void Application::setColorSchemeFile(const std::string& file)
                 std::string("Parsing color scheme file failed: ").append(error.what())
               );
     }
+}
+
+std::shared_ptr<Palette> Application::getPalette(const std::string& className, const std::shared_ptr<Palette>& oldPalette)
+{
+    return getPalette(className, oldPalette, std::map<std::string, int>());
 }
 
 std::shared_ptr<Palette> Application::getPalette(const std::string&                className,
@@ -455,14 +462,14 @@ void ApplicationPrivate::mouseEnable()
 {
     // XTerm control sequence for enabling mouse support,
     // see http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
-    printf("\033[?1000h");
-    fflush(stdout);
+    std::printf("\033[?1000h");
+    std::fflush(stdout);
 }
 
 void ApplicationPrivate::mouseDisable()
 {
-    printf("\033[?1000l");
-    fflush(stdout);
+    std::printf("\033[?1000l");
+    std::fflush(stdout);
 }
 
 void ApplicationPrivate::signalHandler(int signal)

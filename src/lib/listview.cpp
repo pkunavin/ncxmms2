@@ -15,7 +15,9 @@
  */
 
 #include <vector>
+#include <algorithm>
 #include <glib.h>
+#include <assert.h>
 
 #include "size.h"
 #include "keyevent.h"

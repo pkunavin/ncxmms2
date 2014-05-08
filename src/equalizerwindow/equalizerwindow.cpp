@@ -15,6 +15,8 @@
  */
 
 #include <algorithm>
+#include <iterator>
+#include <cstring>
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
@@ -157,7 +159,7 @@ void EqualizerWindow::paint(const Rectangle& rect)
     painter.clearWindow();
     if (!m_equalizerPluginEnabled) {
         const char *message = "Equalizer plugin is not enabled in the xmms2 config!";
-        painter.move((cols() - strlen(message)) / 2, lines() / 2);
+        painter.move((cols() - std::strlen(message)) / 2, lines() / 2);
         painter.printString(message);
     }
     painter.flush();

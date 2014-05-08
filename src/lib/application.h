@@ -17,8 +17,6 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include <map>
-#include <memory>
 #include "size.h"
 
 namespace ncxmms2 {
@@ -46,9 +44,10 @@ public:
 
     static void setColorSchemeFile(const std::string& file);
     static std::shared_ptr<Palette> getPalette(const std::string&                className,
+                                               const std::shared_ptr<Palette>&   oldPalette);
+    static std::shared_ptr<Palette> getPalette(const std::string&                className,
                                                const std::shared_ptr<Palette>&   oldPalette,
-                                               const std::map<std::string, int>& userRolesMap =
-                                                                    std::map<std::string, int>());
+                                               const std::map<std::string, int>& userRolesMap);
 
 private:
     Application(bool useColors, bool mouseEnable);

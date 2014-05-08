@@ -18,6 +18,7 @@
 #define SONGDISPLAYFORMATPARSER_H
 
 #include <vector>
+#include <utility>
 #include <assert.h>
 
 #include "song.h"

@@ -14,8 +14,11 @@
  *  GNU General Public License for more details.
  */
 
-#include <glib.h>
+#include <vector>
+#include <algorithm>
 #include <boost/cast.hpp>
+#include <glib.h>
+#include <assert.h>
 
 #include "playlistview.h"
 #include "playlistmodel.h"

@@ -14,9 +14,11 @@
  *  GNU General Public License for more details.
  */
 
+#include <algorithm>
+#include <memory>
+#include <map>
 #include <curses.h>
 #include <assert.h>
-#include <algorithm>
 
 #include "window.h"
 #include "window_p.h"
@@ -229,6 +231,11 @@ void Window::setPalette(const std::shared_ptr<Palette>& palette)
 const Palette& Window::palette() const
 {
     return *(d->palette);
+}
+
+void Window::loadPalette(const std::string& className)
+{
+    loadPalette(className, std::map<std::string, int>());
 }
 
 void Window::loadPalette(const std::string&                className,

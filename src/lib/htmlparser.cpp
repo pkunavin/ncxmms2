@@ -548,12 +548,12 @@ HtmlParser::TokenEntity::TokenEntity(const std::string& entity) :
     
     if (boost::istarts_with(entity, "#x")) {
         char *end;
-        m_character = strtol(entity.c_str() + 2, &end, 16);
+        m_character = std::strtol(entity.c_str() + 2, &end, 16);
         if (*end)
             m_character = 0;
     } else if (boost::istarts_with(entity, "#")) {
         char *end;
-        m_character = strtol(entity.c_str() + 1, &end, 10);
+        m_character = std::strtol(entity.c_str() + 1, &end, 10);
         if (*end)
             m_character = 0;
     } else {
