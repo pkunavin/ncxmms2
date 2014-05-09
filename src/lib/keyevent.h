@@ -17,6 +17,8 @@
 #ifndef KEYEVENT_H
 #define KEYEVENT_H
 
+#include <string>
+
 typedef struct TermKeyKey_St TermKeyKey;
 
 namespace ncxmms2 {

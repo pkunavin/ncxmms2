@@ -15,8 +15,6 @@
  */
 
 #include <algorithm>
-#include <memory>
-#include <map>
 #include <curses.h>
 #include <assert.h>
 

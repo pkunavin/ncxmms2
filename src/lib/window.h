@@ -17,6 +17,9 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include <map>
+#include <memory>
+
 #include "object.h"
 
 namespace ncxmms2 {

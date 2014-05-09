@@ -20,8 +20,6 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 
-#include <map>
-#include <memory>
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>

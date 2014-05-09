@@ -17,6 +17,7 @@
 #ifndef LISTVIEW_H
 #define LISTVIEW_H
 
+#include <vector>
 #include "window.h"
 
 namespace ncxmms2 {

@@ -17,6 +17,10 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
+#include <string>
+#include <memory>
+#include <map>
+
 #include "size.h"
 
 namespace ncxmms2 {
