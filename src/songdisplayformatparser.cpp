@@ -207,7 +207,7 @@ void SongDisplayFormatParser::paint(const Song& song, Painter *painter, const Re
     }
 
     for (int i = 0; i < lastNotFixedColumn; ++i) {
-        struct Column& column = m_columns[i];
+        Column& column = m_columns[i];
         if (column.factor() != 0) {
             column.setSize(sizeStep * column.factor());
             sizeLeft -= column.size();
