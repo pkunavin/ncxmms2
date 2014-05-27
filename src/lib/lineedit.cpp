@@ -47,7 +47,7 @@ public:
     std::u32string::size_type viewportBegin;
     typedef std::u32string::size_type TextSizeType;
 
-    Signals::connection focusLostSlotConnection;
+    Signals::Connection focusLostSlotConnection;
 
     void returnResult(LineEdit::Result result);
     void clearText();
@@ -67,8 +67,8 @@ using namespace ncxmms2;
 
 void LineEditPrivate::returnResult(LineEdit::Result result)
 {
-    Signals::shared_connection_block block(focusLostSlotConnection);
-    if (!resultCallback.empty())
+    Signals::ScopedConnectionBlock block(focusLostSlotConnection);
+    if (resultCallback)
         resultCallback(u32stringToUtf8(text), result);
     Application::releaseFocus();
 }

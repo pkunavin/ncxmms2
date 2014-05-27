@@ -71,7 +71,7 @@ void AlbumsListModel::refresh()
         const std::list<std::string> groupBy = {"album"};
 
         m_xmmsClient->collection.queryInfos(allByArtist, fetch, m_sortingOrder, 0, 0, groupBy)(
-            boost::bind(&AlbumsListModel::getAlbumsList, this, m_artist, _1)
+            std::bind(&AlbumsListModel::getAlbumsList, this, m_artist, std::placeholders::_1)
         );
     }
 

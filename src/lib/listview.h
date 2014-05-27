@@ -61,8 +61,8 @@ public:
     void invertSelection();
     void selectItemsByRegExp(const std::string& pattern);
     void unselectItemsByRegExp(const std::string& pattern);
-    void selectItems(const boost::function<bool (int)>& predicate);
-    void unselectItems(const boost::function<bool (int)>& predicate);
+    void selectItems(const std::function<bool (int)>& predicate);
+    void unselectItems(const std::function<bool (int)>& predicate);
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
     virtual void mouseEvent(const MouseEvent& ev);

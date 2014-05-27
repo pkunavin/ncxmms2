@@ -73,7 +73,7 @@ void SongsListModel::refresh()
         const std::list<std::string> fetch = {"id", "title"};
 
         m_xmmsClient->collection.queryInfos(albumByArtist, fetch, m_sortingOrder)(
-            boost::bind(&SongsListModel::getSongsList, this, m_artist, m_album, _1)
+            std::bind(&SongsListModel::getSongsList, this, m_artist, m_album, std::placeholders::_1)
         );
     }
 

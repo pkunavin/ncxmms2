@@ -1,6 +1,7 @@
 
 set(SOURCES
     application.cpp
+    signals.cpp
     object.cpp
     window.cpp
     stackedwindow.cpp

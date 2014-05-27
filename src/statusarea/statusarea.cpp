@@ -116,7 +116,7 @@ void StatusArea::_askQuestion(const std::string& question,
     auto resultCallback = [answerCallback, this](const std::string& answer, LineEdit::Result result)
     {
         m_stackedWindow->setCurrentIndex(StackedPlaybackStatusWindow);
-        if (!answerCallback.empty())
+        if (answerCallback)
             answerCallback(answer, result);
     };
 

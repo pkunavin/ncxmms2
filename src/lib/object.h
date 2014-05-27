@@ -30,6 +30,8 @@ class Object
 {
 public:
     Object(Object *parent = nullptr);
+    Object(const Object& other) = delete;
+    Object& operator=(const Object& other) = delete;
     virtual ~Object();
 
     Object *parent() const;
@@ -37,14 +39,12 @@ public:
     void setName(const std::string& name);
     const std::string& name() const;
 
-    void registerConnection(const Signals::connection& connection);
+    void registerConnection(Signals::Connection connection);
 
     // Signals:
     NCXMMS2_SIGNAL(nameChanged, const std::string&)
 
 private:
-    Object(const Object& other);
-    Object& operator=(const Object& other);
     std::unique_ptr<ObjectPrivate> d;
 };
 } // ncxmms2

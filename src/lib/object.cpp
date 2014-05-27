@@ -31,7 +31,7 @@ public:
     std::vector<Object*> children;
     bool aboutToBeDestroyedByParent;
     std::string name;
-    std::vector<Signals::connection> connections;
+    std::vector<Signals::Connection> connections;
 };
 } // ncxmms2
 
@@ -43,7 +43,7 @@ Object::Object(Object *parent) : d(new ObjectPrivate(parent))
         d->parent->d->children.push_back(this);
 }
 
-void Object::registerConnection(const Signals::connection& connection)
+void Object::registerConnection(Signals::Connection connection)
 {
     d->connections.push_back(connection);
 }

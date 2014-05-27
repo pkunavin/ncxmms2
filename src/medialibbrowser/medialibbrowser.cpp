@@ -49,7 +49,7 @@ MedialibBrowser::MedialibBrowser(Xmms::Client *xmmsClient, const Rectangle& rect
     m_artistsListView = new ListViewAppIntegrated(artistsListViewRect, this);
     m_artistsListView->setModel(new ArtistsListModel(xmmsClient, this));
     m_artistsListView->currentItemChanged_Connect(&MedialibBrowser::setAlbumsListViewArtist, this);
-    m_artistsListView->itemEntered_Connect(&MedialibBrowser::activePlaylistAddArtist, this,  _1, false); //TODO: Play artist
+    m_artistsListView->itemEntered_Connect(&MedialibBrowser::activePlaylistAddArtist, this,  std::placeholders::_1, false); //TODO: Play artist
     m_artistsListView->setFocus();
 
     const int albumsListViewCols = artistsListViewCols;
@@ -58,14 +58,14 @@ MedialibBrowser::MedialibBrowser(Xmms::Client *xmmsClient, const Rectangle& rect
     m_albumsListView = new ListViewAppIntegrated(albumsListViewRect, this);
     m_albumsListView->setModel(new AlbumsListModel(xmmsClient, this));
     m_albumsListView->currentItemChanged_Connect(&MedialibBrowser::setSongsListViewAlbum, this);
-    m_albumsListView->itemEntered_Connect(&MedialibBrowser::activePlaylistAddAlbum, this,  _1, false); //TODO: Play album
+    m_albumsListView->itemEntered_Connect(&MedialibBrowser::activePlaylistAddAlbum, this,  std::placeholders::_1, false); //TODO: Play album
 
     const int songsListViewCols = cols() - artistsListViewCols - albumsListViewCols - 2;
     const Rectangle songsListViewRect(cols() - songsListViewCols, headerLines,
                                       songsListViewCols, lines() - headerLines);
     m_songsListView = new ListViewAppIntegrated(songsListViewRect, this);
     m_songsListView->setModel(new SongsListModel(xmmsClient, this));
-    m_songsListView->itemEntered_Connect(&MedialibBrowser::activePlaylistAddSong, this, _1, false); //TODO: Play song
+    m_songsListView->itemEntered_Connect(&MedialibBrowser::activePlaylistAddSong, this, std::placeholders::_1, false); //TODO: Play song
 
     // This will reload the whole medialib on adding new medialib entry.
     // TODO: Can it be done in a more clever way?
@@ -247,7 +247,7 @@ void MedialibBrowser::activePlaylistAddArtist(int item, bool beQuiet)
     const std::list<std::string> groupBy = {"album"};
 
     m_xmmsClient->collection.queryInfos(allByArtist, fetch, albumsModel->sortingOrder(), 0, 0, groupBy)(
-        boost::bind(&MedialibBrowser::activePlaylistAddAlbums, this, artist, _1, beQuiet)
+        std::bind(&MedialibBrowser::activePlaylistAddAlbums, this, artist, std::placeholders::_1, beQuiet)
     );
 }
 

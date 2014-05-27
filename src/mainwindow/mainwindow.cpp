@@ -70,7 +70,7 @@ MainWindow::MainWindow(Xmms::Client *xmmsClient) :
         StackedWindows stackedWindow = pair.first;
         Window *window = pair.second;
         m_stackedWindow->addWindow(window);
-        window->nameChanged_Connect(&MainWindow::handleStackedWindowNameChanged, this, stackedWindow, _1);
+        window->nameChanged_Connect(&MainWindow::handleStackedWindowNameChanged, this, stackedWindow, std::placeholders::_1);
     }
     setVisibleScreen(StackedPlaylistWindow);
     

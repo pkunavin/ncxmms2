@@ -17,6 +17,8 @@
 #include <vector>
 #include <assert.h>
 
+#include <map>
+
 #include "stackedwindow.h"
 
 namespace ncxmms2 {

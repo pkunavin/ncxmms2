@@ -61,7 +61,7 @@ public:
     bool currentItemHidden;
     unsigned int hideCurrentItemSelectionInterval;
 
-    std::vector<Signals::connection> modelConnections;
+    std::vector<Signals::Connection> modelConnections;
     void disconnectModel();
 
     void reset();
@@ -114,32 +114,32 @@ void ListView::setModel(ListModel *model)
 
         d->modelConnections.push_back(
             model->reset_Connect(
-                boost::bind(&ListViewPrivate::reset, d.get())
+                std::bind(&ListViewPrivate::reset, d.get())
         ));
 
         d->modelConnections.push_back(
             model->itemsChanged_Connect(
-                boost::bind(&ListViewPrivate::itemsChanged, d.get(), _1, _2)
+                std::bind(&ListViewPrivate::itemsChanged, d.get(), std::placeholders::_1, std::placeholders::_2)
         ));
 
         d->modelConnections.push_back(
             model->itemAdded_Connect(
-                boost::bind(&ListViewPrivate::itemAdded, d.get())
+                std::bind(&ListViewPrivate::itemAdded, d.get())
         ));
 
         d->modelConnections.push_back(
             model->itemInserted_Connect(
-                boost::bind(&ListViewPrivate::itemInserted, d.get(), _1)
+                std::bind(&ListViewPrivate::itemInserted, d.get(), std::placeholders::_1)
         ));
 
         d->modelConnections.push_back(
             model->itemRemoved_Connect(
-                boost::bind(&ListViewPrivate::itemRemoved, d.get(), _1)
+                std::bind(&ListViewPrivate::itemRemoved, d.get(), std::placeholders::_1)
         ));
 
         d->modelConnections.push_back(
             model->itemMoved_Connect(
-                boost::bind(&ListViewPrivate::itemMoved, d.get(), _1, _2)
+                std::bind(&ListViewPrivate::itemMoved, d.get(), std::placeholders::_1, std::placeholders::_2)
         ));
     }
     d->reset();
@@ -404,9 +404,9 @@ void ListView::unselectItemsByRegExp(const std::string &pattern)
     g_regex_unref(regex);
 }
 
-void ListView::selectItems(const boost::function<bool (int)>& predicate)
+void ListView::selectItems(const std::function<bool (int)>& predicate)
 {
-    if (!d->model || predicate.empty())
+    if (!d->model || !predicate)
         return;
 
     const int itemsCount = d->model->itemsCount();
@@ -422,9 +422,9 @@ void ListView::selectItems(const boost::function<bool (int)>& predicate)
     update();
 }
 
-void ListView::unselectItems(const boost::function<bool (int)>& predicate)
+void ListView::unselectItems(const std::function<bool (int)>& predicate)
 {
-    if (!d->model || predicate.empty())
+    if (!d->model || !predicate)
         return;
 
     std::vector<int> leftSelectedItems;

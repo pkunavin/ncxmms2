@@ -71,7 +71,7 @@ bool PlaylistModel::getEntries(const Xmms::List<int>& list)
         m_idList.push_back(id);
         m_songInfos[id];
         m_xmmsClient->medialib.getInfo(id)(
-            boost::bind(&PlaylistModel::getSongInfo, this, pos, _1)
+            std::bind(&PlaylistModel::getSongInfo, this, pos, std::placeholders::_1)
         );
     }
     reset();
@@ -120,7 +120,7 @@ bool PlaylistModel::processPlaylistChange(const Xmms::Dict& change)
             m_idList.push_back(id);
             m_songInfos[id];
             m_xmmsClient->medialib.getInfo(id)(
-                boost::bind(&PlaylistModel::getSongInfo, this, m_idList.size() - 1, _1)
+                std::bind(&PlaylistModel::getSongInfo, this, m_idList.size() - 1, std::placeholders::_1)
             );
             itemAdded();
             totalDurationChanged();
@@ -135,7 +135,7 @@ bool PlaylistModel::processPlaylistChange(const Xmms::Dict& change)
             m_idList.insert(m_idList.begin() + position, id);
             m_songInfos[id];
             m_xmmsClient->medialib.getInfo(id)(
-                boost::bind(&PlaylistModel::getSongInfo, this, position, _1)
+                std::bind(&PlaylistModel::getSongInfo, this, position, std::placeholders::_1)
             );
             itemInserted(position);
             totalDurationChanged();
@@ -224,7 +224,7 @@ bool PlaylistModel::handleSongInfoUpdate(const int& id)
 {
     if (m_songInfos.find(id) != m_songInfos.end()) {
         m_xmmsClient->medialib.getInfo(id)(
-            boost::bind(&PlaylistModel::getSongInfo, this, -1, _1)
+            std::bind(&PlaylistModel::getSongInfo, this, -1, std::placeholders::_1)
         );
     }
 
@@ -247,7 +247,7 @@ const Song &PlaylistModel::song(int item) const
         PlaylistModel *nonConstThis = const_cast<PlaylistModel*>(this);
         song = &nonConstThis->m_songInfos[id];
         m_xmmsClient->medialib.getInfo(id)(
-            boost::bind(&PlaylistModel::getSongInfo, nonConstThis, -1, _1)
+            std::bind(&PlaylistModel::getSongInfo, nonConstThis, -1, std::placeholders::_1)
         );
     } else {
         song = &(*it).second;

@@ -17,7 +17,6 @@
 #ifndef LINEEDIT_H
 #define LINEEDIT_H
 
-#include <boost/function.hpp>
 #include "window.h"
 
 namespace ncxmms2 {
@@ -34,7 +33,7 @@ public:
         Rejected,
         Accepted
     };
-    typedef boost::function<void (const std::string&, Result)> ResultCallback;
+    typedef std::function<void (const std::string&, Result)> ResultCallback;
 
     void edit(const ResultCallback& resultCallback, const std::string& text = std::string());
     void edit(const ResultCallback& resultCallback, const std::u32string& text = std::u32string());

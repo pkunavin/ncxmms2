@@ -18,8 +18,7 @@
 #define SIGNALS_H
 
 /**
-    This file incudes a slot-signal idea realization using boost::signals2
-  library.
+    This file incudes a slot-signal idea realization.
 
     Using signals and slots:
   1. Declaring signals
@@ -70,11 +69,11 @@
           X x;
           ObjectDerivedClass obj;
 
-          obj.someVoidSignal_Connect(boost::bind(&X:f1, &x));
-          obj.someIntSignal_Connect(boost::bind(&X::f2, &x, _1));
+          obj.someVoidSignal_Connect(std::bind(&X:f1, &x));
+          obj.someIntSignal_Connect(std::bind(&X::f2, &x, std::placeholders::_1));
 
           // Use 10 as an argument for f2
-          obj.someVoidSignal_Connect(boost::bind(&X:f2, &x, 10));
+          obj.someVoidSignal_Connect(std::bind(&X:f2, &x, 10));
 
       - ncxmms2::Object derived class member function
          For ncxmms2::Object derived classes simplified syntax and also automatic
@@ -110,78 +109,231 @@
 
 
           // If your member function has more than five args or you need
-             to bind something, use general syntax (boost::bind syntax):
-          obj1.someIntSignal_Connect(&SlotsHolder::f2, &obj2, _1);
+             to bind something, use general syntax (std::bind syntax):
+          obj1.someIntSignal_Connect(&SlotsHolder::f2, &obj2, std::placeholders::_1);
           obj1.someVoidSignal_Connect(&SlotsHolder::f2, &obj2, 10);
-          obj1.someIntIntSignal_Connect(&SlotsHolder::f3, &obj2, _1, _2);
-          obj1.someIntSignal_Connect(&SlotsHolder::f3, &obj2, 10, _1);
+          obj1.someIntIntSignal_Connect(&SlotsHolder::f3, &obj2, std::placeholders::_1, std::placeholders::_2);
+          obj1.someIntSignal_Connect(&SlotsHolder::f3, &obj2, 10, std::placeholders::_1);
 
  */
 
-#include <boost/signals2.hpp>
+#include <cstdint>
 #include <utility>
+#include <vector>
+#include <functional>
+#include <type_traits>
+
+#include "../../3rdparty/folly/sorted_vector_types.h"
 
 namespace ncxmms2 {
-namespace Signals = boost::signals2;
 class Object;
+
+namespace Signals {
+
+class SignalBase;
+
+class Connection
+{
+    friend class SignalBase;
+    uint32_t m_id;
+    Connection(uint32_t id) : m_id(id) {}
+    
+public:
+    Connection() : m_id(0) {}
+    
+    void disconnect();
+    bool isConnected() const;
+    
+    void block();
+    void unblock();
+    bool isBlocked() const;
+    
+    bool operator==(const Connection& other) const
+    {
+        return m_id == other.m_id;
+    }
+    
+    bool operator<(const Connection& other) const
+    {
+        return m_id < other.m_id;
+    }
+    
+    bool operator>(const Connection& other) const
+    {
+        return m_id > other.m_id;
+    }
+};
+
+class ScopedConnectionBlock
+{
+    Connection m_connection;
+public:
+    ScopedConnectionBlock(Connection connection) :
+        m_connection(connection)
+    {
+        m_connection.block();
+    }
+
+    ~ScopedConnectionBlock()
+    {
+        m_connection.unblock();
+    }
+    
+    ScopedConnectionBlock(const ScopedConnectionBlock& other) = delete;
+    ScopedConnectionBlock& operator=(const ScopedConnectionBlock& other) = delete;
+};
+
+class SignalBase
+{
+public:
+    SignalBase(){}
+    SignalBase(const SignalBase& other) = delete;
+    SignalBase& operator=(const SignalBase& other) = delete;
+    virtual ~SignalBase(){}
+    
+protected:
+    virtual void eraseConnection(Connection connection) = 0;
+    virtual void blockConnection(Connection connection, bool block) = 0;
+    virtual bool isBlockedConnection(Connection connection) = 0;
+    
+    static Connection creatConnection(SignalBase *signal);
+    static void destroyConnection(Connection connection);
+    
+    friend class Connection;
+};
+
+template <typename F, typename T>
+class MemFnBindImpl
+{
+    F f;
+    T *m_obj;
+public:
+    template <typename U>
+    MemFnBindImpl(U&& memFnResult, T *obj) : 
+        f(std::forward<U>(memFnResult)),
+        m_obj(obj) {}
+    
+    template <typename... Args>
+    void operator()(Args&&... args)
+    {
+        f(*m_obj, std::forward<Args>(args)...);
+    }
+};
+
+template <typename T, typename... Signature>
+inline auto memFnBind(void (T::*func)(Signature...), T *obj)
+-> MemFnBindImpl<decltype(std::mem_fn(func)), T>
+{
+    return MemFnBindImpl<decltype(std::mem_fn(func)), T>(std::mem_fn(func), obj);
 }
 
-#define NCXMMS2_SIGNAL(NAME, ...) \
-    protected: \
-        ncxmms2::Signals::signal<void (__VA_ARGS__)> NAME; \
-    public: \
-        ncxmms2::Signals::connection NAME ## _Connect(const ncxmms2::Signals::signal<void (__VA_ARGS__)>::slot_type& slot) \
-        { \
-            return NAME.connect(slot); \
-        } \
-        template <typename T> \
-        ncxmms2::Signals::connection NAME ## _Connect(void (T::*func)(), ncxmms2::Object *obj) \
-        { \
-            ncxmms2::Signals::connection conn = NAME.connect(boost::bind(func, (T*)obj)); \
-            obj->registerConnection(conn); \
-            return conn; \
-        } \
-        template <typename T, typename Arg0> \
-        ncxmms2::Signals::connection NAME ## _Connect(void (T::*func)(Arg0), ncxmms2::Object *obj) \
-        { \
-            ncxmms2::Signals::connection conn = NAME.connect(boost::bind(func, (T*)obj, _1)); \
-            obj->registerConnection(conn); \
-            return conn; \
-        } \
-        template <typename T, typename Arg0, typename Arg1> \
-        ncxmms2::Signals::connection NAME ## _Connect(void (T::*func)(Arg0, Arg1), ncxmms2::Object *obj) \
-        { \
-            ncxmms2::Signals::connection conn = NAME.connect(boost::bind(func, (T*)obj, _1, _2)); \
-            obj->registerConnection(conn); \
-            return conn; \
-        } \
-        template <typename T, typename Arg0, typename Arg1, typename Arg2> \
-        ncxmms2::Signals::connection NAME ## _Connect(void (T::*func)(Arg0, Arg1, Arg2), ncxmms2::Object *obj) \
-        { \
-            ncxmms2::Signals::connection conn = NAME.connect(boost::bind(func, (T*)obj, _1, _2, _3)); \
-            obj->registerConnection(conn); \
-            return conn; \
-        } \
-        template <typename T, typename Arg0, typename Arg1, typename Arg2, typename Arg3> \
-        ncxmms2::Signals::connection NAME ## _Connect(void (T::*func)(Arg0, Arg1, Arg2, Arg3), ncxmms2::Object *obj) \
-        { \
-            ncxmms2::Signals::connection conn = NAME.connect(boost::bind(func, (T*)obj, _1, _2, _3, _4)); \
-            obj->registerConnection(conn); \
-            return conn; \
-        } \
-        template <typename T, typename Arg0, typename Arg1, typename Arg2, typename Arg3, typename Arg4> \
-        ncxmms2::Signals::connection NAME ## _Connect(void (T::*func)(Arg0, Arg1, Arg2, Arg3, Arg4), ncxmms2::Object *obj) \
-        { \
-            ncxmms2::Signals::connection conn = NAME.connect(boost::bind(func, (T*)obj, _1, _2, _3, _4, _5)); \
-            obj->registerConnection(conn); \
-            return conn; \
-        } \
-        template <typename T, typename ... Signature, typename Arg, typename ... Args> \
-        ncxmms2::Signals::connection NAME ## _Connect(void (T::*func)(Signature ...), ncxmms2::Object *obj, Arg&& arg0, Args&& ... args) \
-        { \
-            ncxmms2::Signals::connection conn = NAME.connect(boost::bind(func, (T*)obj, std::forward<Arg>(arg0), std::forward<Args>(args)...)); \
-            obj->registerConnection(conn); \
-            return conn; \
-        } \
+template <typename... Args>
+class Signal : public SignalBase
+{
+    struct Slot
+    {
+        std::function<void (Args...)> func;
+        bool blocked;
+        
+        template <typename F>
+        Slot(F&& f) :
+            func(std::forward<F>(f)),
+            blocked(false) {}
+    };
+    
+    folly::sorted_vector_map<Connection, Slot> m_slots;
+    
+protected:
+    virtual void eraseConnection(Connection connection)
+    {
+        m_slots.erase(connection);
+    }
+    
+    virtual void blockConnection(Connection connection, bool block)
+    {
+        auto it = m_slots.find(connection);
+        if (it != m_slots.end()) {
+            it->second.blocked = block;
+        }
+    }
+    
+    virtual bool isBlockedConnection(Connection connection)
+    {
+        auto it = m_slots.find(connection);
+        return it != m_slots.end() ? it->second.blocked : false;
+    }
+
+public:
+    template <typename F>
+    Connection connect(F&& f)
+    {
+        Connection conn = creatConnection(this);
+        m_slots.insert(std::make_pair(conn, std::forward<F>(f)));
+        return conn;
+    }
+    
+    template <typename T, typename... Signature>
+    typename std::enable_if<std::is_base_of<Object, T>::value, Connection>::type
+    connect(void (T::*func)(Signature...), T *obj)
+    {
+        Connection conn = connect(memFnBind(func, obj));
+        obj->registerConnection(conn);
+        return conn;
+    }
+    
+    template <typename T, typename... Signature>
+    typename std::enable_if<!std::is_base_of<Object, T>::value, Connection>::type
+    connect(void (T::*func)(Signature...), T *obj)
+    {
+        return connect(memFnBind(func, obj));
+    }
+    
+    template <typename T, typename... Signature, typename T0, typename... Ts>
+    typename std::enable_if<std::is_base_of<Object, T>::value, Connection>::type
+    connect(void (T::*func)(Signature...), T *obj, T0&& t0, Ts&&... ts)
+    {
+        Connection conn = connect(std::bind(func, obj, std::forward<T0>(t0), std::forward<Ts>(ts)...));
+        obj->registerConnection(conn);
+        return conn;
+    }
+    
+    template <typename T, typename... Signature, typename T0, typename... Ts>
+    typename std::enable_if<!std::is_base_of<Object, T>::value, Connection>::type
+    connect(void (T::*func)(Signature...), T *obj, T0&& t0, Ts&&... ts)
+    {
+        return connect(std::bind(func, obj, std::forward<T0>(t0), std::forward<Ts>(ts)...));
+    }
+    
+    void operator()(Args... args)
+    {
+        for (auto& slot : m_slots) {
+            if (!slot.second.blocked)
+                slot.second.func(args...);
+        }
+    }
+    
+    ~Signal()
+    {
+        for (auto& slot : m_slots)
+            destroyConnection(slot.first);
+    }
+};
+
+
+} // Signals
+} // ncxmms2
+
+/* The only purpose of this macro is to allow to emit signal only from the class
+ * that defines the signal and its subclasses.
+ */
+#define NCXMMS2_SIGNAL(NAME, ...)                             \
+    protected:                                                \
+        Signals::Signal<__VA_ARGS__> NAME;                    \
+    public:                                                   \
+        template <typename... Args>                           \
+        Signals::Connection NAME ## _Connect(Args&&... args)  \
+        {                                                     \
+            return NAME.connect(std::forward<Args>(args)...); \
+        }                                                     \
 
 #endif // SIGNALS_H
