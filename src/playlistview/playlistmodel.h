@@ -19,7 +19,7 @@
 
 #include <vector>
 #include <string>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 #include "../song.h"
 #include "../lib/listmodel.h"
@@ -57,7 +57,7 @@ public:
 private:
     Xmms::Client *m_xmmsClient;
 
-    boost::unordered_map<int, Song> m_songInfos;
+    std::unordered_map<int, Song> m_songInfos;
     std::vector<int> m_idList;
     std::string m_playlist;
     int m_currentPosition;
