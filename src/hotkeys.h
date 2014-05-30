@@ -46,6 +46,7 @@ enum
     ClearPlaylist            = 'c',
     ShufflePlaylist          = 'S',
     GoToCurrentlyPlayingSong = 'o',
+    MoveSelectedSongs        = 'm',
     AddFileOrDirectory       = KeyEvent::ModifierCtrl | 'o',
     AddUrl                   = KeyEvent::ModifierCtrl | 'u',
     ShowSongInfo             = 'i'

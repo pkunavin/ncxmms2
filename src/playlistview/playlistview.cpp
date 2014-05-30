@@ -87,6 +87,10 @@ void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
             setCurrentItem(plsModel->currentSongItem());
             break;
 
+        case Hotkeys::PlaylistView::MoveSelectedSongs:
+            moveSelectedSongs();
+            break;
+            
         case Hotkeys::PlaylistView::AddFileOrDirectory:
         {
             auto resultCallback = [this](const std::string& path, LineEdit::Result result)
@@ -296,5 +300,28 @@ void PlaylistView::removeSelectedSongs()
             m_xmmsClient->playlist.removeEntry(currentItem(), plsModel->playlist());
         }
         showCurrentItem();
+    }
+}
+
+void PlaylistView::moveSelectedSongs()
+{
+    PlaylistModel *plsModel = boost::polymorphic_downcast<PlaylistModel*>(model());
+    const std::vector<int> selectedSongs  = selectedItems();
+    assert(std::is_sorted(selectedSongs.begin(), selectedSongs.end()));
+    
+    if (isCurrentItemHidden() || selectedSongs.empty())
+        return;
+    
+    const int moveTo = currentItem();
+    auto it = std::lower_bound(selectedSongs.begin(), selectedSongs.end(), moveTo);
+    
+    int to = moveTo;
+    for (size_t i = it - selectedSongs.begin(); i < selectedSongs.size(); ++i, ++to) {
+        m_xmmsClient->playlist.moveEntry(selectedSongs[i], to, plsModel->playlist());
+    }
+    
+    to = it == selectedSongs.end() ? moveTo : moveTo - 1;
+    for (ptrdiff_t i = it - selectedSongs.begin() - 1; i >= 0; --i, --to) {
+        m_xmmsClient->playlist.moveEntry(selectedSongs[i], to, plsModel->playlist());
     }
 }

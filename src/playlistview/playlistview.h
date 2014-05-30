@@ -50,6 +50,7 @@ private:
     void selectSongsByRegExp();
     void unselectSongsByRegExp();
     void removeSelectedSongs();
+    void moveSelectedSongs();
 };
 
 } // ncxmms2

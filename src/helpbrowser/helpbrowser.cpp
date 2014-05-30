@@ -72,6 +72,7 @@ HelpBrowser::HelpBrowser(const Rectangle& rect, Window *parent) :
         {"Clear playlist",               Hotkeys::PlaylistView::ClearPlaylist           },
         {"Shuffle playlist",             Hotkeys::PlaylistView::ShufflePlaylist         },
         {"Go to currently playing song", Hotkeys::PlaylistView::GoToCurrentlyPlayingSong},
+        {"Move selected songs",          Hotkeys::PlaylistView::MoveSelectedSongs       },
         {"Add file or directory",        Hotkeys::PlaylistView::AddFileOrDirectory      },
         {"Add url",                      Hotkeys::PlaylistView::AddUrl                  },
         {"Show song info",               Hotkeys::PlaylistView::ShowSongInfo            },
