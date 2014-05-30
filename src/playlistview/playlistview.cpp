@@ -25,7 +25,6 @@
 #include "playlistitemdelegate.h"
 
 #include "../statusarea/statusarea.h"
-#include "../utils.h"
 #include "../xmmsutils.h"
 #include "../hotkeys.h"
 
@@ -73,21 +72,8 @@ void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
 
     switch (keyEvent.key()) {
         case Hotkeys::PlaylistView::RemoveEntry:
-        {
-            if (plsModel->itemsCount() && !isCurrentItemHidden()) {
-                const std::vector<int>& _selectedItems = selectedItems();
-                if (!_selectedItems.empty()) {
-                    assert(std::is_sorted(_selectedItems.begin(), _selectedItems.end()));
-                    std::for_each(_selectedItems.rbegin(), _selectedItems.rend(), [&](int item){
-                        m_xmmsClient->playlist.removeEntry(item, plsModel->playlist());
-                    });
-                } else {
-                    m_xmmsClient->playlist.removeEntry(currentItem(), plsModel->playlist());
-                }
-                showCurrentItem();
-            }
+            removeSelectedSongs();
             break;
-        }
 
         case Hotkeys::PlaylistView::ClearPlaylist:
             m_xmmsClient->playlist.clear(plsModel->playlist());
@@ -132,56 +118,12 @@ void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
             break;
             
         case '+': // Select be regexp
-        {
-            // We can't use selectItemsByRegExp here, because it matches ListModelItemData::text,
-            // but for PlaylistModel its value doesn't correspond to what actually displyed, as
-            // it uses SongDisplayFormatParser for this job.
-            auto resultCallback = [this, plsModel](const std::string& pattern, LineEdit::Result result)
-            {
-                if (result == LineEdit::Result::Accepted) {
-                    GRegex *regex = g_regex_new(pattern.c_str(), G_REGEX_OPTIMIZE,
-                                                (GRegexMatchFlags)0, nullptr);
-                    if (!regex)
-                        return;
-
-                    PlaylistItemDelegate *delegate =
-                            boost::polymorphic_downcast<PlaylistItemDelegate*>(itemDelegate());
-
-                    selectItems([plsModel, delegate, regex](int item){
-                        return delegate->matchFormattedString(plsModel->song(item), regex);
-                    });
-                    g_regex_unref(regex);
-                    StatusArea::showMessage("%1% items selected", selectedItems().size());
-                }
-            };
-            StatusArea::askQuestion("Select items: ", resultCallback, ".*");
+            selectSongsByRegExp();
             break;
-        }
 
         case '\\': // Unselect be regexp
-        {
-            // The same story here...
-            auto resultCallback = [this, plsModel](const std::string& pattern, LineEdit::Result result)
-            {
-                if (result == LineEdit::Result::Accepted) {
-                    GRegex *regex = g_regex_new(pattern.c_str(), G_REGEX_OPTIMIZE,
-                                                (GRegexMatchFlags)0, nullptr);
-                    if (!regex)
-                        return;
-
-                    PlaylistItemDelegate *delegate =
-                            boost::polymorphic_downcast<PlaylistItemDelegate*>(itemDelegate());
-
-                    unselectItems([plsModel, delegate, regex](int item){
-                        return delegate->matchFormattedString(plsModel->song(item), regex);
-                    });
-                    g_regex_unref(regex);
-                    StatusArea::showMessage("%1% items selected", selectedItems().size());
-                }
-            };
-            StatusArea::askQuestion("Unselect items: ", resultCallback, ".*");
+            unselectSongsByRegExp();
             break;
-        }
 
         default: ListViewAppIntegrated::keyPressedEvent(keyEvent);
     }
@@ -283,4 +225,76 @@ void PlaylistView::addUrl(const std::string& url)
 
     // FIXME: Url may be too long to display
     StatusArea::showMessage("Adding \"%1%\" to \"%2%\" playlist", url, plsModel->playlist());
+}
+
+void PlaylistView::selectSongsByRegExp()
+{
+    // We can't use selectItemsByRegExp here, because it matches ListModelItemData::text,
+    // but for PlaylistModel its value doesn't correspond to what actually displyed, as
+    // it uses SongDisplayFormatParser for this job.
+    auto resultCallback = [this](const std::string& pattern, LineEdit::Result result)
+    {
+        if (result == LineEdit::Result::Accepted) {
+            GRegex *regex = g_regex_new(pattern.c_str(), G_REGEX_OPTIMIZE,
+                                        (GRegexMatchFlags)0, nullptr);
+            if (!regex)
+                return;
+
+            PlaylistModel *plsModel = boost::polymorphic_downcast<PlaylistModel*>(model());
+            PlaylistItemDelegate *delegate =
+                    boost::polymorphic_downcast<PlaylistItemDelegate*>(itemDelegate());
+
+            selectItems([plsModel, delegate, regex](int item){
+                return delegate->matchFormattedString(plsModel->song(item), regex);
+            });
+            g_regex_unref(regex);
+            StatusArea::showMessage("%1% items selected", selectedItems().size());
+        }
+    };
+    StatusArea::askQuestion("Select items: ", resultCallback, ".*");
+}
+
+void PlaylistView::unselectSongsByRegExp()
+{
+    // The same story here...
+    auto resultCallback = [this](const std::string& pattern, LineEdit::Result result)
+    {
+        if (result == LineEdit::Result::Accepted) {
+            GRegex *regex = g_regex_new(pattern.c_str(), G_REGEX_OPTIMIZE,
+                                        (GRegexMatchFlags)0, nullptr);
+            if (!regex)
+                return;
+
+            PlaylistModel *plsModel = boost::polymorphic_downcast<PlaylistModel*>(model());
+            PlaylistItemDelegate *delegate =
+                    boost::polymorphic_downcast<PlaylistItemDelegate*>(itemDelegate());
+
+            unselectItems([plsModel, delegate, regex](int item){
+                return delegate->matchFormattedString(plsModel->song(item), regex);
+            });
+            g_regex_unref(regex);
+            StatusArea::showMessage("%1% items selected", selectedItems().size());
+        }
+    };
+    StatusArea::askQuestion("Unselect items: ", resultCallback, ".*");
+}
+
+void PlaylistView::removeSelectedSongs()
+{
+    PlaylistModel *plsModel = boost::polymorphic_downcast<PlaylistModel*>(model());
+    if (plsModel->itemsCount() && !isCurrentItemHidden()) {
+        //   Actually we don't have to make copy of selectedItems, since removeEntry
+        // doesn't modify it immediately, but this is not obvious and may lead to
+        // problems in the future.
+        const std::vector<int> selectedSongs = selectedItems();
+        if (!selectedSongs.empty()) {
+            assert(std::is_sorted(selectedSongs.begin(), selectedSongs.end()));
+            std::for_each(selectedSongs.rbegin(), selectedSongs.rend(), [&](int item){
+                m_xmmsClient->playlist.removeEntry(item, plsModel->playlist());
+            });
+        } else {
+            m_xmmsClient->playlist.removeEntry(currentItem(), plsModel->playlist());
+        }
+        showCurrentItem();
+    }
 }

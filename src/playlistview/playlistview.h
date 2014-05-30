@@ -47,6 +47,9 @@ private:
     void addPath(const std::string& path);
     void addFile(const std::string& path);
     void addUrl(const std::string& url);
+    void selectSongsByRegExp();
+    void unselectSongsByRegExp();
+    void removeSelectedSongs();
 };
 
 } // ncxmms2
