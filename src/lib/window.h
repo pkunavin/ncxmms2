@@ -80,7 +80,7 @@ public:
     bool hasFocus() const;
     Window *focusedWindow() const;
     
-    void setPalette(const std::shared_ptr<Palette>& palette);
+    void setPalette(const std::shared_ptr<const Palette>& palette);
     const Palette& palette() const;
 
     void loadPalette(const std::string& className);

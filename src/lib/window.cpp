@@ -221,7 +221,7 @@ Window *Window::focusedWindow() const
     return d->focusedWindow;
 }
 
-void Window::setPalette(const std::shared_ptr<Palette>& palette)
+void Window::setPalette(const std::shared_ptr<const Palette> &palette)
 {
     d->palette = palette;
 }
@@ -239,9 +239,9 @@ void Window::loadPalette(const std::string& className)
 void Window::loadPalette(const std::string&                className,
                          const std::map<std::string, int>& userRolesMap)
 {
-    std::shared_ptr<Palette> newPalette = Application::getPalette(className,
-                                                                  d->palette,
-                                                                  userRolesMap);
+    std::shared_ptr<const Palette> newPalette = Application::getPalette(className,
+                                                                        d->palette,
+                                                                        userRolesMap);
     if (newPalette)
         d->palette = newPalette;
 

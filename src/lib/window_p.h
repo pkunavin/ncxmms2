@@ -64,7 +64,7 @@ public:
     PainterPrivate painterPrivate;
     bool isPainterPrivateAlreadyInUse;
 
-    std::shared_ptr<Palette> palette;
+    std::shared_ptr<const Palette> palette;
 
     static bool doingResize;
     void checkSize(const Size& size);

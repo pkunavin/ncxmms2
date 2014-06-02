@@ -85,7 +85,7 @@ public:
     Window *grabbedFocusWindow;
 
     boost::property_tree::ptree colorSchemeTree;
-    std::map<std::string, std::shared_ptr<Palette>> paletteMap;
+    std::map<std::string, std::shared_ptr<const Palette>> paletteMap;
     void parseColorSchemeTree(const boost::property_tree::ptree&  colorSchemeTree,
                               Palette                            *palette,
                               const std::map<std::string, int>&   rolesMap);
@@ -230,14 +230,15 @@ void Application::setColorSchemeFile(const std::string& file)
     }
 }
 
-std::shared_ptr<Palette> Application::getPalette(const std::string& className, const std::shared_ptr<Palette>& oldPalette)
+std::shared_ptr<const Palette> Application::getPalette(const std::string&                    className,
+                                                       const std::shared_ptr<const Palette>& oldPalette)
 {
     return getPalette(className, oldPalette, std::map<std::string, int>());
 }
 
-std::shared_ptr<Palette> Application::getPalette(const std::string&                className,
-                                                 const std::shared_ptr<Palette>&   oldPalette,
-                                                 const std::map<std::string, int>& userRolesMap)
+std::shared_ptr<const Palette> Application::getPalette(const std::string&                     className,
+                                                       const std::shared_ptr<const Palette>&  oldPalette,
+                                                       const std::map<std::string, int>&      userRolesMap)
 {
     CHECK_INST;
     ApplicationPrivate *p = inst->d.get();
@@ -248,21 +249,21 @@ std::shared_ptr<Palette> Application::getPalette(const std::string&             
 
     const auto classPalette = p->colorSchemeTree.find(className);
     if (classPalette == p->colorSchemeTree.not_found()) {
-        if (oldPalette)                        // Return empty ptr, if we have no custom
-            return std::shared_ptr<Palette>(); // palette
+        if (oldPalette) // Return empty ptr, if we have no custom palette
+            return std::shared_ptr<const Palette>();
 
-        std::shared_ptr<Palette> palette = std::make_shared<Palette>(); // This is a special
-        p->paletteMap[className] = palette;                             // case where Window
-        return palette;                                                 // gets it initial palette
+        // This is a special case where Window  gets it initial palette
+        std::shared_ptr<const Palette> palette = std::make_shared<const Palette>();
+        p->paletteMap[className] = palette;
+        return palette;
     }
 
-    // At this point we have custom palette, old palette is used as initial (custom palette doesn't
-    // have to change all roles) or creat new if emtpty pointer is passed
-    std::shared_ptr<Palette> palette = oldPalette
-                                       ? std::make_shared<Palette>(*oldPalette)
-                                       : std::make_shared<Palette>();
-    p->paletteMap[className] = palette;
-
+    // At this point we have custom palette, old palette is used as initial
+    // (custom palette doesn'thave to change all roles) or creat new if emtpty pointer is passed
+    std::unique_ptr<Palette> palette = oldPalette
+                                       ? make_unique<Palette>(*oldPalette)
+                                       : make_unique<Palette>();
+    
     static const std::map<std::string, int> standartRolesMap =
     {
         {"Text",            Palette::RoleText           },
@@ -273,8 +274,10 @@ std::shared_ptr<Palette> Application::getPalette(const std::string&             
     };
     p->parseColorSchemeTree(classPalette->second, palette.get(), standartRolesMap);
     p->parseColorSchemeTree(classPalette->second, palette.get(), userRolesMap);
-
-    return palette;
+    
+    std::shared_ptr<const Palette> sharedPalette(palette.release());
+    p->paletteMap[className] = sharedPalette;
+    return sharedPalette;
 }
 
 void ApplicationPrivate::parseColorSchemeTree(const boost::property_tree::ptree&  colorSchemeTree,
@@ -306,14 +309,14 @@ void ApplicationPrivate::parseColorSchemeTree(const boost::property_tree::ptree&
         std::string key(paletteGroup->name);
         key.push_back('.');
         const size_t keyStrSize = key.size();
-        for (auto roleIt = rolesMap.begin(), roleItEnd = rolesMap.end(); roleIt != roleItEnd; ++roleIt) {
+        for (const auto& role : rolesMap) {
             key.resize(keyStrSize);
-            key.append(roleIt->first);
+            key.append(role.first);
             std::string colorName = colorSchemeTree.get(key, std::string());
             auto it = colorNamesMap.find(colorName.c_str());
             if (it != colorNamesMap.end()) {
                 palette->setColor((Palette::ColorGroup)paletteGroup->group,
-                                  roleIt->second,
+                                  role.second,
                                   it->second);
             }
         }
