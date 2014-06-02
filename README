@@ -55,6 +55,7 @@ Hotkeys:
   Clear playlist : c
   Shuffle playlist : S
   Go to currently playing song : o
+  Move selected songs : m
   Add file / directory : Ctrl+O
   Add url : Ctrl+U
   Show song info : i
