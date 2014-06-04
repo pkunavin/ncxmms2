@@ -134,21 +134,24 @@ private:
         static std::string samplerateStringGenerator(const Song& song);
     };
 
-    class FormatToken
+    class Token
     {
     public:
         enum class Type
         {
-            None,
             Character,
             Variable,
-            Color
+            Color,
+            SectionOpenBrace,
+            SectionCloseBrace,
+            SectionOr
         };
 
-        typedef const std::string& (Song::*SongStrFuncPtr)() const;
-
-        FormatToken() :
-            m_type(Type::None) {}
+        Token(Type type) : m_type(type)
+        {
+            if (m_type == Type::Variable)
+                new (&m_variable) Variable();
+        }
 
         Type type() const {return m_type;}
 
@@ -170,8 +173,6 @@ private:
             return m_color;
         }
 
-        void setType(Type type) {m_type = type;}
-
         void setCharacter(char ch)
         {
             assert(m_type == Type::Character);
@@ -189,9 +190,9 @@ private:
             assert(m_type == Type::Color);
             m_color = color;
         }
-
+        
     private:
-        Type m_type;
+        const Type m_type;
         union
         {
             char m_character;
@@ -200,40 +201,8 @@ private:
         };
     };
 
-    class Token
-    {
-    public:
-        enum class Type
-        {
-            SectionOpenBrace,
-            SectionCloseBrace,
-            SectionOr,
-
-            Format
-        };
-
-        Token(Type type) :
-            m_type(type) {}
-
-        Type type() const {return m_type;}
-
-        FormatToken& formatToken()
-        {
-            assert(m_type == Type::Format);
-            return m_formatToken;
-        }
-
-        const FormatToken& formatToken() const
-        {
-            assert(m_type == Type::Format);
-            return m_formatToken;
-        }
-
-    private:
-        Type m_type;
-        FormatToken m_formatToken;
-    };
-
+    //   FormatTokenIterator allows to iterate through first not empty
+    // section of the column.
     template <typename Iterator>
     class FormatTokenIterator
     {
@@ -254,9 +223,12 @@ private:
             checkIterator();
         }
 
-        const FormatToken& get() const
+        const Token& get() const
         {
-            return m_it->formatToken();
+            assert(m_it->type() != Token::Type::SectionOpenBrace);
+            assert(m_it->type() != Token::Type::SectionCloseBrace);
+            assert(m_it->type() != Token::Type::SectionOr);
+            return *m_it;
         }
 
     private:
@@ -264,6 +236,8 @@ private:
         Iterator m_it;
         Iterator m_itEnd;
 
+        // Checks if an iterator points inside not empty section,
+        // otherwise find first non empty one if exists.
         void checkIterator()
         {
             if (m_it == m_itEnd)
@@ -274,9 +248,8 @@ private:
                 bool isSectionEmpty = false;
                 auto it = m_it;
                 for (; it->type() != Token::Type::SectionCloseBrace; ++it) {
-                    const FormatToken& token = it->formatToken();
-                    if (!isSectionEmpty && token.type() == FormatToken::Type::Variable) {
-                        if (token.variable().isEmpty(m_song))
+                    if (!isSectionEmpty && it->type() == Token::Type::Variable) {
+                        if (it->variable().isEmpty(m_song))
                             isSectionEmpty = true;
                     }
                 }

@@ -99,9 +99,7 @@ bool SongDisplayFormatParser::setDisplayFormat(const std::string& formatString)
                 case '$': // Variable
                 {
                     ensureNotNullChar(++p);
-                    Column& column = m_columns.back();
-                    FormatToken& token = column.addToken(Token::Type::Format).formatToken();
-                    token.setType(FormatToken::Type::Variable);
+                    Token& token = m_columns.back().addToken(Token::Type::Variable);
                     if (!token.setVariable(*p))
                         throw ParsingError("Unknown variable $%c at position %d.",
                                            *p, p - formatString.c_str() - 1);
@@ -112,9 +110,7 @@ bool SongDisplayFormatParser::setDisplayFormat(const std::string& formatString)
                 {
                     const char *pStart = p;
                     ensureNotNullChar(++p);
-                    Column& column = m_columns.back();
-                    FormatToken& token = column.addToken(Token::Type::Format).formatToken();
-                    token.setType(FormatToken::Type::Color);
+                    Token& token = m_columns.back().addToken(Token::Type::Color);
                     const int value = readNumber(formatString.c_str(), &p, 'c');
                     const int color = getColorByKey(value);
                     if (color == -1)
@@ -156,9 +152,7 @@ bool SongDisplayFormatParser::setDisplayFormat(const std::string& formatString)
                     if (!g_ascii_isprint(*p))
                         throw ParsingError("Unexpected symbol '%c' at position %d.",
                                            *p, p - formatString.c_str());
-                    Column& column = m_columns.back();
-                    FormatToken& token = column.addToken(Token::Type::Format).formatToken();
-                    token.setType(FormatToken::Type::Character);
+                    Token& token = m_columns.back().addToken(Token::Type::Character);
                     token.setCharacter(*p);
                     break;
                 }
@@ -177,7 +171,8 @@ bool SongDisplayFormatParser::setDisplayFormat(const std::string& formatString)
     return true;
 }
 
-void SongDisplayFormatParser::paint(const Song& song, Painter *painter, const Rectangle& rect, bool ignoreColors)
+void SongDisplayFormatParser::paint(const Song& song, Painter *painter,
+                                    const Rectangle& rect, bool ignoreColors)
 {
     if (G_UNLIKELY(m_columns.empty()))
         return;
@@ -259,7 +254,7 @@ void SongDisplayFormatParser::paint(const Song& song, Painter *painter, const Re
         for (auto it = column.getFormatTokenIterator(song); it.isValid(); it.next()) {
             const auto& token = it.get();
             switch (token.type()) {
-                case FormatToken::Type::Variable:
+                case Token::Type::Variable:
                 {
                     const int oldX = painter->x();
                     token.variable().print(painter, song, sizeLeft);
@@ -267,17 +262,17 @@ void SongDisplayFormatParser::paint(const Song& song, Painter *painter, const Re
                     break;
                 }
 
-                case FormatToken::Type::Character:
+                case Token::Type::Character:
                     painter->printChar(token.character());
                     --sizeLeft;
                     break;
 
-                case FormatToken::Type::Color:
+                case Token::Type::Color:
                     if (!ignoreColors)
                         painter->setColor(token.color());
                     break;
 
-                case FormatToken::Type::None:
+                default:
                     assert(false);
                     break;
             }
@@ -294,7 +289,7 @@ bool SongDisplayFormatParser::matchFormattedString(const Song& song, const GRege
         for (auto it = column.getFormatTokenIterator(song); it.isValid(); it.next()) {
             const auto& token = it.get();
             switch (token.type()) {
-                case FormatToken::Type::Variable:
+                case Token::Type::Variable:
                 {
                     const bool match = g_regex_match(regex, token.variable().toString(song).c_str(),
                                                      (GRegexMatchFlags)0, nullptr);
@@ -305,11 +300,11 @@ bool SongDisplayFormatParser::matchFormattedString(const Song& song, const GRege
 
                // NOTE: Current implementation ignores single characters.
                //       Is it OK ?
-                case FormatToken::Type::Character:
-                case FormatToken::Type::Color:
+                case Token::Type::Character:
+                case Token::Type::Color:
                     break;
 
-                case FormatToken::Type::None:
+                default:
                     assert(false);
                     break;
             }
@@ -335,9 +330,7 @@ const char * SongDisplayFormatParser::getSongVariableName(char var)
         case 'l' : return "Length";
         case 'B' : return "Bitrate";
         case 'S' : return "Samplerate";
-        default:
-            assert(false);
-            return "Unknown variable";
+        default  : return "Unknown variable";
     }
 }
 
@@ -533,18 +526,18 @@ int SongDisplayFormatParser::Column::calculateContentSize(const Song& song) cons
     for (auto it = getFormatTokenIterator(song); it.isValid(); it.next()) {
         const auto& token = it.get();
         switch (token.type()) {
-            case FormatToken::Type::Variable:
+            case Token::Type::Variable:
                 size += token.variable().size(song);
                 break;
 
-            case FormatToken::Type::Character:
+            case Token::Type::Character:
                 ++size;
                 break;
 
-            case FormatToken::Type::Color:
+            case Token::Type::Color:
                 break;
 
-            case FormatToken::Type::None:
+            default:
                 assert(false);
                 break;
         }
