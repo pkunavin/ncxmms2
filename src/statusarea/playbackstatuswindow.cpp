@@ -14,6 +14,8 @@
  *  GNU General Public License for more details.
  */
 
+#include <cstring>
+
 #include "playbackstatuswindow.h"
 #include "../utils.h"
 #include "../settings.h"
@@ -21,6 +23,7 @@
 #include "../lib/painter.h"
 #include "../lib/rectangle.h"
 #include "../lib/palette.h"
+#include "../lib/application.h"
 
 using namespace ncxmms2;
 
@@ -28,12 +31,13 @@ PlaybackStatusWindow::PlaybackStatusWindow(Xmms::Client *client, int xPos, int y
     Window(Rectangle(xPos, yPos, cols, 1), parent),
     m_xmmsClient(client),
     m_playbackStatus(Xmms::Playback::STOPPED),
-    m_playbackPlaytime(0)
+    m_playbackPlaytime(0),
+    m_useTerminalWindowTitle(true)
 {
     loadPalette("PlaybackStatusWindow");
     setMinumumLines(1);
     setMaximumLines(1);
-    setMinumumCols(strlen("[Stopped] ...[xx::xx::xx/xx::xx::xx]"));
+    setMinumumCols(std::strlen("[Stopped] ...[xx::xx::xx/xx::xx::xx]"));
 
     std::string defaultDisplayFormat = "[l:1:0]{$a - $t}|{$t}|{$f}";
     const std::string displayFormat = Settings::value("PlaybackStatusWindow", "displayFormat",
@@ -47,6 +51,20 @@ PlaybackStatusWindow::PlaybackStatusWindow(Xmms::Client *client, int xPos, int y
         );
     }
 
+    m_useTerminalWindowTitle = Settings::value("General", "useTerminalWindowTitle", true);
+    std::string terminalWindowTitleFormat = "[l:1:0]";
+    terminalWindowTitleFormat.append(
+        Settings::value<std::string>("General", "terminalWindowTitleFormat", "{$a - $t}|{$t}|{$f}")
+    );
+    
+    if (!m_terminalWindowTitleFormatter.setDisplayFormat(terminalWindowTitleFormat)) {
+        throw std::runtime_error(
+            std::string("PlaybackStatusWindow: Parsing terminal title format string failed: ").append(
+                m_terminalWindowTitleFormatter.errorString()
+            )
+        );
+    }
+    
     m_xmmsClient->playback.getStatus()(Xmms::bind(&PlaybackStatusWindow::getPlaybackStatus, this));
     m_xmmsClient->playback.broadcastStatus()(Xmms::bind(&PlaybackStatusWindow::getPlaybackStatus, this));
 
@@ -75,6 +93,8 @@ bool PlaybackStatusWindow::getCurrentIdInfo(const Xmms::PropDict& info)
 {
     m_currentSong.loadInfo(info);
     currentSongChanged(m_currentSong);
+    if (m_useTerminalWindowTitle)
+        updateTerminalWindowTitle();
     update();
     return true;
 }
@@ -133,6 +153,12 @@ void PlaybackStatusWindow::paint(const Rectangle& rect)
     painter.printString(timeString);
 
     painter.flush();
+}
+
+void PlaybackStatusWindow::updateTerminalWindowTitle()
+{
+    std::string title = m_terminalWindowTitleFormatter.formattedString(m_currentSong, 0);
+    Application::setTerminalWindowTitle(title);
 }
 
 Xmms::Playback::Status PlaybackStatusWindow::playbackStatus() const

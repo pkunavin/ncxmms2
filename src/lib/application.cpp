@@ -324,6 +324,12 @@ void ApplicationPrivate::parseColorSchemeTree(const boost::property_tree::ptree&
     }
 }
 
+void Application::setTerminalWindowTitle(const std::string& title)
+{
+    std::printf("\033]2;%s\007", title.c_str());
+    std::fflush(stdout);
+}
+
 gboolean ApplicationPrivate::stdinEvent(GIOChannel *iochan, GIOCondition cond, gpointer data)
 {
     NCXMMS2_UNUSED(iochan);

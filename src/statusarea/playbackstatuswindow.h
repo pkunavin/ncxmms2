@@ -43,8 +43,12 @@ private:
     Xmms::Playback::Status m_playbackStatus;
     Song m_currentSong;
     int m_playbackPlaytime;
-     SongDisplayFormatParser m_songDisplayFormatter;
-
+    bool m_useTerminalWindowTitle;
+    SongDisplayFormatParser m_songDisplayFormatter;
+    SongDisplayFormatParser m_terminalWindowTitleFormatter;
+    
+    void updateTerminalWindowTitle();
+     
     // Callbacks
     bool getPlaybackStatus(const Xmms::Playback::Status& status);
     bool getCurrentId(const int& id);

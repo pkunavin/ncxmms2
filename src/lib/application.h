@@ -52,6 +52,8 @@ public:
     static std::shared_ptr<const Palette> getPalette(const std::string&                    className,
                                                      const std::shared_ptr<const Palette>& oldPalette,
                                                      const std::map<std::string, int>&     userRolesMap);
+    
+    static void setTerminalWindowTitle(const std::string& title);
 
 private:
     Application(bool useColors, bool mouseEnable);

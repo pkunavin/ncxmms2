@@ -96,6 +96,8 @@ public:
 
     bool matchFormattedString(const Song& song, const GRegex *regex); // Used to select items in PlaylistView
     
+    std::string formattedString(const Song& song, int column) const;
+    
     static const char * getSongVariableName(char var);
     static std::string getSongVariableValue(const Song& song, char var);
 

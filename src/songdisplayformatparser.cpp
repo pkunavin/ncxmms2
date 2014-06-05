@@ -313,6 +313,32 @@ bool SongDisplayFormatParser::matchFormattedString(const Song& song, const GRege
     return false;
 }
 
+std::string SongDisplayFormatParser::formattedString(const Song& song, int column) const
+{
+    assert((size_t)column < m_columns.size());
+    std::string str;
+    for (auto it = m_columns[column].getFormatTokenIterator(song); it.isValid(); it.next()) {
+        const auto& token = it.get();
+        switch (token.type()) {
+            case Token::Type::Variable:
+                str.append(token.variable().toString(song));
+                break;
+           
+            case Token::Type::Character:
+                str.push_back(token.character());
+                break;
+
+            case Token::Type::Color:
+                break;
+
+            default:
+                assert(false);
+                break;
+        }
+    }
+    return str;
+}
+
 const char * SongDisplayFormatParser::getSongVariableName(char var)
 {
     switch (var) {
