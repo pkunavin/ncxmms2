@@ -50,7 +50,7 @@ int main(int argc, char **argv)
     if (!xmmsClient)
         return EXIT_FAILURE;
 
-    const bool mouseEnable = ncxmms2::Settings::value("General", "mouseEnable", false);
+    const bool mouseEnable = ncxmms2::Settings::value("General", "mouseEnable", true);
     const int mouseDoubleClickInterval = ncxmms2::Settings::value("General",
                                                                   "mouseDoubleClickInterval", 300);
 
