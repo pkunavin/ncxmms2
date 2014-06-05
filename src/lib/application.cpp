@@ -24,6 +24,8 @@
 #include <iostream>
 #include <stdexcept>
 #include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 
@@ -54,7 +56,8 @@ public:
         mouseDoubleClickHaveReleaseEvent(false),
         mouseDoubleClickPosition(-1, -1),
         mainWindow(nullptr),
-        grabbedFocusWindow(nullptr) {}
+        grabbedFocusWindow(nullptr),
+        runningOnXTerm(false) {}
 
     bool useColors;
 
@@ -84,6 +87,8 @@ public:
     Window *mainWindow;
     Window *grabbedFocusWindow;
 
+    bool runningOnXTerm;
+    
     boost::property_tree::ptree colorSchemeTree;
     std::map<std::string, std::shared_ptr<const Palette>> paletteMap;
     void parseColorSchemeTree(const boost::property_tree::ptree&  colorSchemeTree,
@@ -163,6 +168,10 @@ Application::Application(bool useColors, bool mouseEnable) :
         d->mouseDoubleClickTimeExpired = true;
         d->mouseDoubleClickTimer.stop();
     });
+    
+    const char *term = std::getenv("TERM");
+    if (term)
+        d->runningOnXTerm = std::strstr(term, "xterm") != nullptr;
 }
 
 void Application::run()
@@ -326,8 +335,11 @@ void ApplicationPrivate::parseColorSchemeTree(const boost::property_tree::ptree&
 
 void Application::setTerminalWindowTitle(const std::string& title)
 {
-    std::printf("\033]2;%s\007", title.c_str());
-    std::fflush(stdout);
+    CHECK_INST;
+    if (inst->d->runningOnXTerm) {
+        std::printf("\033]2;%s\007", title.c_str());
+        std::fflush(stdout);
+    }
 }
 
 gboolean ApplicationPrivate::stdinEvent(GIOChannel *iochan, GIOCondition cond, gpointer data)
