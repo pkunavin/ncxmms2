@@ -476,7 +476,7 @@ void ListView::paint(const Rectangle& rect)
         if (d->viewportBeginItem == -1) {
             painter.clearWindow();
         } else {
-            for (int i = d->viewportEndItem; i < lines(); ++i) {
+            for (int i = d->viewportEndItem; i < rect.y() + rect.lines(); ++i) {
                 painter.clearLine(i);
             }
         }
