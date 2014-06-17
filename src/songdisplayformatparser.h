@@ -194,7 +194,7 @@ private:
         }
         
     private:
-        const Type m_type;
+        Type m_type;
         union
         {
             char m_character;
