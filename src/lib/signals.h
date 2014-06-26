@@ -272,18 +272,18 @@ public:
         return conn;
     }
     
-    template <typename T, typename... Signature>
+    template <typename T>
     typename std::enable_if<std::is_base_of<Object, T>::value, Connection>::type
-    connect(void (T::*func)(Signature...), T *obj)
+    connect(void (T::*func)(Args...), T *obj)
     {
         Connection conn = connect(memFnBind(func, obj));
         obj->registerConnection(conn);
         return conn;
     }
     
-    template <typename T, typename... Signature>
+    template <typename T>
     typename std::enable_if<!std::is_base_of<Object, T>::value, Connection>::type
-    connect(void (T::*func)(Signature...), T *obj)
+    connect(void (T::*func)(Args...), T *obj)
     {
         return connect(memFnBind(func, obj));
     }
