@@ -30,9 +30,13 @@ namespace ncxmms2 {
 class StringRef
 {
 public:
-    StringRef(const char *str) : m_str(str) {}
+    StringRef(const char *str = nullptr) : m_str(str) {}
+    
+    void assign(const char *str) {m_str = str;}
     
     const char *c_str() const {return m_str;}
+    
+    bool isNull() const {return !m_str;}
     
 private:
     const char *m_str;
