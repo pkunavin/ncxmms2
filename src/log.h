@@ -53,6 +53,7 @@ private:
 } // ncxmms2
 
 #define NCXMMS2_LOG(...) ncxmms2::Log::logPrintf(__VA_ARGS__)
+#define NCXMMS2_LOG_ERROR(msg) NCXMMS2_LOG("Error in %s at line %d : %s : %s.\n", __FILE__, __LINE__, __func__, msg)
 #ifndef NDEBUG
 #define NCXMMS2_DEBUG(...) ncxmms2::Log::debugPrintf(__VA_ARGS__)
 #else

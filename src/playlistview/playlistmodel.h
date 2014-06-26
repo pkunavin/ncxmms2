@@ -22,21 +22,19 @@
 #include <unordered_map>
 
 #include "../song.h"
+#include "../xmmsutils/types.h"
 #include "../lib/listmodel.h"
 
-namespace Xmms {
-class Client;
-class Dict;
-class PropDict;
-template <class T> class List;
-}
-
 namespace ncxmms2 {
+
+namespace xmms2 {
+class Client;
+}
 
 class PlaylistModel : public ListModel
 {
 public:
-    PlaylistModel(Xmms::Client *xmmsClient, Object *parent = nullptr);
+    PlaylistModel(xmms2::Client *xmmsClient, Object *parent = nullptr);
 
     void setPlaylist(const std::string& playlist);
     const std::string& playlist() const;
@@ -55,7 +53,7 @@ public:
     NCXMMS2_SIGNAL(totalDurationChanged)
 
 private:
-    Xmms::Client *m_xmmsClient;
+    xmms2::Client *m_xmmsClient;
 
     std::unordered_map<int, Song> m_songInfos;
     std::vector<int> m_idList;
@@ -65,12 +63,13 @@ private:
     int m_totalDuration;
 
     // Callbacks
-    bool getEntries(const Xmms::List<int>& list);
-    bool getSongInfo(int position, const Xmms::PropDict& info);
-    bool processPlaylistChange(const Xmms::Dict& change);
-    bool getCurrentPosition(const Xmms::Dict& position);
-    bool handlePlaylistRename(const Xmms::Dict& change);
-    bool handleSongInfoUpdate(const int& id);
+    void getEntries(const xmms2::List<int>& entries);
+    void getEntriesOrder(const xmms2::List<int>& entries);
+    void getSongInfo(int position, const xmms2::PropDict& info);
+    void processPlaylistChange(const xmms2::PlaylistChangeEvent& change);
+    void getCurrentPosition(const xmms2::Dict& position);
+    void handlePlaylistRename(const xmms2::CollectionChangeEvent& change);
+    void handleSongInfoUpdate(int id);
 };
 } // ncxmms2
 

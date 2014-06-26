@@ -19,11 +19,11 @@
 
 #include "../lib/window.h"
 
-namespace Xmms {
+namespace ncxmms2 {
+
+namespace xmms2 {
 class Client;
 }
-
-namespace ncxmms2 {
 
 class HeaderWindow;
 class StackedWindow;
@@ -32,7 +32,7 @@ class StatusArea;
 class MainWindow : public Window
 {
 public:
-    MainWindow(Xmms::Client *xmmsClient);
+    MainWindow(xmms2::Client *xmmsClient);
     ~MainWindow();
 
     enum StackedWindows
@@ -53,10 +53,10 @@ protected:
     virtual void resizeChildren(const Size& size);
 
 private:
+    xmms2::Client *m_xmmsClient;
     HeaderWindow *m_headerWindow;
     StackedWindow *m_stackedWindow;
     StatusArea *m_statusArea;
-    Xmms::Client *m_xmmsClient;
     StackedWindows m_lastVisibleScreen;
 
     void setVisibleScreen(StackedWindows win);

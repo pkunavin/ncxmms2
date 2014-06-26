@@ -28,7 +28,7 @@
 
 using namespace ncxmms2;
 
-PlaylistsBrowser::PlaylistsBrowser(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent) :
+PlaylistsBrowser::PlaylistsBrowser(xmms2::Client *xmmsClient, const Rectangle& rect, Window *parent) :
     Window(rect, parent)
 {
     setName("Playlists browser");

@@ -16,14 +16,13 @@
 
 #include <glib.h>
 #include <cstdlib>
-#include <xmmsclient/xmmsclient++.h>
+#include <iostream>
 
 #include "config.h"
-#include "log.h"
-#include "xmmsutils.h"
 #include "settings.h"
 #include "commandlineoptions.h"
 #include "mainwindow/mainwindow.h"
+#include "xmmsutils/client.h"
 
 #include "lib/application.h"
 #include "lib/exceptions.h"
@@ -46,10 +45,17 @@ int main(int argc, char **argv)
                   : ncxmms2::Settings::value<std::string>("General", "ipcpath");
     }
 
-    std::unique_ptr<Xmms::Client> xmmsClient = ncxmms2::XmmsUtils::clientCreateAndConnect(ipcPath);
-    if (!xmmsClient)
-        return EXIT_FAILURE;
-
+    ncxmms2::xmms2::Client xmmsClient;
+    if (!xmmsClient.connect(ipcPath)) {
+        std::cerr << "Connection failed (ipcpath = " << ipcPath << ')' << std::endl;
+        return EXIT_FAILURE;        
+    }
+    
+    xmmsClient.disconnected_Connect([]{
+        ncxmms2::Application::shutdown();
+        std::cerr << "Disconnected!" << std::endl;
+    });
+    
     const bool mouseEnable = ncxmms2::Settings::value("General", "mouseEnable", true);
     const int mouseDoubleClickInterval = ncxmms2::Settings::value("General",
                                                                   "mouseDoubleClickInterval", 300);
@@ -74,17 +80,11 @@ int main(int argc, char **argv)
             }
         }
 
-        ncxmms2::Window *mainWindow = new ncxmms2::MainWindow(xmmsClient.get());
+        ncxmms2::Window *mainWindow = new ncxmms2::MainWindow(&xmmsClient);
         ncxmms2::Application::setMainWindow(mainWindow);
         mainWindow->show();
         ncxmms2::Application::run();
         ncxmms2::Application::shutdown();
-    }
-    catch (const Xmms::connection_error& error)
-    {
-        ncxmms2::Application::shutdown();
-        std::cerr << "Connection failed: " << error.what() << std::endl;
-        return EXIT_FAILURE;
     }
     catch (const ncxmms2::DesiredWindowSizeTooSmall& error)
     {
@@ -98,6 +98,6 @@ int main(int argc, char **argv)
         std::cerr << "Runtime error: " << error.what() << std::endl;
         return EXIT_FAILURE;
     }
-
+    
     return EXIT_SUCCESS;
 }

@@ -3,12 +3,15 @@ add_subdirectory(lib)
 set(SOURCES
     main.cpp
     utils.cpp
-    xmmsutils.cpp
     settings.cpp
     commandlineoptions.cpp
     song.cpp
     songdisplayformatparser.cpp
     log.cpp
+
+    xmmsutils/client.cpp
+    xmmsutils/types.cpp
+    xmmsutils/result.cpp
 
     mainwindow/mainwindow.cpp
 
@@ -50,13 +53,16 @@ set(SOURCES
 
 set(HEADERS
     utils.h
-    xmmsutils.h
     settings.h
     commandlineoptions.h
     song.h
     songdisplayformatparser.h
     hotkeys.h
     log.h
+
+    xmmsutils/client.h
+    xmmsutils/types.h
+    xmmsutils/result.h
 
     mainwindow/mainwindow.h
 
@@ -112,16 +118,16 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(GLIB glib-2.0 REQUIRED)
 include_directories(${GLIB_INCLUDE_DIRS})
 
-pkg_check_modules(XMMS2_CPP xmms2-client-cpp REQUIRED)
-include_directories(${XMMS2_CPP_INCLUDE_DIRS})
+pkg_check_modules(XMMS2_C xmms2-client REQUIRED)
+include_directories(${XMMS2_C_INCLUDE_DIRS})
 
-pkg_check_modules(XMMS2_CPP_GLIB xmms2-client-cpp-glib REQUIRED)
-include_directories(${XMMS2_CPP_GLIB_INCLUDE_DIRS})
+pkg_check_modules(XMMS2_C_GLIB xmms2-client-glib REQUIRED)
+include_directories(${XMMS2_C_GLIB_INCLUDE_DIRS})
 
 target_link_libraries(ncxmms2 ncxmms2-lib
                               ${GLIB_LIBRARIES}
-                              ${XMMS2_CPP_LIBRARIES}
-                              ${XMMS2_CPP_GLIB_LIBRARIES})
+                              ${XMMS2_C_LIBRARIES}
+                              ${XMMS2_C_GLIB_LIBRARIES})
 
 install (TARGETS ncxmms2 DESTINATION bin)
 

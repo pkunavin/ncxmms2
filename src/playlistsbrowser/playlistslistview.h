@@ -19,23 +19,23 @@
 
 #include "../listviewappintegrated/listviewappintegrated.h"
 
-namespace Xmms {
+namespace ncxmms2 {
+
+namespace xmms2 {
 class Client;
 }
-
-namespace ncxmms2 {
 
 class PlaylistsListView : public ListViewAppIntegrated
 {
 public:
-    PlaylistsListView(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
+    PlaylistsListView(xmms2::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
 
     const std::string& playlist(int item) const;
 
 private:
-    Xmms::Client *m_xmmsClient;
+    xmms2::Client *m_xmmsClient;
     std::string m_newPlaylist;
 
     void loadPlaylist(int item);

@@ -15,11 +15,11 @@
  */
 
 #include <vector>
-#include <xmmsclient/xmmsclient++.h>
 #include <boost/cast.hpp>
 
 #include "playlistslistview.h"
 #include "playlistslistmodel.h"
+#include "../xmmsutils/client.h"
 #include "../statusarea/statusarea.h"
 #include "../hotkeys.h"
 
@@ -27,13 +27,13 @@
 
 using namespace ncxmms2;
 
-PlaylistsListView::PlaylistsListView(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent) :
+PlaylistsListView::PlaylistsListView(xmms2::Client *xmmsClient, const Rectangle& rect, Window *parent) :
     ListViewAppIntegrated(rect, parent),
     m_xmmsClient(xmmsClient)
 {
     loadPalette("PlaylistsListView");
 
-    PlaylistsListModel *model = new PlaylistsListModel(xmmsClient, this);
+    PlaylistsListModel *model = new PlaylistsListModel(m_xmmsClient, this);
     setModel(model);
     model->playlistAdded_Connect(&PlaylistsListView::checkNewPlaylist, this);
 
@@ -53,7 +53,7 @@ void PlaylistsListView::loadPlaylist(int item)
     PlaylistsListModel *plsModel =
             boost::polymorphic_downcast<PlaylistsListModel*>(model());
 
-    m_xmmsClient->playlist.load(plsModel->playlist(item));
+    m_xmmsClient->playlistLoad(plsModel->playlist(item));
 }
 
 void PlaylistsListView::keyPressedEvent(const KeyEvent& keyEvent)
@@ -68,10 +68,10 @@ void PlaylistsListView::keyPressedEvent(const KeyEvent& keyEvent)
                 const std::vector<int>& _selectedItems = selectedItems();
                 if (!_selectedItems.empty()) {
                     for (int item : _selectedItems) {
-                        m_xmmsClient->playlist.remove(plsModel->playlist(item));
+                        m_xmmsClient->playlistRemove(plsModel->playlist(item));
                     }
                 } else {
-                    m_xmmsClient->playlist.remove(plsModel->playlist(currentItem()));
+                    m_xmmsClient->playlistRemove(plsModel->playlist(currentItem()));
                 }
             }
             break;
@@ -131,7 +131,7 @@ void PlaylistsListView::createPlaylist(const std::string& playlist)
     }
 
     m_newPlaylist = playlist;
-    m_xmmsClient->playlist.create(playlist);
+    m_xmmsClient->playlistCreat(playlist);
 }
 
 void PlaylistsListView::renamePlaylist(const std::string& oldName, const std::string& newName)
@@ -160,7 +160,7 @@ void PlaylistsListView::renamePlaylist(const std::string& oldName, const std::st
         return;
     }
 
-    m_xmmsClient->collection.rename(oldName, newName, Xmms::Collection::PLAYLISTS);
+    m_xmmsClient->collectionRename(oldName, newName, "Playlists");
 }
 
 void PlaylistsListView::checkNewPlaylist(const std::string& playlist, int item)

@@ -21,17 +21,21 @@
 
 namespace ncxmms2 {
 
+namespace xmms2 {
+class Client;
+}
+
 class ActivePlaylistWindow : public PlaylistView
 {
 public:
-    ActivePlaylistWindow(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
+    ActivePlaylistWindow(xmms2::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
 
 private:
     // Settings
     bool m_autoScrollToActiveSong;
 
     void updateWindowTitle();
-    bool getActivePlaylist(const std::string& playlist);
+    void getActivePlaylist(StringRef playlist);
     void scrollToActiveSong(int item);
 };
 } // ncxmms2

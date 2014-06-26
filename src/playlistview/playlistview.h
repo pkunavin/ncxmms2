@@ -17,7 +17,7 @@
 #ifndef PLAYLISTVIEW_H
 #define PLAYLISTVIEW_H
 
-#include <xmmsclient/xmmsclient++.h>
+#include "../xmmsutils/client.h"
 #include "../listviewappintegrated/listviewappintegrated.h"
 
 namespace ncxmms2 {
@@ -25,7 +25,7 @@ namespace ncxmms2 {
 class PlaylistView : public ListViewAppIntegrated
 {
 public:
-    PlaylistView(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
+    PlaylistView(xmms2::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
 
     void setPlaylist(const std::string& playlist);
 
@@ -37,12 +37,12 @@ public:
     NCXMMS2_SIGNAL(showSongInfo, int)
     
 private:
-    Xmms::Client *m_xmmsClient;
+    xmms2::Client *m_xmmsClient;
     std::string m_activePlaylist;
-    Xmms::Playback::Status m_playbackStatus;
+    xmms2::PlaybackStatus m_playbackStatus;
 
-    bool getActivePlaylist(const std::string& playlist);
-    bool getPlaybackStatus(const Xmms::Playback::Status& status);
+    void getActivePlaylist(StringRef playlist);
+    void getPlaybackStatus(xmms2::PlaybackStatus status);
     void onItemEntered(int item);
     void addPath(const std::string& path);
     void addFile(const std::string& path);

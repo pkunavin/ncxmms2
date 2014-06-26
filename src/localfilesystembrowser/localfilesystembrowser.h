@@ -20,24 +20,22 @@
 #include <stack>
 #include "../listviewappintegrated/listviewappintegrated.h"
 
-namespace Xmms {
+namespace ncxmms2 {
+
+namespace xmms2 {
 class Client;
 }
-
-namespace ncxmms2 {
 
 class LocalFileSystemBrowser : public ListViewAppIntegrated
 {
 public:
-    LocalFileSystemBrowser(Xmms::Client    *xmmsClient,
-                           const Rectangle& rect,
-                           Window          *parent = nullptr);
+    LocalFileSystemBrowser(xmms2::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
     ~LocalFileSystemBrowser();
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
 
 private:
-    Xmms::Client *m_xmmsClient;
+    xmms2::Client *m_xmmsClient;
 
     class Dir
     {

@@ -19,22 +19,18 @@
 
 #include "activeplaylistwindow.h"
 #include "../playlistview/playlistmodel.h"
-
+#include "../xmmsutils/client.h"
 #include "../settings.h"
 #include "../utils.h"
 
 using namespace ncxmms2;
 
-ActivePlaylistWindow::ActivePlaylistWindow(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent) :
+ActivePlaylistWindow::ActivePlaylistWindow(xmms2::Client *xmmsClient, const Rectangle& rect, Window *parent) :
     PlaylistView(xmmsClient, rect, parent),
     m_autoScrollToActiveSong(true)
 {
-    xmmsClient->playlist.currentActive()(
-        Xmms::bind(&ActivePlaylistWindow::getActivePlaylist, this)
-    );
-    xmmsClient->playlist.broadcastLoaded()(
-        Xmms::bind(&ActivePlaylistWindow::getActivePlaylist, this)
-    );
+    xmmsClient->playlistCurrentActive()(&ActivePlaylistWindow::getActivePlaylist, this);
+    xmmsClient->playlistLoaded_Connect(&ActivePlaylistWindow::getActivePlaylist, this);
 
     PlaylistModel *plsModel = static_cast<PlaylistModel*>(model());
     plsModel->activeSongPositionChanged_Connect(&ActivePlaylistWindow::scrollToActiveSong, this);
@@ -81,11 +77,10 @@ void ActivePlaylistWindow::updateWindowTitle()
 }
 
 
-bool ActivePlaylistWindow::getActivePlaylist(const std::string& playlist)
+void ActivePlaylistWindow::getActivePlaylist(StringRef playlist)
 {
-    setPlaylist(playlist);
+    setPlaylist(playlist.c_str());
     updateWindowTitle();
-    return true;
 }
 
 void ActivePlaylistWindow::scrollToActiveSong(int item)

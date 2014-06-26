@@ -25,17 +25,16 @@
 #include "playlistitemdelegate.h"
 
 #include "../statusarea/statusarea.h"
-#include "../xmmsutils.h"
 #include "../hotkeys.h"
 
 #include "../lib/keyevent.h"
 
 using namespace ncxmms2;
 
-PlaylistView::PlaylistView(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent) :
+PlaylistView::PlaylistView(xmms2::Client *xmmsClient, const Rectangle& rect, Window *parent) :
     ListViewAppIntegrated(rect, parent),
     m_xmmsClient(xmmsClient),
-    m_playbackStatus(Xmms::Playback::STOPPED)
+    m_playbackStatus(xmms2::PlaybackStatus::Stopped)
 {
     loadPalette("PlaylistView");
 
@@ -46,11 +45,11 @@ PlaylistView::PlaylistView(Xmms::Client *xmmsClient, const Rectangle& rect, Wind
 
     itemEntered_Connect(&PlaylistView::onItemEntered, this);
 
-    m_xmmsClient->playlist.currentActive()(Xmms::bind(&PlaylistView::getActivePlaylist, this));
-    m_xmmsClient->playlist.broadcastLoaded()(Xmms::bind(&PlaylistView::getActivePlaylist, this));
+    m_xmmsClient->playlistCurrentActive()(&PlaylistView::getActivePlaylist, this);
+    m_xmmsClient->playlistLoaded_Connect(&PlaylistView::getActivePlaylist, this);
 
-    m_xmmsClient->playback.getStatus()(Xmms::bind(&PlaylistView::getPlaybackStatus, this));
-    m_xmmsClient->playback.broadcastStatus()(Xmms::bind(&PlaylistView::getPlaybackStatus, this));
+    m_xmmsClient->playbackStatus()(&PlaylistView::getPlaybackStatus, this);
+    m_xmmsClient->playbackStatusChanged_Connect(&PlaylistView::getPlaybackStatus, this);
 }
 
 void PlaylistView::setPlaylist(const std::string& playlist)
@@ -76,11 +75,11 @@ void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
             break;
 
         case Hotkeys::PlaylistView::ClearPlaylist:
-            m_xmmsClient->playlist.clear(plsModel->playlist());
+            m_xmmsClient->playlistClear(plsModel->playlist());
             break;
 
         case Hotkeys::PlaylistView::ShufflePlaylist:
-            m_xmmsClient->playlist.shuffle(plsModel->playlist());
+            m_xmmsClient->playlistShuffle(plsModel->playlist());
             break;
 
         case Hotkeys::PlaylistView::GoToCurrentlyPlayingSong:
@@ -133,16 +132,14 @@ void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
     }
 }
 
-bool PlaylistView::getActivePlaylist(const std::string& playlist)
+void PlaylistView::getActivePlaylist(StringRef playlist)
 {
-    m_activePlaylist = playlist;
-    return true;
+    m_activePlaylist = playlist.c_str();
 }
 
-bool PlaylistView::getPlaybackStatus(const Xmms::Playback::Status& status)
+void PlaylistView::getPlaybackStatus(xmms2::PlaybackStatus status)
 {
     m_playbackStatus = status;
-    return true;
 }
 
 void PlaylistView::onItemEntered(int item)
@@ -150,20 +147,22 @@ void PlaylistView::onItemEntered(int item)
     PlaylistModel *plsModel = boost::polymorphic_downcast<PlaylistModel*>(model());
 
     if (plsModel->playlist() != m_activePlaylist)
-        m_xmmsClient->playlist.load(plsModel->playlist());
+        m_xmmsClient->playlistLoad(plsModel->playlist());
 
-    m_xmmsClient->playlist.setNext(item);
-    m_xmmsClient->playback.tickle();
+    m_xmmsClient->playlistSetNext(item);
+    m_xmmsClient->playbackTickle();
     switch (m_playbackStatus) {
-        case Xmms::Playback::STOPPED:
-            m_xmmsClient->playback.start();
+        case xmms2::PlaybackStatus::Stopped:
+            m_xmmsClient->playbackStart();
             break;
-        case Xmms::Playback::PLAYING:
-            m_xmmsClient->playback.tickle();
+            
+        case xmms2::PlaybackStatus::Playing:
+            m_xmmsClient->playbackTickle();
             break;
-        case Xmms::Playback::PAUSED:
-            m_xmmsClient->playback.start();
-            m_xmmsClient->playback.tickle();
+            
+        case xmms2::PlaybackStatus::Paused:
+            m_xmmsClient->playbackStart();
+            m_xmmsClient->playbackTickle();
     }
 }
 
@@ -180,8 +179,8 @@ void PlaylistView::addPath(const std::string& path)
         addFile(path);
     } else if (g_file_test(path.c_str(), G_FILE_TEST_IS_DIR)) {
         PlaylistModel *plsModel = boost::polymorphic_downcast<PlaylistModel*>(model());
-        m_xmmsClient->playlist.addRecursive(std::string("file://").append(path),
-                                            plsModel->playlist());
+        m_xmmsClient->playlistAddRecursive(plsModel->playlist(),
+                                           std::string("file://").append(path));
         // FIXME: Path may be too long to display
         StatusArea::showMessage("Adding \"%1%\" directory to \"%2%\" playlist",
                                 path, plsModel->playlist());
@@ -202,16 +201,15 @@ void PlaylistView::addFile(const std::string& path)
     const Utils::FileType fileType = Utils::getFileType(path);
     switch (fileType) {
         case Utils::FileType::Media:
-            m_xmmsClient->playlist.addUrl(std::string("file://").append(path),
-                                          plsModel->playlist());
+            m_xmmsClient->playlistAddUrl(plsModel->playlist(),
+                                         std::string("file://").append(path));
             StatusArea::showMessage("Adding \"%1%\" file to \"%2%\" playlist",
                                     fileName, plsModel->playlist());
             break;
 
         case Utils::FileType::Playlist:
-            XmmsUtils::playlistAddPlaylistFile(m_xmmsClient,
-                                               plsModel->playlist(),
-                                               std::string("file://").append(path));
+            m_xmmsClient->playlistAddPlaylistFile(plsModel->playlist(),
+                                                  std::string("file://").append(path));
             StatusArea::showMessage("Adding \"%1%\" playlist to \"%2%\" playlist",
                                     fileName, plsModel->playlist());
             break;
@@ -225,7 +223,7 @@ void PlaylistView::addFile(const std::string& path)
 void PlaylistView::addUrl(const std::string& url)
 {
     PlaylistModel *plsModel = boost::polymorphic_downcast<PlaylistModel*>(model());
-    m_xmmsClient->playlist.addUrl(url, plsModel->playlist());
+    m_xmmsClient->playlistAddUrl(plsModel->playlist(), url);
 
     // FIXME: Url may be too long to display
     StatusArea::showMessage("Adding \"%1%\" to \"%2%\" playlist", url, plsModel->playlist());
@@ -294,10 +292,10 @@ void PlaylistView::removeSelectedSongs()
         if (!selectedSongs.empty()) {
             assert(std::is_sorted(selectedSongs.begin(), selectedSongs.end()));
             std::for_each(selectedSongs.rbegin(), selectedSongs.rend(), [&](int item){
-                m_xmmsClient->playlist.removeEntry(item, plsModel->playlist());
+                m_xmmsClient->playlistRemoveEntry(plsModel->playlist(), item);
             });
         } else {
-            m_xmmsClient->playlist.removeEntry(currentItem(), plsModel->playlist());
+            m_xmmsClient->playlistRemoveEntry(plsModel->playlist(), currentItem());
         }
         showCurrentItem();
     }
@@ -317,11 +315,11 @@ void PlaylistView::moveSelectedSongs()
     
     int to = moveTo;
     for (size_t i = it - selectedSongs.begin(); i < selectedSongs.size(); ++i, ++to) {
-        m_xmmsClient->playlist.moveEntry(selectedSongs[i], to, plsModel->playlist());
+        m_xmmsClient->playlistMoveEntry(plsModel->playlist(), selectedSongs[i], to);
     }
     
     to = it == selectedSongs.end() ? moveTo : moveTo - 1;
     for (ptrdiff_t i = it - selectedSongs.begin() - 1; i >= 0; --i, --to) {
-        m_xmmsClient->playlist.moveEntry(selectedSongs[i], to, plsModel->playlist());
+        m_xmmsClient->playlistMoveEntry(plsModel->playlist(), selectedSongs[i], to);
     }
 }

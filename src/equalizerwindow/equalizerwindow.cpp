@@ -24,6 +24,7 @@
 #include "equalizerwindow.h"
 #include "equalizerbandswindow.h"
 #include "equalizerpreampwindow.h"
+#include "../xmmsutils/client.h"
 #include "../utils.h"
 
 #include "../lib/painter.h"
@@ -32,14 +33,11 @@
 #include "../lib/radiobuttongroupbox.h"
 #include "../lib/keyevent.h"
 
-#include "../log.h"
-
 using namespace ncxmms2;
 
-EqualizerWindow::EqualizerWindow(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent) :
+EqualizerWindow::EqualizerWindow(xmms2::Client *xmmsClient, const Rectangle& rect, Window *parent) :
     Window(rect, parent),
     m_xmmsClient(xmmsClient),
-    m_xmmsConfig(xmmsClient),
     m_equalizerPluginEnabled(false)
 {
     setName("Equalizer");
@@ -75,8 +73,8 @@ EqualizerWindow::EqualizerWindow(Xmms::Client *xmmsClient, const Rectangle& rect
     m_bandsWindow = new EqualizerBandsWindow(eqBandsWinRect, this);
     m_bandsWindow->bandGainChangeRequested_Connect(&EqualizerWindow::setEqualizerBandGain, this);
 
-    m_xmmsConfig.configLoaded_Connect(&EqualizerWindow::loadEqualizerConfig, this);
-    m_xmmsConfig.valueChanged_Connect(&EqualizerWindow::handleEqualizerConfigChanged, this);
+    m_xmmsClient->configLoaded_Connect(&EqualizerWindow::loadEqualizerConfig, this);
+    m_xmmsClient->configValueChanged_Connect(&EqualizerWindow::handleEqualizerConfigChanged, this);
 }
 
 void EqualizerWindow::keyPressedEvent(const KeyEvent& keyEvent)
@@ -184,7 +182,7 @@ void EqualizerWindow::loadEqualizerConfig()
     std::string effect;
     int i = 0;
     do {
-        effect = m_xmmsConfig.getValue((fmt % i).str());
+        effect = m_xmmsClient->configValue((fmt % i).str());
         if (effect == "equalizer") {
             m_equalizerPluginEnabled = true;
             break;
@@ -197,7 +195,7 @@ void EqualizerWindow::loadEqualizerConfig()
                                          "equalizer.use_legacy"};
     
     for (const auto& option : optionsToLoad) {
-        handleEqualizerConfigChanged(option, m_xmmsConfig.getValue(option));
+        handleEqualizerConfigChanged(option, m_xmmsClient->configValue(option));
     }
     
     if (!isHidden()) {
@@ -211,11 +209,11 @@ void EqualizerWindow::handleEqualizerConfigChanged(const std::string& key, const
     if (!boost::starts_with(key, "equalizer."))
         return;
     
-    const std::string eqKey = key.substr(strlen("equalizer."));
+    const std::string eqKey = key.substr(std::strlen("equalizer."));
     if (eqKey == "enabled") {
-        m_enabledCheckBox->setChecked(value != "0");
+        m_enabledCheckBox->setChecked(value == "1");
     } else if (eqKey == "extra_filtering") {
-        m_extraFilteringCheckBox->setChecked(value != "0");
+        m_extraFilteringCheckBox->setChecked(value == "1");
     } else if (eqKey == "preamp") {
         m_preampWindow->setPreamp(boost::lexical_cast<double>(value));
     } else if (boost::starts_with(eqKey, "legacy")) {
@@ -224,16 +222,16 @@ void EqualizerWindow::handleEqualizerConfigChanged(const std::string& key, const
     } else if (boost::starts_with(eqKey, "gain")) {
         if (m_bandsWindow->legacyModeEnabled())
             return;
-        const int band = boost::lexical_cast<int>(eqKey.substr(strlen("gain")));
+        const int band = boost::lexical_cast<int>(eqKey.substr(std::strlen("gain")));
         if (band < m_bandsWindow->bandsNumber()) {
             m_bandsWindow->setBandGain(band, boost::lexical_cast<double>(value));
         }
     } else if (eqKey == "use_legacy" || eqKey == "bands") {
-        const bool useLegacy = m_xmmsConfig.getValue("equalizer.use_legacy") != "0";
+        const bool useLegacy = m_xmmsClient->configValue("equalizer.use_legacy") == "1";
         if (useLegacy) {
              m_bandsNumberGroupBox->setCheckedRadioButton(BandsNumberGroupBoxLegacy);
         } else {
-            const std::string bandsNumberStr = m_xmmsConfig.getValue("equalizer.bands");
+            const std::string bandsNumberStr = m_xmmsClient->configValue("equalizer.bands");
             for (int i = BandsNumberGroupBox10; i < BandsNumberGroupBoxItemsCount; ++i) {
                 if (m_bandsNumberGroupBox->radioButtonText(i) == bandsNumberStr) {
                     m_bandsNumberGroupBox->setCheckedRadioButton(i);
@@ -251,43 +249,43 @@ void EqualizerWindow::handleEqualizerConfigChanged(const std::string& key, const
         boost::format fmt(useLegacy ? "equalizer.legacy%1%" : "equalizer.gain%02d");
         for (int i = 0; i < bandsNumber; ++i) {
             fmt % i;
-            std::string gain = m_xmmsConfig.getValue(fmt.str());
+            std::string gain = m_xmmsClient->configValue(fmt.str());
             m_bandsWindow->setBandGain(i, boost::lexical_cast<double>(gain));
             
-            //FIXME: Workaround of xmms2 bug
-            m_xmmsConfig.setValue(fmt.str(), "0");
-            m_xmmsConfig.setValue(fmt.str(), gain);
+            //FIXME: Workaround of xmms2 bug 2581
+            m_xmmsClient->configSetValue(fmt.str(), "0");
+            m_xmmsClient->configSetValue(fmt.str(), gain);
         }
     }
 }
 
 void EqualizerWindow::setEqualizerEnabled(bool enable)
 {
-    m_xmmsConfig.setValue("equalizer.enabled", enable ? "1" : "0");
+    m_xmmsClient->configSetValue("equalizer.enabled", enable ? "1" : "0");
 }
 
 void EqualizerWindow::setEqualizerExtraFiltering(bool enable)
 {
-    m_xmmsConfig.setValue("equalizer.extra_filtering", enable ? "1" : "0");
+    m_xmmsClient->configSetValue("equalizer.extra_filtering", enable ? "1" : "0");
 }
 
 void EqualizerWindow::setEqualizerBandsNumber(int index)
 {
     if (index == BandsNumberGroupBoxLegacy) {
-        m_xmmsConfig.setValue("equalizer.use_legacy", "1");
+        m_xmmsClient->configSetValue("equalizer.use_legacy", "1");
     } else {
-        m_xmmsConfig.setValue("equalizer.use_legacy", "0");
-        m_xmmsConfig.setValue("equalizer.bands", m_bandsNumberGroupBox->radioButtonText(index));
+        m_xmmsClient->configSetValue("equalizer.use_legacy", "0");
+        m_xmmsClient->configSetValue("equalizer.bands", m_bandsNumberGroupBox->radioButtonText(index));
     }
 }
 
 void EqualizerWindow::setEqualizerPreamp(int preamp)
 {
-    m_xmmsConfig.setValue("equalizer.preamp", boost::lexical_cast<std::string>(preamp));
+    m_xmmsClient->configSetValue("equalizer.preamp", boost::lexical_cast<std::string>(preamp));
 }
 
 void EqualizerWindow::setEqualizerBandGain(int band, int gain)
 {
     std::string keyFmt = m_bandsWindow->legacyModeEnabled() ? "equalizer.legacy%1%" : "equalizer.gain%02d";
-    m_xmmsConfig.setValue(Utils::format(keyFmt, band), boost::lexical_cast<std::string>(gain));
+    m_xmmsClient->configSetValue(Utils::format(keyFmt, band), boost::lexical_cast<std::string>(gain));
 }

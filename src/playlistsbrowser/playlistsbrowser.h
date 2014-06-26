@@ -19,11 +19,11 @@
 
 #include "../lib/window.h"
 
-namespace Xmms {
+namespace ncxmms2 {
+
+namespace xmms2 {
 class Client;
 }
-
-namespace ncxmms2 {
 
 class PlaylistsListView;
 class PlaylistView;
@@ -31,7 +31,7 @@ class PlaylistView;
 class PlaylistsBrowser : public Window
 {
 public:
-    PlaylistsBrowser(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
+    PlaylistsBrowser(xmms2::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
 

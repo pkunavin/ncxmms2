@@ -14,15 +14,15 @@
  *  GNU General Public License for more details.
  */
 
-#include <xmmsclient/xmmsclient++.h>
 #include <assert.h>
 
 #include "songslistmodel.h"
+#include "../xmmsutils/client.h"
 #include "../lib/listmodelitemdata.h"
 
 using namespace ncxmms2;
 
-SongsListModel::SongsListModel(Xmms::Client *xmmsClient, Object *parent) :
+SongsListModel::SongsListModel(xmms2::Client *xmmsClient, Object *parent) :
     ListModel(parent),
     m_xmmsClient(xmmsClient)
 {
@@ -48,7 +48,7 @@ const std::string &SongsListModel::title(int item) const
     return m_songs[item].title;
 }
 
-const std::list<std::string>& SongsListModel::sortingOrder() const
+const std::vector<std::string>& SongsListModel::sortingOrder() const
 {
     return m_sortingOrder;
 }
@@ -65,41 +65,41 @@ int SongsListModel::itemsCount() const
 
 void SongsListModel::refresh()
 {
-    if (!m_artist.empty() && !m_album.empty()) { //FIXME: handle empty artist and album
-        Xmms::Coll::Universe     allMedia;
-        Xmms::Coll::Equals       allByArtist(allMedia, "artist", m_artist, true);
-        const Xmms::Coll::Equals albumByArtist(allByArtist, "album", m_album, true);
-
-        const std::list<std::string> fetch = {"id", "title"};
-
-        m_xmmsClient->collection.queryInfos(albumByArtist, fetch, m_sortingOrder)(
-            std::bind(&SongsListModel::getSongsList, this, m_artist, m_album, std::placeholders::_1)
-        );
-    }
-
+    xmms2::Collection songs = xmms2::Collection::albumByArtist(m_artist, m_album);
+    const std::vector<std::string> fetch = {"id", "title", "url"};
+    
+    m_xmmsClient->collectionQueryInfos(songs, fetch, m_sortingOrder)(
+        &SongsListModel::getSongsList, this, m_artist, m_album, std::placeholders::_1);
+    
     m_songs.clear();
     reset();
 }
 
-bool SongsListModel::getSongsList(const std::string& artist,
+void SongsListModel::getSongsList(const std::string& artist,
                                   const std::string& album,
-                                  const Xmms::List<Xmms::Dict>& list)
+                                  const xmms2::List<xmms2::Dict>& list)
 {
     if (artist != m_artist || album != m_album)
-        return true;
+        return;
 
     m_songs.clear();
-    for (auto it = list.begin(), it_end = list.end(); it != it_end; ++it) {
-        try {
-            const int id = (*it).get<int>("id");
-            const std::string title = (*it).get<std::string>("title"); // TODO: Handle empty title
-            m_songs.push_back(SongData(id, title));
-        }
-        catch (...) {
+    for (auto it = list.getIterator(); it.isValid(); it.next()) {
+        bool ok = false;
+        xmms2::Dict dict = it.value(&ok);
+        if (NCXMMS2_UNLIKELY(!ok))
             continue;
+        std::string title = dict.value<std::string>("title");
+        if (NCXMMS2_UNLIKELY(title.empty())) {
+            StringRef url = dict.value<StringRef>("url");
+            if (url.isNull())
+                continue;
+            title = xmms2::getFileNameFromUrl(xmms2::decodeUrl(url.c_str()));
         }
+        int id = dict.value<int>("id");
+        if (NCXMMS2_UNLIKELY(id == 0))
+            continue;
+        m_songs.push_back({id, std::move(title)});
     }
 
     reset();
-    return true;
 }

@@ -17,7 +17,7 @@
 #ifndef PLAYBACKSTATUSWINDOW_H
 #define PLAYBACKSTATUSWINDOW_H
 
-#include <xmmsclient/xmmsclient++.h>
+#include "../xmmsutils/client.h"
 #include "../song.h"
 #include "../songdisplayformatparser.h"
 #include "../lib/window.h"
@@ -27,20 +27,19 @@ namespace ncxmms2 {
 class PlaybackStatusWindow : public Window
 {
 public:
-    PlaybackStatusWindow(Xmms::Client *client, int xPos, int yPos, int cols, Window *parent = nullptr);
+    PlaybackStatusWindow(xmms2::Client *client, int xPos, int yPos, int cols, Window *parent = nullptr);
 
-    Xmms::Playback::Status playbackStatus() const;
+    xmms2::PlaybackStatus playbackStatus() const;
 
     // Signals
-    NCXMMS2_SIGNAL(playtimeChanged, int)
     NCXMMS2_SIGNAL(currentSongChanged, const Song&)
 
 protected:
     virtual void paint(const Rectangle& rect);
 
 private:
-    Xmms::Client *m_xmmsClient;
-    Xmms::Playback::Status m_playbackStatus;
+    xmms2::Client *m_xmmsClient;
+    xmms2::PlaybackStatus m_playbackStatus;
     Song m_currentSong;
     int m_playbackPlaytime;
     bool m_useTerminalWindowTitle;
@@ -50,11 +49,11 @@ private:
     void updateTerminalWindowTitle();
      
     // Callbacks
-    bool getPlaybackStatus(const Xmms::Playback::Status& status);
-    bool getCurrentId(const int& id);
-    bool getCurrentIdInfo(const Xmms::PropDict& info);
-    bool getPlaytime(const int& playtime);
-    bool handleIdInfoChanged(const int& id);
+    void getPlaybackStatus(xmms2::PlaybackStatus status);
+    void getCurrentId(int id);
+    void getCurrentIdInfo(const xmms2::PropDict& info);
+    void getPlaytime(int playtime);
+    void handleIdInfoChanged(int id);
 };
 } // ncxmms2
 

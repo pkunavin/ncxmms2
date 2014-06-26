@@ -14,53 +14,33 @@
  *  GNU General Public License for more details.
  */
 
-#include <xmmsclient/xmmsclient++.h>
 #include "song.h"
+#include "xmmsutils/types.h"
 
 using namespace ncxmms2;
 
-void Song::loadInfo(const Xmms::PropDict& info)
+void Song::loadInfo(const xmms2::PropDict& info)
 {
-    m_id = info.get<int>("id");
-
-#define INFO_GET_STRING(var, key)             \
-    do {                                      \
-        var.clear();                          \
-        if (info.contains(key))               \
-            var = info.get<std::string>(key); \
-    } while (0)
-
-    INFO_GET_STRING(m_title, "title");
-    INFO_GET_STRING(m_artist, "artist");
-    INFO_GET_STRING(m_album, "album");
-    INFO_GET_STRING(m_performer, "performer");
-    INFO_GET_STRING(m_date, "date");
-    INFO_GET_STRING(m_genre, "genre");
-
-#undef INFO_GET_STRING
-
+    m_id          = info.value<int>("id");
+    m_durartion   = info.value<int>("duration"   , -1);
+    m_trackNumber = info.value<int>("tracknr"    , -1);
+    m_timesPlayed = info.value<int>("timesplayed", -1);
+    m_bitrate     = info.value<int>("bitrate"    , -1);
+    m_samplerate  = info.value<int>("samplerate" , -1);
+    
+    m_title     = info.value<StringRef>("title"    , "").c_str();
+    m_artist    = info.value<StringRef>("artist"   , "").c_str();
+    m_album     = info.value<StringRef>("album"    , "").c_str();
+    m_performer = info.value<StringRef>("performer", "").c_str();
+    m_date      = info.value<StringRef>("date"     , "").c_str();
+    m_genre     = info.value<StringRef>("genre"    , "").c_str();
+    
     m_url.clear();
     m_fileName.clear();
-    if (info.contains("url")) {
-        m_url = Xmms::decodeUrl(info.get<std::string>("url"));
-        const std::string::size_type slashPos = m_url.rfind('/');
-        if (!(slashPos == std::string::npos || slashPos + 1 >= m_url.size()))
-            m_fileName = m_url.substr(slashPos + 1);
+    StringRef urlRef = info.value<StringRef>("url");
+    if (!urlRef.isNull()) {
+        m_url = xmms2::decodeUrl(urlRef.c_str());
+        m_fileName = xmms2::getFileNameFromUrl(m_url);
     }
-
-#define INFO_GET_INT(var, key)        \
-    do {                              \
-        var = -1;                     \
-        if (info.contains(key))       \
-            var = info.get<int>(key); \
-    } while (0)
-
-    INFO_GET_INT(m_durartion, "duration");
-    INFO_GET_INT(m_trackNumber, "tracknr");
-    INFO_GET_INT(m_timesPlayed, "timesplayed");
-    INFO_GET_INT(m_bitrate, "bitrate");
-    INFO_GET_INT(m_samplerate, "samplerate");
-
-#undef INFO_GET_INT
 }
 

@@ -18,20 +18,19 @@
 #define PLAYLISTSLISTMODEL_H
 
 #include <vector>
+#include "../xmmsutils/types.h"
 #include "../lib/listmodel.h"
 
-namespace Xmms {
-class Client;
-class Dict;
-template <class T> class List;
-}
-
 namespace ncxmms2 {
+
+namespace xmms2 {
+class Client;
+}
 
 class PlaylistsListModel : public ListModel
 {
 public:
-    PlaylistsListModel(Xmms::Client *xmmsClient, Object *parent = nullptr);
+    PlaylistsListModel(xmms2::Client *xmmsClient, Object *parent = nullptr);
 
     virtual void data(int item, ListModelItemData *itemData) const;
     virtual int itemsCount() const;
@@ -45,14 +44,14 @@ public:
     NCXMMS2_SIGNAL(playlistAdded, const std::string&, int)
 
 private:
-    Xmms::Client *m_xmmsClient;
+    xmms2::Client *m_xmmsClient;
     std::vector<std::string> m_playlists;
     std::string m_currentPlaylist;
 
     // Callbacks
-    bool getPlaylists(const Xmms::List<std::string>& playlists);
-    bool getCurrentPlaylist(const std::string& playlist);
-    bool handlePlaylistsChange(const Xmms::Dict& change);
+    void getPlaylists(const xmms2::List<StringRef>& playlists);
+    void getCurrentPlaylist(StringRef playlist);
+    void handlePlaylistsChange(const xmms2::CollectionChangeEvent& change);
 };
 } // ncxmms2
 

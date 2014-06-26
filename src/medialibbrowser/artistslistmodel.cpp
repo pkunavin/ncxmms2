@@ -14,16 +14,15 @@
  *  GNU General Public License for more details.
  */
 
-#include <xmmsclient/xmmsclient++.h>
 #include <assert.h>
-#include <list>
 
 #include "artistslistmodel.h"
+#include "../xmmsutils/client.h"
 #include "../lib/listmodelitemdata.h"
 
 using namespace ncxmms2;
 
-ArtistsListModel::ArtistsListModel(Xmms::Client *xmmsClient, Object *parent) :
+ArtistsListModel::ArtistsListModel(xmms2::Client *xmmsClient, Object *parent) :
     ListModel(parent),
     m_xmmsClient(xmmsClient)
 {
@@ -38,7 +37,8 @@ const std::string& ArtistsListModel::artist(int item) const
 
 void ArtistsListModel::data(int item, ListModelItemData *itemData) const
 {
-    itemData->textPtr = &m_artists[item];
+    static const std::string unknownArtist = "Unknown artist";
+    itemData->textPtr = !m_artists[item].empty() ? &m_artists[item] : &unknownArtist;
 }
 
 int ArtistsListModel::itemsCount() const
@@ -51,28 +51,24 @@ void ArtistsListModel::refresh()
     m_artists.clear();
     reset();
 
-    const Xmms::Coll::Universe allMedia;
-    const std::list<std::string>   fetch = {"artist"};
-    const std::list<std::string>   order = {"artist"};
-    const std::list<std::string> groupBy = {"artist"};
+    const xmms2::Collection allMedia = xmms2::Collection::universe();
+    const std::vector<std::string>  fetch = {"artist"};
+    const std::vector<std::string>& order = fetch;
+    const std::vector<std::string>& groupBy = fetch;
 
-    m_xmmsClient->collection.queryInfos(allMedia, fetch, order, 0, 0, groupBy)(
-        Xmms::bind(&ArtistsListModel::getArtistsList, this)
-    );
+    m_xmmsClient->collectionQueryInfos(allMedia, fetch, order, groupBy)(&ArtistsListModel::getArtistsList, this);
 }
 
-bool ArtistsListModel::getArtistsList(const Xmms::List<Xmms::Dict>& list)
+void ArtistsListModel::getArtistsList(const xmms2::List<xmms2::Dict>& list)
 {
     m_artists.clear();
-    for (auto it = list.begin(), it_end = list.end(); it != it_end; ++it) {
-        try {
-            m_artists.push_back((*it).get<std::string>("artist"));
-        }
-        catch (...) {
+    for (auto it = list.getIterator(); it.isValid(); it.next()) {
+        bool ok = false;
+        xmms2::Dict dict = it.value(&ok);
+        if (NCXMMS2_UNLIKELY(!ok))
             continue;
-        }
+        StringRef artist = dict.value<StringRef>("artist", "");
+        m_artists.emplace_back(artist.c_str());
     }
-
     reset();
-    return true;
 }

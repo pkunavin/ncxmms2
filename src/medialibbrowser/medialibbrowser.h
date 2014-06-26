@@ -17,22 +17,20 @@
 #ifndef MEDIALIBBROWSER_H
 #define MEDIALIBBROWSER_H
 
+#include "../xmmsutils/types.h"
 #include "../lib/window.h"
-
-namespace Xmms {
-class Client;
-class Dict;
-template <class T> class List;
-}
 
 namespace ncxmms2 {
 
+namespace xmms2 {
+class Client;
+}
 class ListView;
 
 class MedialibBrowser : public Window
 {
 public:
-    MedialibBrowser(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
+    MedialibBrowser(xmms2::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
     
@@ -44,7 +42,7 @@ protected:
     virtual void paint(const Rectangle& rect);
 
 private:
-    Xmms::Client *m_xmmsClient;
+    xmms2::Client *m_xmmsClient;
 
     ListView *m_artistsListView;
     ListView *m_albumsListView;
@@ -56,7 +54,8 @@ private:
     void activePlaylistAddSong(int item, bool beQuiet = false);
     void activePlaylistAddAlbum(int item, bool beQuiet = false);
     void activePlaylistAddArtist(int item, bool beQuiet = false);
-    bool activePlaylistAddAlbums(const std::string& artist, const Xmms::List<Xmms::Dict>& list, bool beQuiet = false);
+    void activePlaylistAddAlbums(const std::string& artist, const xmms2::List<xmms2::Dict>& list,
+                                 bool beQuiet = false);
 };
 } // ncxmms2
 

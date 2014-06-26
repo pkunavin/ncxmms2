@@ -14,18 +14,18 @@
  *  GNU General Public License for more details.
  */
 
-#include <xmmsclient/xmmsclient++.h>
 #include <boost/lexical_cast.hpp>
 
 #include "songinfowindow.h"
 #include "../songdisplayformatparser.h"
+#include "../xmmsutils/client.h"
 
 #include "../lib/htmlparser.h"
 #include "../lib/keyevent.h"
 
 using namespace ncxmms2;
 
-SongInfoWindow::SongInfoWindow(Xmms::Client *xmmsClient, const Rectangle &rect, Window *parent) :
+SongInfoWindow::SongInfoWindow(xmms2::Client *xmmsClient, const Rectangle &rect, Window *parent) :
     TextView(rect, parent),
     m_xmmsClient(xmmsClient),
     m_id(-1)
@@ -34,17 +34,13 @@ SongInfoWindow::SongInfoWindow(Xmms::Client *xmmsClient, const Rectangle &rect, 
     setName("Song info");
     setMode(Mode::RichText);
     
-    m_xmmsClient->medialib.broadcastEntryChanged()(
-        Xmms::bind(&SongInfoWindow::handleSongInfoUpdate, this)
-    );
+    m_xmmsClient->medialibEntryChanged_Connect(&SongInfoWindow::handleSongInfoUpdate, this);
 }
 
 void SongInfoWindow::showSongInfo(int id)
 {
     m_id = id;
-    m_xmmsClient->medialib.getInfo(m_id)(
-        Xmms::bind(&SongInfoWindow::getSongInfo, this)
-    );
+    m_xmmsClient->medialibGetInfo(m_id)(&SongInfoWindow::getSongInfo, this);
     setText("Loading...");
 }
 
@@ -61,7 +57,7 @@ void SongInfoWindow::keyPressedEvent(const KeyEvent& keyEvent)
     }
 }
 
-bool SongInfoWindow::getSongInfo(const Xmms::PropDict& info)
+void SongInfoWindow::getSongInfo(const xmms2::PropDict& info)
 {
     Song song;
     song.loadInfo(info);
@@ -82,15 +78,11 @@ bool SongInfoWindow::getSongInfo(const Xmms::PropDict& info)
     }
     text.append("</pre>");
     setText(text);
-    return true;
 }
 
-bool SongInfoWindow::handleSongInfoUpdate(const int& id)
+void SongInfoWindow::handleSongInfoUpdate(int id)
 {
     if (id == m_id) {
-        m_xmmsClient->medialib.getInfo(m_id)(
-            Xmms::bind(&SongInfoWindow::getSongInfo, this)
-        );
+        m_xmmsClient->medialibGetInfo(m_id)(&SongInfoWindow::getSongInfo, this);
     }
-    return true;
 }

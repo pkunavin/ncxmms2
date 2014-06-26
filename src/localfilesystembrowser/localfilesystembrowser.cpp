@@ -16,17 +16,17 @@
 
 #include <vector>
 #include <utility>
+#include <cstring>
 #include <unistd.h>
 #include <assert.h>
 #include <boost/cast.hpp>
-#include <xmmsclient/xmmsclient++.h>
 
 #include "localfilesystembrowser.h"
 #include "filesystemmodel.h"
 #include "filesystemitemdelegate.h"
+#include "../xmmsutils/client.h"
 #include "../statusarea/statusarea.h"
 #include "../utils.h"
-#include "../xmmsutils.h"
 #include "../settings.h"
 #include "../hotkeys.h"
 
@@ -34,9 +34,7 @@
 
 using namespace ncxmms2;
 
-LocalFileSystemBrowser::LocalFileSystemBrowser(Xmms::Client    *xmmsClient,
-                                               const Rectangle& rect,
-                                               Window          *parent) :
+LocalFileSystemBrowser::LocalFileSystemBrowser(xmms2::Client *xmmsClient, const Rectangle& rect, Window *parent) :
     ListViewAppIntegrated(rect, parent),
     m_xmmsClient(xmmsClient),
     m_currentDir("/")
@@ -153,7 +151,7 @@ bool LocalFileSystemBrowser::setDirectory(const Dir& dir)
         return true;
     }
 
-    StatusArea::showMessage("Can't open %1% : %2%", dir.path(), strerror(errno));
+    StatusArea::showMessage("Can't open %1% : %2%", dir.path(), std::strerror(errno));
     return false;
 }
 
@@ -220,8 +218,8 @@ void LocalFileSystemBrowser::activePlaylistAddFileOrDirectory(int item, bool beQ
     assert(item >= 0 && item < fsModel->itemsCount());
 
     if (fsModel->isDirectory(item)) {
-        m_xmmsClient->playlist.addRecursive(
-            std::string("file://").append(fsModel->filePath(item))
+        m_xmmsClient->playlistAddRecursive("_active",
+             std::string("file://").append(fsModel->filePath(item))
         );
         if (!beQuiet) {
             StatusArea::showMessage("Adding \"%1%\" directory to active playlist",
@@ -243,9 +241,7 @@ void LocalFileSystemBrowser::activePlaylistAddFile(int item, bool beQuiet)
 
     switch (Utils::getFileType(fileName)) {
         case Utils::FileType::Playlist:
-            XmmsUtils::playlistAddPlaylistFile(m_xmmsClient,
-                                               XMMS_ACTIVE_PLAYLIST,
-                                               filePath);
+            m_xmmsClient->playlistAddPlaylistFile("_active", filePath);
             if (!beQuiet) {
                 StatusArea::showMessage("Adding \"%1%\" playlist file to active playlist",
                                         fileName);
@@ -253,7 +249,7 @@ void LocalFileSystemBrowser::activePlaylistAddFile(int item, bool beQuiet)
             break;
 
         case Utils::FileType::Media:
-            m_xmmsClient->playlist.addUrl(filePath);
+            m_xmmsClient->playlistAddUrl("_active", filePath);
             if (!beQuiet) {
                 StatusArea::showMessage("Adding \"%1%\" file to active playlist", fileName);
             }
@@ -296,6 +292,6 @@ std::string LocalFileSystemBrowser::Dir::name() const
     if (slashPos == std::string::npos || slashPos + 1 >= m_path.size())
         return std::string();
 
-    return std::move(m_path.substr(slashPos + 1));
+    return m_path.substr(slashPos + 1);
 }
 

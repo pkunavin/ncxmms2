@@ -18,6 +18,7 @@
 #include <boost/cast.hpp>
 
 #include "mainwindow.h"
+#include "../xmmsutils/client.h"
 #include "../statusarea/statusarea.h"
 #include "../helpbrowser/helpbrowser.h"
 #include "../activeplaylistwindow/activeplaylistwindow.h"
@@ -39,7 +40,7 @@
 
 using namespace ncxmms2;
 
-MainWindow::MainWindow(Xmms::Client *xmmsClient) :
+MainWindow::MainWindow(xmms2::Client *xmmsClient) :
     Window(Rectangle(0, 0, Application::terminalSize().cols(), Application::terminalSize().lines())),
     m_xmmsClient(xmmsClient)
 {
@@ -57,13 +58,13 @@ MainWindow::MainWindow(Xmms::Client *xmmsClient) :
     const Rectangle stackedSubWinRect(0, 0, stackedWindowRect.cols(), stackedWindowRect.lines());
     const folly::sorted_vector_map<StackedWindows, Window*> stakedWindows
     {
-        {StackedHelpBrowser,            new HelpBrowser           (            stackedSubWinRect, m_stackedWindow)},
-        {StackedPlaylistWindow,         new ActivePlaylistWindow  (xmmsClient, stackedSubWinRect, m_stackedWindow)},
-        {StackedLocalFileBrowserWindow, new LocalFileSystemBrowser(xmmsClient, stackedSubWinRect, m_stackedWindow)},
-        {StackedMedialibBrowser,        new MedialibBrowser       (xmmsClient, stackedSubWinRect, m_stackedWindow)},
-        {StackedPlaylistsBrowser,       new PlaylistsBrowser      (xmmsClient, stackedSubWinRect, m_stackedWindow)},
-        {StackedEqualizerWindow,        new EqualizerWindow       (xmmsClient, stackedSubWinRect, m_stackedWindow)},
-        {StackedSongInfoWindow,         new SongInfoWindow        (xmmsClient, stackedSubWinRect, m_stackedWindow)}
+        {StackedHelpBrowser,            new HelpBrowser           (              stackedSubWinRect, m_stackedWindow)},
+        {StackedPlaylistWindow,         new ActivePlaylistWindow  (m_xmmsClient, stackedSubWinRect, m_stackedWindow)},
+        {StackedLocalFileBrowserWindow, new LocalFileSystemBrowser(m_xmmsClient, stackedSubWinRect, m_stackedWindow)},
+        {StackedMedialibBrowser,        new MedialibBrowser       (m_xmmsClient, stackedSubWinRect, m_stackedWindow)},
+        {StackedPlaylistsBrowser,       new PlaylistsBrowser      (m_xmmsClient, stackedSubWinRect, m_stackedWindow)},
+        {StackedEqualizerWindow,        new EqualizerWindow       (m_xmmsClient, stackedSubWinRect, m_stackedWindow)},
+        {StackedSongInfoWindow,         new SongInfoWindow        (m_xmmsClient, stackedSubWinRect, m_stackedWindow)}
     };
 
     for (const auto& pair : stakedWindows) {
@@ -119,33 +120,33 @@ void MainWindow::keyPressedEvent(const KeyEvent& keyEvent)
             break;
             
         case Hotkeys::Playback::Toggle:
-            if (m_statusArea->playbackStatus() == Xmms::Playback::PLAYING) {
-                m_xmmsClient->playback.pause();
+            if (m_statusArea->playbackStatus() == xmms2::PlaybackStatus::Playing) {
+                m_xmmsClient->playbackPause();
             } else {
-                m_xmmsClient->playback.start();
+                m_xmmsClient->playbackStart();
             }
             break;
 
         case Hotkeys::Playback::Stop:
-            m_xmmsClient->playback.stop();
+            m_xmmsClient->playbackStop();
             break;
 
         case Hotkeys::Playback::Next:
-            m_xmmsClient->playlist.setNextRel(1);
-            m_xmmsClient->playback.tickle();
+            m_xmmsClient->playlistSetNextRel(1);
+            m_xmmsClient->playbackTickle();
             break;
 
         case Hotkeys::Playback::Prev:
-            m_xmmsClient->playlist.setNextRel(-1);
-            m_xmmsClient->playback.tickle();
+            m_xmmsClient->playlistSetNextRel(-1);
+            m_xmmsClient->playbackTickle();
             break;
 
         case Hotkeys::Playback::SeekForward:
-            m_xmmsClient->playback.seekMsRel(1000);
+            m_xmmsClient->playbackSeekMsRel(1000);
             break;
 
         case Hotkeys::Playback::SeekBackward:
-            m_xmmsClient->playback.seekMsRel(-1000);
+            m_xmmsClient->playbackSeekMsRel(-1000);
             break;
 
         case Hotkeys::Quit:

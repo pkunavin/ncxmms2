@@ -17,10 +17,8 @@
 #ifndef STATUSAREA_H
 #define STATUSAREA_H
 
-#include <xmmsclient/xmmsclient++/playback.h>
-
-#include "../song.h"
 #include "../utils.h"
+#include "../xmmsutils/types.h"
 
 #include "../lib/window.h"
 #include "../lib/lineedit.h"
@@ -28,13 +26,17 @@
 
 namespace ncxmms2 {
 
+namespace xmms2 {
+class Client;
+}
+
 class PlaybackProgressBar;
 class StackedWindow;
 
 class StatusArea : public Window
 {
 public:
-    StatusArea(Xmms::Client *client, int xPos, int yPos, int cols, Window *parent = nullptr);
+    StatusArea(xmms2::Client *client, int xPos, int yPos, int cols, Window *parent = nullptr);
     ~StatusArea();
 
     static void showMessage(const std::string& message);
@@ -49,7 +51,7 @@ public:
                             const LineEdit::ResultCallback& answerCallback,
                             const std::string& initialAnswer = std::string());
 
-    Xmms::Playback::Status playbackStatus() const;
+    xmms2::PlaybackStatus playbackStatus() const;
 
     enum
     {

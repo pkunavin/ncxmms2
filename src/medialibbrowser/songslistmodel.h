@@ -18,28 +18,26 @@
 #define SONGSLISTMODEL_H
 
 #include <vector>
-#include <list>
+#include "../xmmsutils/types.h"
 #include "../lib/listmodel.h"
 
-namespace Xmms {
-class Client;
-class Dict;
-template <class T> class List;
-}
-
 namespace ncxmms2 {
+
+namespace xmms2 {
+class Client;
+}
 
 class SongsListModel : public ListModel
 {
 public:
-    SongsListModel(Xmms::Client *xmmsClient, Object *parent = nullptr);
+    SongsListModel(xmms2::Client *xmmsClient, Object *parent = nullptr);
 
     void setAlbumByArtist(const std::string& artist, const std::string& album);
 
     int id(int item) const;
     const std::string& title(int item) const;
 
-    const std::list<std::string>& sortingOrder() const;
+    const std::vector<std::string>& sortingOrder() const;
 
     virtual void data(int item, ListModelItemData *itemData) const;
     virtual int itemsCount() const;
@@ -47,27 +45,22 @@ public:
     virtual void refresh();
 
 private:
-    Xmms::Client *m_xmmsClient;
+    xmms2::Client *m_xmmsClient;
     std::string m_artist;
     std::string m_album;
 
-    class SongData
+    struct SongData
     {
-    public:
-        SongData(int _id, const std::string& _title) :
-            id(_id),
-            title(_title){}
-
         int id;
         std::string title;
     };
 
-    std::list<std::string> m_sortingOrder;
+    std::vector<std::string> m_sortingOrder;
     std::vector<SongData> m_songs;
 
-    bool getSongsList(const std::string& artist,
+    void getSongsList(const std::string& artist,
                       const std::string& album,
-                      const Xmms::List<Xmms::Dict>& list);
+                      const xmms2::List<xmms2::Dict>& list);
 };
 } // ncxmms2
 

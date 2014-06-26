@@ -21,6 +21,8 @@
 #include "playbackstatuswindow.h"
 #include "questionwindow.h"
 
+#include "../xmmsutils/client.h"
+
 #include "../lib/label.h"
 #include "../lib/stackedwindow.h"
 #include "../lib/size.h"
@@ -32,7 +34,7 @@ using namespace ncxmms2;
 
 StatusArea *StatusArea::inst = nullptr;
 
-StatusArea::StatusArea(Xmms::Client *client, int xPos, int yPos, int cols, Window *parent) :
+StatusArea::StatusArea(xmms2::Client *xmmsClient, int xPos, int yPos, int cols, Window *parent) :
     Window(Rectangle(xPos, yPos, cols, LinesNumber), parent)
 {
     if (inst) {
@@ -45,12 +47,12 @@ StatusArea::StatusArea(Xmms::Client *client, int xPos, int yPos, int cols, Windo
     setMaximumLines(LinesNumber);
 
     m_stackedWindow = new StackedWindow(Rectangle(0, InformationLine, cols, 1), this);
-
+    
     const folly::sorted_vector_map<StackedWindows, Window*> stackedWins
     {
-        {StackedPlaybackStatusWindow, new PlaybackStatusWindow(client, 0, 0, cols, m_stackedWindow)},
-        {StackedMessageWindow,        new Label(0, 0, cols, m_stackedWindow)                       },
-        {StackedQuestionWindow,       new QuestionWindow(0, 0, cols, m_stackedWindow)              }
+        {StackedPlaybackStatusWindow, new PlaybackStatusWindow(xmmsClient, 0, 0, cols, m_stackedWindow)},
+        {StackedMessageWindow,        new Label(0, 0, cols, m_stackedWindow)                           },
+        {StackedQuestionWindow,       new QuestionWindow(0, 0, cols, m_stackedWindow)                  }
     };
     for (const auto& pair : stackedWins) {
         m_stackedWindow->addWindow(pair.second);
@@ -59,13 +61,18 @@ StatusArea::StatusArea(Xmms::Client *client, int xPos, int yPos, int cols, Windo
     m_stackedWindow->setFocus();
     m_stackedWindow->setCurrentIndex(StackedPlaybackStatusWindow);
     m_stackedWindow->window(StackedMessageWindow)->loadPalette("StatusMessageWindow");
-
+    
     m_playbackProgressBar = new PlaybackProgressBar(0, 0, cols, this);
-    m_playbackProgressBar->progressChangeRequested_Connect([client](int value){
-        client->playback.seekMs(value);
+    
+    xmmsClient->playbackPlaytime()(&PlaybackProgressBar::setValue, m_playbackProgressBar);
+    xmmsClient->playbackPlaytimeChanged_Connect(&PlaybackProgressBar::setValue, m_playbackProgressBar);
+    
+    m_playbackProgressBar->progressChangeRequested_Connect([xmmsClient](int value){
+        xmmsClient->playbackSeekMs(value);
     });
+    
+    
     auto *playbackStatusWin = static_cast<PlaybackStatusWindow*>(m_stackedWindow->window(StackedPlaybackStatusWindow));
-    playbackStatusWin->playtimeChanged_Connect(&PlaybackProgressBar::setValue, m_playbackProgressBar);
     playbackStatusWin->currentSongChanged_Connect([this](const Song& song)
     {
         m_playbackProgressBar->setMaxValue(song.duration());
@@ -126,7 +133,7 @@ void StatusArea::_askQuestion(const std::string& question,
     m_timer.stop();
 }
 
-Xmms::Playback::Status StatusArea::playbackStatus() const
+xmms2::PlaybackStatus StatusArea::playbackStatus() const
 {
     return static_cast<PlaybackStatusWindow*>(m_stackedWindow->window(StackedPlaybackStatusWindow))->playbackStatus();
 }

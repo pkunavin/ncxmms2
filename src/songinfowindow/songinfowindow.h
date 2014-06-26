@@ -19,16 +19,17 @@
 
 #include "../lib/textview.h"
 
-namespace Xmms {
-    class Client;
-}
-
 namespace ncxmms2 {
+
+namespace xmms2 {
+    class Client;
+    class PropDict;
+}
 
 class SongInfoWindow : public TextView
 {
 public:
-    SongInfoWindow(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
+    SongInfoWindow(xmms2::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
     
     void showSongInfo(int id);
     
@@ -38,11 +39,11 @@ public:
     NCXMMS2_SIGNAL(hideRequested)
     
 private:
-    Xmms::Client *m_xmmsClient;
+    xmms2::Client *m_xmmsClient;
     int m_id;
     
-    bool getSongInfo(const Xmms::PropDict& info);
-    bool handleSongInfoUpdate(const int& id);
+    void getSongInfo(const ncxmms2::xmms2::PropDict& info);
+    void handleSongInfoUpdate(int id);
 };
 } // ncxmms2
 

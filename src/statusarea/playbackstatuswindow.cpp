@@ -27,10 +27,10 @@
 
 using namespace ncxmms2;
 
-PlaybackStatusWindow::PlaybackStatusWindow(Xmms::Client *client, int xPos, int yPos, int cols, Window *parent) :
+PlaybackStatusWindow::PlaybackStatusWindow(xmms2::Client *client, int xPos, int yPos, int cols, Window *parent) :
     Window(Rectangle(xPos, yPos, cols, 1), parent),
     m_xmmsClient(client),
-    m_playbackStatus(Xmms::Playback::STOPPED),
+    m_playbackStatus(xmms2::PlaybackStatus::Stopped),
     m_playbackPlaytime(0),
     m_useTerminalWindowTitle(true)
 {
@@ -65,53 +65,47 @@ PlaybackStatusWindow::PlaybackStatusWindow(Xmms::Client *client, int xPos, int y
         );
     }
     
-    m_xmmsClient->playback.getStatus()(Xmms::bind(&PlaybackStatusWindow::getPlaybackStatus, this));
-    m_xmmsClient->playback.broadcastStatus()(Xmms::bind(&PlaybackStatusWindow::getPlaybackStatus, this));
+    m_xmmsClient->playbackStatus()(&PlaybackStatusWindow::getPlaybackStatus, this);
+    m_xmmsClient->playbackStatusChanged_Connect(&PlaybackStatusWindow::getPlaybackStatus, this);
 
-    m_xmmsClient->playback.currentID()(Xmms::bind(&PlaybackStatusWindow::getCurrentId, this));
-    m_xmmsClient->playback.broadcastCurrentID()(Xmms::bind(&PlaybackStatusWindow::getCurrentId, this));
-    m_xmmsClient->medialib.broadcastEntryChanged()(Xmms::bind(&PlaybackStatusWindow::handleIdInfoChanged, this));
+    m_xmmsClient->playbackCurrentId()(&PlaybackStatusWindow::getCurrentId, this);
+    m_xmmsClient->playbackCurrentIdChanged_Connect(&PlaybackStatusWindow::getCurrentId, this);
+    m_xmmsClient->medialibEntryChanged_Connect(&PlaybackStatusWindow::handleIdInfoChanged, this);
 
-    m_xmmsClient->playback.getPlaytime()(Xmms::bind(&PlaybackStatusWindow::getPlaytime, this));
-    m_xmmsClient->playback.signalPlaytime()(Xmms::bind(&PlaybackStatusWindow::getPlaytime, this));
+    m_xmmsClient->playbackPlaytime()(&PlaybackStatusWindow::getPlaytime, this);
+    m_xmmsClient->playbackPlaytimeChanged_Connect(&PlaybackStatusWindow::getPlaytime, this);
 }
 
-bool PlaybackStatusWindow::getPlaybackStatus(const Xmms::Playback::Status& status)
+void PlaybackStatusWindow::getPlaybackStatus(xmms2::PlaybackStatus status)
 {
     m_playbackStatus = status;
     update();
-    return true;
 }
 
-bool PlaybackStatusWindow::getCurrentId(const int& id)
+void PlaybackStatusWindow::getCurrentId(int id)
 {
-    m_xmmsClient->medialib.getInfo(id)(Xmms::bind(&PlaybackStatusWindow::getCurrentIdInfo, this));
-    return true;
+    m_xmmsClient->medialibGetInfo(id)(&PlaybackStatusWindow::getCurrentIdInfo, this);
 }
 
-bool PlaybackStatusWindow::getCurrentIdInfo(const Xmms::PropDict& info)
+void PlaybackStatusWindow::getCurrentIdInfo(const xmms2::PropDict& info)
 {
     m_currentSong.loadInfo(info);
     currentSongChanged(m_currentSong);
     if (m_useTerminalWindowTitle)
         updateTerminalWindowTitle();
     update();
-    return true;
 }
 
-bool PlaybackStatusWindow::getPlaytime(const int& playtime)
+void PlaybackStatusWindow::getPlaytime(int playtime)
 {
     m_playbackPlaytime = playtime;
-    playtimeChanged(playtime);
     update();
-    return true;
 }
 
-bool PlaybackStatusWindow::handleIdInfoChanged(const int& id)
+void PlaybackStatusWindow::handleIdInfoChanged(int id)
 {
     if (m_currentSong.id() == id)
-        m_xmmsClient->medialib.getInfo(id)(Xmms::bind(&PlaybackStatusWindow::getCurrentIdInfo, this));
-    return true;
+        m_xmmsClient->medialibGetInfo(id)(&PlaybackStatusWindow::getCurrentIdInfo, this);
 }
 
 void PlaybackStatusWindow::paint(const Rectangle& rect)
@@ -127,9 +121,9 @@ void PlaybackStatusWindow::paint(const Rectangle& rect)
     painter.setColor(palette().color(colorGroup, Palette::RoleText));
     painter.setBold(true);
     switch (m_playbackStatus) {
-        case Xmms::Playback::PLAYING : painter.printString("Playing: " ); break;
-        case Xmms::Playback::STOPPED : painter.printString("[Stopped] "); break;
-        case Xmms::Playback::PAUSED  : painter.printString("[Paused] " ); break;
+        case xmms2::PlaybackStatus::Playing : painter.printString("Playing: " ); break;
+        case xmms2::PlaybackStatus::Stopped : painter.printString("[Stopped] "); break;
+        case xmms2::PlaybackStatus::Paused  : painter.printString("[Paused] " ); break;
     }
     painter.setBold(false);
 
@@ -161,7 +155,7 @@ void PlaybackStatusWindow::updateTerminalWindowTitle()
     Application::setTerminalWindowTitle(title);
 }
 
-Xmms::Playback::Status PlaybackStatusWindow::playbackStatus() const
+xmms2::PlaybackStatus PlaybackStatusWindow::playbackStatus() const
 {
     return m_playbackStatus;
 }

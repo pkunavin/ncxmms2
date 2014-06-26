@@ -19,23 +19,23 @@
 
 #include <string>
 
-namespace Xmms {
+namespace ncxmms2 {
+
+namespace xmms2 {
 class PropDict;
 }
-
-namespace ncxmms2 {
 
 class Song
 {
 public:
     Song() :
-        m_id(-1),
+        m_id(0),
         m_durartion(-1),
         m_trackNumber(-1),
         m_bitrate(-1),
         m_samplerate(-1) {}
 
-    void loadInfo(const Xmms::PropDict& info);
+    void loadInfo(const xmms2::PropDict& info);
 
     int id() const                            {return m_id;}
     int duration() const                      {return m_durartion;}

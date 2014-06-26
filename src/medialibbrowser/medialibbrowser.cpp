@@ -14,7 +14,6 @@
  *  GNU General Public License for more details.
  */
 
-#include <xmmsclient/xmmsclient++.h>
 #include <vector>
 #include <algorithm>
 #include <iterator>
@@ -25,6 +24,7 @@
 #include "albumslistmodel.h"
 #include "songslistmodel.h"
 
+#include "../xmmsutils/client.h"
 #include "../listviewappintegrated/listviewappintegrated.h"
 #include "../statusarea/statusarea.h"
 #include "../hotkeys.h"
@@ -35,7 +35,7 @@
 
 using namespace ncxmms2;
 
-MedialibBrowser::MedialibBrowser(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent) :
+MedialibBrowser::MedialibBrowser(xmms2::Client *xmmsClient, const Rectangle& rect, Window *parent) :
     Window(rect, parent),
     m_xmmsClient(xmmsClient)
 {
@@ -47,7 +47,7 @@ MedialibBrowser::MedialibBrowser(Xmms::Client *xmmsClient, const Rectangle& rect
     const Rectangle artistsListViewRect(0, headerLines,
                                         artistsListViewCols, lines() - headerLines);
     m_artistsListView = new ListViewAppIntegrated(artistsListViewRect, this);
-    m_artistsListView->setModel(new ArtistsListModel(xmmsClient, this));
+    m_artistsListView->setModel(new ArtistsListModel(m_xmmsClient, this));
     m_artistsListView->currentItemChanged_Connect(&MedialibBrowser::setAlbumsListViewArtist, this);
     m_artistsListView->itemEntered_Connect(&MedialibBrowser::activePlaylistAddArtist, this,  std::placeholders::_1, false); //TODO: Play artist
     m_artistsListView->setFocus();
@@ -56,7 +56,7 @@ MedialibBrowser::MedialibBrowser(Xmms::Client *xmmsClient, const Rectangle& rect
     const Rectangle albumsListViewRect(artistsListViewCols + 1, headerLines,
                                        albumsListViewCols, lines() - headerLines);
     m_albumsListView = new ListViewAppIntegrated(albumsListViewRect, this);
-    m_albumsListView->setModel(new AlbumsListModel(xmmsClient, this));
+    m_albumsListView->setModel(new AlbumsListModel(m_xmmsClient, this));
     m_albumsListView->currentItemChanged_Connect(&MedialibBrowser::setSongsListViewAlbum, this);
     m_albumsListView->itemEntered_Connect(&MedialibBrowser::activePlaylistAddAlbum, this,  std::placeholders::_1, false); //TODO: Play album
 
@@ -64,16 +64,15 @@ MedialibBrowser::MedialibBrowser(Xmms::Client *xmmsClient, const Rectangle& rect
     const Rectangle songsListViewRect(cols() - songsListViewCols, headerLines,
                                       songsListViewCols, lines() - headerLines);
     m_songsListView = new ListViewAppIntegrated(songsListViewRect, this);
-    m_songsListView->setModel(new SongsListModel(xmmsClient, this));
+    m_songsListView->setModel(new SongsListModel(m_xmmsClient, this));
     m_songsListView->itemEntered_Connect(&MedialibBrowser::activePlaylistAddSong, this, std::placeholders::_1, false); //TODO: Play song
 
     // This will reload the whole medialib on adding new medialib entry.
     // TODO: Can it be done in a more clever way?
-    m_xmmsClient->medialib.broadcastEntryAdded()([this](const int& id)
+    m_xmmsClient->medialibEntryAdded_Connect([this](int id)
     {
         NCXMMS2_UNUSED(id);
         m_artistsListView->model()->refresh();
-        return true;
     });
 }
 
@@ -118,7 +117,7 @@ void MedialibBrowser::keyPressedEvent(const KeyEvent& keyEvent)
             }                                                                            \
             StatusArea::showMessage("Adding %1% " itemDescription " to active playlist", \
                                     selectedItems.size());                               \
-            activeListView->clearSelection();                                          \
+            activeListView->clearSelection();                                            \
         } else {                                                                         \
             if (currentItem != -1)                                                       \
                 addFunction(currentItem);                                                \
@@ -213,7 +212,7 @@ void MedialibBrowser::setSongsListViewAlbum(int item)
 void MedialibBrowser::activePlaylistAddSong(int item, bool beQuiet)
 {
     SongsListModel *songsModel = static_cast<SongsListModel*>(m_songsListView->model());
-    m_xmmsClient->playlist.addId(songsModel->id(item));
+    m_xmmsClient->playlistAddId("_active", songsModel->id(item));
     if (!beQuiet)
         StatusArea::showMessage("Adding \"%1%\" song to active playlist", songsModel->title(item));
 }
@@ -225,11 +224,9 @@ void MedialibBrowser::activePlaylistAddAlbum(int item, bool beQuiet)
     const auto artist = albumsModel->artist();
     const auto album  = albumsModel->album(item);
 
-    Xmms::Coll::Universe     allMedia;
-    Xmms::Coll::Equals       allByArtist(allMedia, "artist", artist, true);
-    const Xmms::Coll::Equals albumByArtist(allByArtist, "album", album, true);
+    xmms2::Collection songs = xmms2::Collection::albumByArtist(artist, album);
 
-    m_xmmsClient->playlist.addCollection(albumByArtist, songsModel->sortingOrder());
+    m_xmmsClient->playlistAddCollection("_active", songs, songsModel->sortingOrder());
     if (!beQuiet)
         StatusArea::showMessage("Adding \"%1%\" album to active playlist", album);
 }
@@ -240,40 +237,29 @@ void MedialibBrowser::activePlaylistAddArtist(int item, bool beQuiet)
     AlbumsListModel  *albumsModel = static_cast<AlbumsListModel*>(m_albumsListView->model());
     const auto artist = artistsModel->artist(item);
 
-    Xmms::Coll::Universe     allMedia;
-    const Xmms::Coll::Equals allByArtist(allMedia, "artist", artist, true);
-
-    const std::list<std::string>   fetch = {"album"};
-    const std::list<std::string> groupBy = {"album"};
-
-    m_xmmsClient->collection.queryInfos(allByArtist, fetch, albumsModel->sortingOrder(), 0, 0, groupBy)(
-        std::bind(&MedialibBrowser::activePlaylistAddAlbums, this, artist, std::placeholders::_1, beQuiet)
-    );
+    xmms2::Collection albums = xmms2::Collection::allByArtist(artist);
+    const std::vector<std::string>    fetch = {"album"};
+    const std::vector<std::string>& groupBy = fetch;
+    
+    m_xmmsClient->collectionQueryInfos(albums, fetch, albumsModel->sortingOrder(), groupBy)(
+        &MedialibBrowser::activePlaylistAddAlbums, this, artist, std::placeholders::_1, beQuiet);
 }
 
-bool MedialibBrowser::activePlaylistAddAlbums(const std::string&            artist,
-                                              const Xmms::List<Xmms::Dict>& list,
-                                              bool                          beQuiet)
+void MedialibBrowser::activePlaylistAddAlbums(const std::string& artist,
+                                              const xmms2::List<xmms2::Dict>& list, bool beQuiet)
 {
-    SongsListModel  *songsModel = static_cast<SongsListModel*>(m_songsListView->model());
-    Xmms::Coll::Universe allMedia;
-
-    for (auto it = list.begin(), it_end = list.end(); it != it_end; ++it) {
-        try {
-            const std::string album = (*it).get<std::string>("album");
-
-            Xmms::Coll::Equals       allByArtist(allMedia, "artist", artist, true);
-            const Xmms::Coll::Equals albumByArtist(allByArtist, "album", album, true);
-
-            m_xmmsClient->playlist.addCollection(albumByArtist, songsModel->sortingOrder());
-        }
-        catch (...) {
+    SongsListModel *songsModel = static_cast<SongsListModel*>(m_songsListView->model());
+    
+    for (auto it = list.getIterator(); it.isValid(); it.next()) {
+        bool ok = false;
+        xmms2::Dict dict = it.value(&ok);
+        if (NCXMMS2_UNLIKELY(!ok))
             continue;
-        }
+        std::string album = dict.value<std::string>("album");
+        xmms2::Collection songs = xmms2::Collection::albumByArtist(artist, album);
+        m_xmmsClient->playlistAddCollection("_active", songs, songsModel->sortingOrder());
     }
-
+    
     if (!beQuiet)
         StatusArea::showMessage("Adding all albums by \"%1%\" to active playlist", artist);
-
-    return true;
 }

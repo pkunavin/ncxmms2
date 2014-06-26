@@ -8,8 +8,8 @@ libboost-dev
 libncurses5-dev
 libncursesw5-dev
 libglib2.0-dev
-libxmmsclient++-dev
-libxmmsclient++-glib-dev
+libxmmsclient-dev
+libxmmsclient-glib-dev
 
     Build process is straightforward:
 $ git clone git://github.com/pkunavin/ncxmms2.git

@@ -17,14 +17,13 @@
 #ifndef EQUALIZERWINDOW_H
 #define EQUALIZERWINDOW_H
 
-#include "../xmmsutils.h"
 #include "../lib/window.h"
 
-namespace Xmms {
+namespace ncxmms2 {
+
+namespace xmms2 {
 class Client;
 }
-
-namespace ncxmms2 {
 
 class EqualizerBandsWindow;
 class EqualizerPreampWindow;
@@ -34,7 +33,7 @@ class RadioButtonGroupBox;
 class EqualizerWindow : public Window
 {
 public:
-    EqualizerWindow(Xmms::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
+    EqualizerWindow(xmms2::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
 
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
     virtual void mouseEvent(const MouseEvent& ev);
@@ -45,13 +44,12 @@ protected:
     virtual void showEvent();
 
 private:
-    Xmms::Client *m_xmmsClient;
+    xmms2::Client *m_xmmsClient;
     EqualizerBandsWindow *m_bandsWindow;
     EqualizerPreampWindow *m_preampWindow;
     CheckBox *m_enabledCheckBox;
     CheckBox *m_extraFilteringCheckBox;
     RadioButtonGroupBox *m_bandsNumberGroupBox;
-    XmmsUtils::XmmsConfig m_xmmsConfig;
     bool m_equalizerPluginEnabled;
 
     enum {

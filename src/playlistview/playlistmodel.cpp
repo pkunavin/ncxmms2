@@ -14,42 +14,30 @@
  *  GNU General Public License for more details.
  */
 
-#include <xmmsclient/xmmsclient++.h>
 #include "playlistmodel.h"
+#include "../xmmsutils/client.h"
 #include "../lib/listmodelitemdata.h"
 
 using namespace ncxmms2;
 
-PlaylistModel::PlaylistModel(Xmms::Client *xmmsClient, Object *parent) :
+PlaylistModel::PlaylistModel(xmms2::Client *xmmsClient, Object *parent) :
     ListModel(parent),
     m_xmmsClient(xmmsClient),
     m_currentPosition(-1),
     m_totalDuration(0)
 {
-    m_xmmsClient->playlist.broadcastChanged()(
-        Xmms::bind(&PlaylistModel::processPlaylistChange, this)
-    );
-    m_xmmsClient->playlist.broadcastCurrentPos()(
-        Xmms::bind(&PlaylistModel::getCurrentPosition, this)
-    );
-    m_xmmsClient->collection.broadcastCollectionChanged()(
-        Xmms::bind(&PlaylistModel::handlePlaylistRename, this)
-    );
-    m_xmmsClient->medialib.broadcastEntryChanged()(
-        Xmms::bind(&PlaylistModel::handleSongInfoUpdate, this)
-    );
+    m_xmmsClient->playlistChanged_Connect(&PlaylistModel::processPlaylistChange, this);
+    m_xmmsClient->playlistCurrentPositionChanged_Connect(&PlaylistModel::getCurrentPosition, this);
+    m_xmmsClient->collectionChanged_Connect(&PlaylistModel::handlePlaylistRename, this);
+    m_xmmsClient->medialibEntryChanged_Connect(&PlaylistModel::handleSongInfoUpdate, this);
 }
 
 void PlaylistModel::setPlaylist(const std::string& playlist)
 {
     m_playlist = playlist;
     m_currentPosition = -1;
-    m_xmmsClient->playlist.listEntries(m_playlist)(
-        Xmms::bind(&PlaylistModel::getEntries, this)
-    );
-    m_xmmsClient->playlist.currentPos(m_playlist)(
-        Xmms::bind(&PlaylistModel::getCurrentPosition, this)
-    );
+    m_xmmsClient->playlistListEntries(m_playlist)(&PlaylistModel::getEntries, this);
+    m_xmmsClient->playlistCurrentPosition(m_playlist)(&PlaylistModel::getCurrentPosition, this);
 }
 
 const std::string& PlaylistModel::playlist() const
@@ -57,34 +45,57 @@ const std::string& PlaylistModel::playlist() const
     return m_playlist;
 }
 
-bool PlaylistModel::getEntries(const Xmms::List<int>& list)
+void PlaylistModel::getEntries(const xmms2::List<int>& entries)
 {
     m_totalDuration = 0;
     m_idList.clear();
+    m_idList.reserve(entries.size());
     m_songInfos.clear();
-    m_idList.reserve(200); // TODO: use Xmms::List::size
-    m_songInfos.rehash(200 / m_songInfos.max_load_factor() + 1);
+    m_songInfos.rehash(m_idList.size() / m_songInfos.max_load_factor() + 1);
 
     int pos = 0;
-    for(auto i(list.begin()), i_end(list.end()); i != i_end; ++i, ++pos) {
-        const int id = *i;
+    for (auto it = entries.getIterator(); it.isValid(); it.next()) {
+        bool ok = false;
+        int id = it.value(&ok);
+        if (NCXMMS2_UNLIKELY(!ok)) {
+            m_idList.clear();
+            m_songInfos.clear();
+            break;
+        }
         m_idList.push_back(id);
         m_songInfos[id];
-        m_xmmsClient->medialib.getInfo(id)(
-            std::bind(&PlaylistModel::getSongInfo, this, pos, std::placeholders::_1)
-        );
+        m_xmmsClient->medialibGetInfo(id)(&PlaylistModel::getSongInfo, this,
+                                          pos, std::placeholders::_1);
+        ++pos;
     }
+    
     reset();
     totalDurationChanged();
-    return true;
 }
 
-bool PlaylistModel::getSongInfo(int position, const Xmms::PropDict& info)
+void PlaylistModel::getEntriesOrder(const xmms2::List<int>& entries)
 {
-    const int id = info.get<int>("id");
+    m_idList.clear();
+    m_idList.reserve(entries.size());
+    for (auto it = entries.getIterator(); it.isValid(); it.next()) {
+        bool ok = false;
+        int id = it.value(&ok);
+        if (NCXMMS2_UNLIKELY(!ok)) {
+            m_idList.clear();
+            m_songInfos.clear();
+            break;
+        }
+        m_idList.push_back(id);
+    }
+    itemsChanged(0, m_idList.size() - 1);
+}
+
+void PlaylistModel::getSongInfo(int position, const xmms2::PropDict& info)
+{
+    const int id = info.value<int>("id");
     auto it = m_songInfos.find(id);
     if (it == m_songInfos.end())
-        return true;
+        return;
 
     Song *song = &(*it).second;
     int durationDiff = song->duration() > 0 ? -song->duration() : 0;
@@ -93,9 +104,9 @@ bool PlaylistModel::getSongInfo(int position, const Xmms::PropDict& info)
     if (position == -1
         || (std::vector<int>::size_type)position >= m_idList.size()
         || m_idList[position] != id) {
-        itemsChanged(0, m_idList.size() - 1);//redrawAll();
+        itemsChanged(0, m_idList.size() - 1);
     } else {
-        itemsChanged(position, position);//redrawItem(position);
+        itemsChanged(position, position);
     }
 
     durationDiff += song->duration() > 0 ? song->duration() : 0;
@@ -103,50 +114,44 @@ bool PlaylistModel::getSongInfo(int position, const Xmms::PropDict& info)
         m_totalDuration += durationDiff;
         totalDurationChanged();
     }
-
-    return true;
 }
 
-bool PlaylistModel::processPlaylistChange(const Xmms::Dict& change)
+void PlaylistModel::processPlaylistChange(const xmms2::PlaylistChangeEvent& change)
 {
-    if (change.get<std::string>("name") != m_playlist)
-        return true;
+    if (change.playlist() != m_playlist)
+        return;
 
-    switch (change.get<int>("type")) {
-        case XMMS_PLAYLIST_CHANGED_ADD:
+    typedef xmms2::PlaylistChangeEvent::Type ChangeType;
+    switch (change.type()) {
+        case ChangeType::Add:
         {
-            const int id = change.get<int>("id");
-
+            const int id = change.id();
             m_idList.push_back(id);
             m_songInfos[id];
-            m_xmmsClient->medialib.getInfo(id)(
-                std::bind(&PlaylistModel::getSongInfo, this, m_idList.size() - 1, std::placeholders::_1)
-            );
+            m_xmmsClient->medialibGetInfo(id)(&PlaylistModel::getSongInfo, this,
+                                              m_idList.size() - 1, std::placeholders::_1);
             itemAdded();
             totalDurationChanged();
             break;
         }
 
-        case XMMS_PLAYLIST_CHANGED_INSERT:
+        case ChangeType::Insert:
         {
-            const int id = change.get<int>("id");
-            const int position = change.get<int>("position");
-
+            const int id = change.id();
+            const int position = change.position();
             m_idList.insert(m_idList.begin() + position, id);
             m_songInfos[id];
-            m_xmmsClient->medialib.getInfo(id)(
-                std::bind(&PlaylistModel::getSongInfo, this, position, std::placeholders::_1)
-            );
+            m_xmmsClient->medialibGetInfo(id)(&PlaylistModel::getSongInfo, this,
+                                              position, std::placeholders::_1);
             itemInserted(position);
             totalDurationChanged();
             break;
         }
 
-        case XMMS_PLAYLIST_CHANGED_REMOVE:
+        case ChangeType::Remove:
         {
-            const int position = change.get<int>("position");
+            const int position = change.position();
             const int id = m_idList[position];
-
             m_idList.erase(m_idList.begin() + position);
             m_totalDuration -= m_songInfos[id].duration();
             m_songInfos.erase(id);
@@ -156,11 +161,10 @@ bool PlaylistModel::processPlaylistChange(const Xmms::Dict& change)
             break;
         }
 
-        case XMMS_PLAYLIST_CHANGED_MOVE:
+        case ChangeType::Move:
         {
-            const int position = change.get<int>("position");
-            const int newPosition = change.get<int>("newposition");
-
+            const int position = change.position();
+            const int newPosition = change.newPosition();
             const int id = m_idList[position];
             m_idList.erase(m_idList.begin() + position);
             m_idList.insert(m_idList.begin() + newPosition, id);
@@ -168,7 +172,7 @@ bool PlaylistModel::processPlaylistChange(const Xmms::Dict& change)
             break;
         }
 
-        case XMMS_PLAYLIST_CHANGED_CLEAR:
+        case ChangeType::Clear:
             m_currentPosition = -1;
             m_totalDuration = 0;
             m_idList.clear();
@@ -177,58 +181,45 @@ bool PlaylistModel::processPlaylistChange(const Xmms::Dict& change)
             reset();
             break;
 
-        case XMMS_PLAYLIST_CHANGED_SHUFFLE:
-        case XMMS_PLAYLIST_CHANGED_SORT:
-            m_xmmsClient->playlist.listEntries(m_playlist)(
-                Xmms::bind(&PlaylistModel::getEntries, this)
-            );
-            break;
-
-        case XMMS_PLAYLIST_CHANGED_UPDATE: // Don't know how I should handle it, just ignore
+        case ChangeType::Reorder:
+            m_xmmsClient->playlistListEntries(m_playlist)(&PlaylistModel::getEntriesOrder, this);
             break;
     }
-
-    return true;
 }
 
-bool PlaylistModel::getCurrentPosition(const Xmms::Dict &position)
+void PlaylistModel::getCurrentPosition(const xmms2::Dict& position)
 {
-    if (!position.contains("name") || position.get<std::string>("name") != m_playlist)
-        return true;
+    if (m_playlist != position.value<StringRef>("name", "").c_str())
+        return;
 
-    if (position.contains("position")) {
+    const int newPosition = position.value<int>("position", -1);
+    if (newPosition != -1) {
         const int oldPosition = m_currentPosition;
-        m_currentPosition = position.get<int>("position");
+        m_currentPosition = newPosition;
         itemsChanged(oldPosition, oldPosition);
         itemsChanged(m_currentPosition, m_currentPosition);
         if (oldPosition != -1)
             activeSongPositionChanged(m_currentPosition);
     }
-    return true;
 }
 
-bool PlaylistModel::handlePlaylistRename(const Xmms::Dict& change)
+void PlaylistModel::handlePlaylistRename(const xmms2::CollectionChangeEvent& change)
 {
-    if (change.get<int>("type") == XMMS_COLLECTION_CHANGED_RENAME
-        && change.get<std::string>("namespace") == XMMS_COLLECTION_NS_PLAYLISTS) {
-        const std::string name = change.get<std::string>("name");
-        if (name == m_playlist) {
-            m_playlist = change.get<std::string>("newname");
+    typedef xmms2::CollectionChangeEvent::Type ChangeType;
+    if (change.type() == ChangeType::Rename && change.kind() == "Playlists") {
+        if (change.name() == m_playlist) {
+            m_playlist = change.newName();
             playlistRenamed();
         }
     }
-    return true;
 }
 
-bool PlaylistModel::handleSongInfoUpdate(const int& id)
+void PlaylistModel::handleSongInfoUpdate(int id)
 {
     if (m_songInfos.find(id) != m_songInfos.end()) {
-        m_xmmsClient->medialib.getInfo(id)(
-            std::bind(&PlaylistModel::getSongInfo, this, -1, std::placeholders::_1)
-        );
+        m_xmmsClient->medialibGetInfo(id)(&PlaylistModel::getSongInfo, this,
+                                          -1, std::placeholders::_1);
     }
-
-    return true;
 }
 
 int PlaylistModel::itemsCount() const
@@ -246,9 +237,8 @@ const Song &PlaylistModel::song(int item) const
     if (it == m_songInfos.end()) {
         PlaylistModel *nonConstThis = const_cast<PlaylistModel*>(this);
         song = &nonConstThis->m_songInfos[id];
-        m_xmmsClient->medialib.getInfo(id)(
-            std::bind(&PlaylistModel::getSongInfo, nonConstThis, -1, std::placeholders::_1)
-        );
+        m_xmmsClient->medialibGetInfo(id)(&PlaylistModel::getSongInfo, nonConstThis,
+                                          -1, std::placeholders::_1);
     } else {
         song = &(*it).second;
     }

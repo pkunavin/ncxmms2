@@ -18,20 +18,19 @@
 #define ARTISTSLISTMODEL_H
 
 #include <vector>
+#include "../xmmsutils/types.h"
 #include "../lib/listmodel.h"
 
-namespace Xmms {
-class Client;
-class Dict;
-template <class T> class List;
-}
-
 namespace ncxmms2 {
+
+namespace xmms2 {
+class Client;
+}
 
 class ArtistsListModel : public ListModel
 {
 public:
-    ArtistsListModel(Xmms::Client *xmmsClient, Object *parent = nullptr);
+    ArtistsListModel(xmms2::Client *xmmsClient, Object *parent = nullptr);
 
     const std::string& artist(int item) const;
 
@@ -41,9 +40,9 @@ public:
     virtual void refresh();
 
 private:
-    Xmms::Client *m_xmmsClient;
+    xmms2::Client *m_xmmsClient;
     std::vector<std::string> m_artists;
-    bool getArtistsList(const Xmms::List<Xmms::Dict>& list);
+    void getArtistsList(const xmms2::List<xmms2::Dict>& list);
 };
 } // ncxmms2
 

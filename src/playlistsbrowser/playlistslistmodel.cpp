@@ -14,31 +14,23 @@
  *  GNU General Public License for more details.
  */
 
-#include <xmmsclient/xmmsclient++.h>
 #include <algorithm>
 #include <assert.h>
 
 #include "playlistslistmodel.h"
+#include "../xmmsutils/client.h"
 #include "../lib/listmodelitemdata.h"
 
 using namespace ncxmms2;
 
-PlaylistsListModel::PlaylistsListModel(Xmms::Client *xmmsClient, Object *parent) :
+PlaylistsListModel::PlaylistsListModel(xmms2::Client *xmmsClient, Object *parent) :
     ListModel(parent),
     m_xmmsClient(xmmsClient)
 {
-    m_xmmsClient->playlist.list()(
-        Xmms::bind(&PlaylistsListModel::getPlaylists, this)
-    );
-    m_xmmsClient->playlist.currentActive()(
-        Xmms::bind(&PlaylistsListModel::getCurrentPlaylist, this)
-    );
-    m_xmmsClient->playlist.broadcastLoaded()(
-        Xmms::bind(&PlaylistsListModel::getCurrentPlaylist, this)
-    );
-    m_xmmsClient->collection.broadcastCollectionChanged()(
-        Xmms::bind(&PlaylistsListModel::handlePlaylistsChange, this)
-    );
+    m_xmmsClient->playlistList()(&PlaylistsListModel::getPlaylists, this);
+    m_xmmsClient->playlistCurrentActive()(&PlaylistsListModel::getCurrentPlaylist, this);
+    m_xmmsClient->playlistLoaded_Connect(&PlaylistsListModel::getCurrentPlaylist, this);
+    m_xmmsClient->collectionChanged_Connect(&PlaylistsListModel::handlePlaylistsChange, this);
 }
 
 void PlaylistsListModel::data(int item, ListModelItemData *itemData) const
@@ -76,79 +68,72 @@ const std::string &PlaylistsListModel::currentPlaylist() const
     return m_currentPlaylist;
 }
 
-bool PlaylistsListModel::getPlaylists(const Xmms::List<std::string>& playlists)
+void PlaylistsListModel::getPlaylists(const xmms2::List<StringRef>& playlists)
 {
     m_playlists.clear();
-    for (auto& playlist : playlists)
-    {
-        if (playlist.empty() || playlist[0] == '_')
+    m_playlists.reserve(playlists.size());
+    
+    for (auto it = playlists.getIterator(); it.isValid(); it.next()) {
+        bool ok;
+        StringRef strRef = it.value(&ok);
+        if (NCXMMS2_UNLIKELY(!ok || strRef.isNull()))
             continue;
-
-        m_playlists.push_back(playlist);
+        if (NCXMMS2_UNLIKELY(*strRef.c_str() == '\0' || *strRef.c_str() == '_'))
+            continue;
+        m_playlists.emplace_back(strRef.c_str());
     }
-
     reset();
-    return true;
 }
 
-bool PlaylistsListModel::getCurrentPlaylist(const std::string& playlist)
+void PlaylistsListModel::getCurrentPlaylist(StringRef playlist)
 {
     auto it = std::find(m_playlists.begin(), m_playlists.end(), m_currentPlaylist);
-    m_currentPlaylist = playlist;
+    m_currentPlaylist = playlist.c_str();
     if (it != m_playlists.end())
         itemsChanged(it - m_playlists.begin(), it - m_playlists.begin());
 
     it = std::find(m_playlists.begin(), m_playlists.end(), m_currentPlaylist);
     if (it != m_playlists.end())
         itemsChanged(it - m_playlists.begin(), it - m_playlists.begin());
-
-    return true;
 }
 
-bool PlaylistsListModel::handlePlaylistsChange(const Xmms::Dict& change)
+void PlaylistsListModel::handlePlaylistsChange(const xmms2::CollectionChangeEvent& change)
 {
-    if (change.get<std::string>("namespace") != XMMS_COLLECTION_NS_PLAYLISTS)
-        return true;
+    if (change.kind() != "Playlists")
+        return;
 
-    switch (change.get<int>("type")) {
-        case XMMS_COLLECTION_CHANGED_ADD:
-            m_playlists.push_back(change.get<std::string>("name"));
+    typedef xmms2::CollectionChangeEvent::Type ChangeType;
+    switch (change.type()) {
+        case ChangeType::Add:
+            m_playlists.push_back(change.name());
             itemAdded();
             playlistAdded(m_playlists.back(), m_playlists.size() - 1);
             break;
 
-        case XMMS_COLLECTION_CHANGED_RENAME:
+        case ChangeType::Rename:
         {
-            const std::string name = change.get<std::string>("name");
-            const std::string newName = change.get<std::string>("newname");
+            if (m_currentPlaylist == change.name())
+                m_currentPlaylist = change.newName();
 
-            if (m_currentPlaylist == name)
-                m_currentPlaylist = newName;
-
-            auto it = std::find(m_playlists.begin(), m_playlists.end(), name);
+            auto it = std::find(m_playlists.begin(), m_playlists.end(), change.name());
             if (it != m_playlists.end()) {
-                (*it) = newName;
+                (*it) = change.newName();
                 itemsChanged(it - m_playlists.begin(), it - m_playlists.begin());
             }
-
             break;
         }
 
-        case XMMS_COLLECTION_CHANGED_REMOVE:
+        case ChangeType::Remove:
         {
-            auto it = std::find(m_playlists.begin(), m_playlists.end(),
-                                change.get<std::string>("name"));
+            auto it = std::find(m_playlists.begin(), m_playlists.end(), change.name());
             if (it != m_playlists.end()) {
                 m_playlists.erase(it);
                 itemRemoved(it - m_playlists.begin());
             }
-
             break;
         }
 
-        case XMMS_COLLECTION_CHANGED_UPDATE:
+        case ChangeType::Update:
             break;
     }
-
-    return true;
 }

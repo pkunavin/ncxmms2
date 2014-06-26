@@ -14,15 +14,15 @@
  *  GNU General Public License for more details.
  */
 
-#include <xmmsclient/xmmsclient++.h>
 #include <assert.h>
 
 #include "albumslistmodel.h"
+#include "../xmmsutils/client.h"
 #include "../lib/listmodelitemdata.h"
 
 using namespace ncxmms2;
 
-AlbumsListModel::AlbumsListModel(Xmms::Client *xmmsClient, Object *parent) :
+AlbumsListModel::AlbumsListModel(xmms2::Client *xmmsClient, Object *parent) :
     ListModel(parent),
     m_xmmsClient(xmmsClient)
 {
@@ -46,14 +46,15 @@ const std::string& AlbumsListModel::album(int item) const
     return m_albums[item];
 }
 
-const std::list<std::string>& AlbumsListModel::sortingOrder() const
+const std::vector<std::string>& AlbumsListModel::sortingOrder() const
 {
     return m_sortingOrder;
 }
 
 void AlbumsListModel::data(int item, ListModelItemData *itemData) const
 {
-    itemData->textPtr = &m_albums[item];
+    static const std::string unknownAlbum = "Unknown album";
+    itemData->textPtr = !m_albums[item].empty() ? &m_albums[item] : &unknownAlbum;
 }
 
 int AlbumsListModel::itemsCount() const
@@ -63,37 +64,31 @@ int AlbumsListModel::itemsCount() const
 
 void AlbumsListModel::refresh()
 {
-    if (!m_artist.empty()) { //FIXME: handle empty artist
-        Xmms::Coll::Universe     allMedia;
-        const Xmms::Coll::Equals allByArtist(allMedia, "artist", m_artist, true);
-
-        const std::list<std::string>   fetch = {"album"};
-        const std::list<std::string> groupBy = {"album"};
-
-        m_xmmsClient->collection.queryInfos(allByArtist, fetch, m_sortingOrder, 0, 0, groupBy)(
-            std::bind(&AlbumsListModel::getAlbumsList, this, m_artist, std::placeholders::_1)
-        );
-    }
-
     m_albums.clear();
+    
+    xmms2::Collection albums = xmms2::Collection::allByArtist(m_artist);
+    const std::vector<std::string>    fetch = {"album"};
+    const std::vector<std::string>& groupBy = fetch;
+    
+    m_xmmsClient->collectionQueryInfos(albums, fetch, m_sortingOrder, groupBy)(
+        &AlbumsListModel::getAlbumsList, this, m_artist, std::placeholders::_1);
+    
     reset();
 }
 
-bool AlbumsListModel::getAlbumsList(const std::string& artist, const Xmms::List<Xmms::Dict>& list)
+void AlbumsListModel::getAlbumsList(const std::string& artist, const xmms2::List<xmms2::Dict>& list)
 {
     if (artist != m_artist)
-        return true;
+        return;
 
     m_albums.clear();
-    for (auto it = list.begin(), it_end = list.end(); it != it_end; ++it) {
-        try {
-            m_albums.push_back((*it).get<std::string>("album"));
-        }
-        catch (...) {
+    for (auto it = list.getIterator(); it.isValid(); it.next()) {
+        bool ok = false;
+        xmms2::Dict dict = it.value(&ok);
+        if (NCXMMS2_UNLIKELY(!ok))
             continue;
-        }
+        StringRef album = dict.value<StringRef>("album", "");
+        m_albums.emplace_back(album.c_str());
     }
-
     reset();
-    return true;
 }
