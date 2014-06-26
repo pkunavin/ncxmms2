@@ -156,7 +156,7 @@ public:
     StringPtr(const StringPtr& other) = delete;
     StringPtr& operator=(const StringPtr& other) = delete;
     
-    StringPtr(StringPtr&& other) :
+    StringPtr(StringPtr&& other) noexcept :
         m_policy(other.m_policy),
         m_begin(other.m_begin),
         m_end(other.m_end)
@@ -166,7 +166,7 @@ public:
         other.m_end = nullptr;
     }
     
-    StringPtr& operator=(StringPtr&& other)
+    StringPtr& operator=(StringPtr&& other) noexcept
     {
         if (this != &other) {
             release();

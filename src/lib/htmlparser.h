@@ -183,12 +183,12 @@ public:
         
         Token(const Token& other) = delete;
         Token& operator=(const Token& other) = delete;
-        Token(Token&& other) :
+        Token(Token&& other) noexcept :
             m_type(other.m_type)
         {
             construct(std::move(other));
         }
-        Token& operator=(Token&& other)
+        Token& operator=(Token&& other) noexcept
         {
             if (this != &other) {
                 destruct();
