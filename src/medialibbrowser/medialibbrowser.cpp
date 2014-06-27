@@ -192,6 +192,14 @@ void MedialibBrowser::paint(const Rectangle& rect)
     painter.flush();
 }
 
+void MedialibBrowser::showEvent()
+{
+    ArtistsListModel *artistsModel = static_cast<ArtistsListModel*>(m_artistsListView->model());
+    if (artistsModel->itemsCount() == 0)
+        artistsModel->refresh();
+    Window::showEvent();
+}
+
 void MedialibBrowser::setAlbumsListViewArtist(int item)
 {
     ArtistsListModel *artistsModel = static_cast<ArtistsListModel*>(m_artistsListView->model());

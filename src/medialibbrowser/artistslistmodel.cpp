@@ -26,7 +26,7 @@ ArtistsListModel::ArtistsListModel(xmms2::Client *xmmsClient, Object *parent) :
     ListModel(parent),
     m_xmmsClient(xmmsClient)
 {
-    refresh();
+    
 }
 
 const std::string& ArtistsListModel::artist(int item) const

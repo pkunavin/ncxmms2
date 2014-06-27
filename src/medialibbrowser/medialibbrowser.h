@@ -40,6 +40,7 @@ public:
 protected:
     virtual void resizeChildren(const Size& size);
     virtual void paint(const Rectangle& rect);
+    virtual void showEvent();
 
 private:
     xmms2::Client *m_xmmsClient;
