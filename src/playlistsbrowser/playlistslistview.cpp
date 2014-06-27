@@ -29,7 +29,8 @@ using namespace ncxmms2;
 
 PlaylistsListView::PlaylistsListView(xmms2::Client *xmmsClient, const Rectangle& rect, Window *parent) :
     ListViewAppIntegrated(rect, parent),
-    m_xmmsClient(xmmsClient)
+    m_xmmsClient(xmmsClient),
+    m_initialized(false)
 {
     loadPalette("PlaylistsListView");
 
@@ -46,6 +47,17 @@ const std::string& PlaylistsListView::playlist(int item) const
             boost::polymorphic_downcast<PlaylistsListModel*>(model());
 
     return plsModel->playlist(item);
+}
+
+void PlaylistsListView::showEvent()
+{
+    if (!m_initialized) {
+        PlaylistsListModel *plsModel =
+                boost::polymorphic_downcast<PlaylistsListModel*>(model());
+        plsModel->init();
+        m_initialized = true;
+    }
+    ListViewAppIntegrated::showEvent();
 }
 
 void PlaylistsListView::loadPlaylist(int item)

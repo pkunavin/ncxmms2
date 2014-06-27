@@ -34,7 +34,9 @@ public:
 
     virtual void data(int item, ListModelItemData *itemData) const;
     virtual int itemsCount() const;
-
+    
+    void init();
+    
     const std::string& playlist(int item) const;
     const std::string& currentPlaylist() const;
     bool playlistExists(const std::string& playlist) const;

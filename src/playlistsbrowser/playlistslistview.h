@@ -34,8 +34,12 @@ public:
 
     const std::string& playlist(int item) const;
 
+protected:
+    virtual void showEvent();
+    
 private:
     xmms2::Client *m_xmmsClient;
+    bool m_initialized;
     std::string m_newPlaylist;
 
     void loadPlaylist(int item);

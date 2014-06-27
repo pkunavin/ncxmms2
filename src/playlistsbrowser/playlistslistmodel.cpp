@@ -27,10 +27,7 @@ PlaylistsListModel::PlaylistsListModel(xmms2::Client *xmmsClient, Object *parent
     ListModel(parent),
     m_xmmsClient(xmmsClient)
 {
-    m_xmmsClient->playlistList()(&PlaylistsListModel::getPlaylists, this);
-    m_xmmsClient->playlistCurrentActive()(&PlaylistsListModel::getCurrentPlaylist, this);
-    m_xmmsClient->playlistLoaded_Connect(&PlaylistsListModel::getCurrentPlaylist, this);
-    m_xmmsClient->collectionChanged_Connect(&PlaylistsListModel::handlePlaylistsChange, this);
+    
 }
 
 void PlaylistsListModel::data(int item, ListModelItemData *itemData) const
@@ -43,6 +40,14 @@ void PlaylistsListModel::data(int item, ListModelItemData *itemData) const
 int PlaylistsListModel::itemsCount() const
 {
     return m_playlists.size();
+}
+
+void PlaylistsListModel::init()
+{
+    m_xmmsClient->playlistList()(&PlaylistsListModel::getPlaylists, this);
+    m_xmmsClient->playlistCurrentActive()(&PlaylistsListModel::getCurrentPlaylist, this);
+    m_xmmsClient->playlistLoaded_Connect(&PlaylistsListModel::getCurrentPlaylist, this);
+    m_xmmsClient->collectionChanged_Connect(&PlaylistsListModel::handlePlaylistsChange, this);
 }
 
 const std::string& PlaylistsListModel::playlist(int item) const
