@@ -33,7 +33,8 @@ public:
         q(_q),
         connection(nullptr),
         connected(false),
-        ml(nullptr)
+        ml(nullptr),
+        configLoadRequested(false)
          {}
      
     Client *q;
@@ -53,6 +54,7 @@ public:
         broadcastsAndSignals.push_back(result);
     }
     
+    bool configLoadRequested;
     std::unordered_map<std::string, std::string> config;
     
     void getConfig(const Dict& dict);
@@ -192,10 +194,6 @@ bool xmms2::Client::connect(const std::string& patch)
     d->connectBroadcastOrSignal(xmmsc_broadcast_playlist_changed(d->connection), playlistChanged);
     d->connectBroadcastOrSignal(xmmsc_broadcast_collection_changed(d->connection), collectionChanged);
     d->connectBroadcastOrSignal(xmmsc_broadcast_config_value_changed(d->connection), configValuesChanged);
-    
-    // Load xmms2 config
-    configValueList()(&ClientPrivate::getConfig, d.get());
-    configValuesChanged_Connect(&ClientPrivate::handleConfigChange, d.get());
     
     return true;
 }
@@ -437,6 +435,20 @@ xmms2::VoidResult xmms2::Client::configSetValue(const std::string& key, const st
 {
     CLIENT_CHECK_CONNECTION;
     return {d->connection, xmmsc_config_set_value(d->connection, key.c_str(), value.c_str())};
+}
+
+void xmms2::Client::configLoad()
+{
+    if (!d->configLoadRequested) {
+        configValueList()(&ClientPrivate::getConfig, d.get());
+        configValuesChanged_Connect(&ClientPrivate::handleConfigChange, d.get());
+        d->configLoadRequested = true;
+    }
+}
+
+bool xmms2::Client::isConfigLoaded() const
+{
+    return !d->config.empty();
 }
 
 bool xmms2::Client::configHasValue(const std::string& key) const

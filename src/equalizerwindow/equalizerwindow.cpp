@@ -172,6 +172,9 @@ void EqualizerWindow::resizeChildren(const Size& size)
 
 void EqualizerWindow::showEvent()
 {
+    if (!m_xmmsClient->isConfigLoaded())
+        m_xmmsClient->configLoad();
+    
     if (m_equalizerPluginEnabled)
         Window::showEvent();
 }

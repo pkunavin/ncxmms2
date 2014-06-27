@@ -120,6 +120,8 @@ public:
     DictResult configValueList();
     VoidResult configSetValue(const std::string& key, const std::string& value);
     
+    void configLoad();
+    bool isConfigLoaded() const;
     bool configHasValue(const std::string& key) const;
     const std::string& configValue(const std::string& key) const;
     
