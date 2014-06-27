@@ -71,5 +71,6 @@ pkg_check_modules(GLIB glib-2.0 REQUIRED)
 include_directories(${GLIB_INCLUDE_DIRS})
 
 target_link_libraries(ncxmms2-lib libtermkey
+                                  json-parser
                                   ${NCURSESW_LIBRARIES}
                                   ${GLIB_LIBRARIES})

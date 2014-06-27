@@ -19,6 +19,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
+#include <assert.h>
 
 #include <algorithm>
 #include <iostream>
@@ -26,8 +27,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
 
 #include "application.h"
 #include "window.h"
@@ -39,6 +38,7 @@
 #include "stringref.h"
 
 #include "../../3rdparty/libtermkey/termkey.h"
+#include "../../3rdparty/json-parser/json.h"
 #include "../../3rdparty/folly/sorted_vector_types.h"
 
 namespace ncxmms2 {
@@ -57,7 +57,8 @@ public:
         mouseDoubleClickPosition(-1, -1),
         mainWindow(nullptr),
         grabbedFocusWindow(nullptr),
-        runningOnXTerm(false) {}
+        runningOnXTerm(false),
+        colorSchemeTree(nullptr) {}
 
     bool useColors;
 
@@ -89,13 +90,45 @@ public:
 
     bool runningOnXTerm;
     
-    boost::property_tree::ptree colorSchemeTree;
+    json_value *colorSchemeTree;
     std::map<std::string, std::shared_ptr<const Palette>> paletteMap;
-    void parseColorSchemeTree(const boost::property_tree::ptree&  colorSchemeTree,
-                              Palette                            *palette,
-                              const std::map<std::string, int>&   rolesMap);
+    void parseObjectPalette(const json_value *paletteTree, Palette *palette,
+                            const std::map<std::string, int>& rolesMap);
 };
 } // ncxmms2
+
+namespace {
+
+json_value * JsonFindObject(const json_value *root, const char *name)
+{
+    if (!root || root->type != json_object)
+        return nullptr;
+    
+    auto *obj = &root->u.object;
+    for (unsigned int i = 0; i < obj->length; ++i) {
+        auto *value = &obj->values[i];
+        if (!std::strcmp(value->name, name) && value->value->type == json_object)
+            return value->value;
+    }
+    
+    return nullptr;
+}
+
+const char * JsonObjectGetString(const json_value *object, const char *key)
+{
+    assert(object->type == json_object);
+
+    auto *obj = &object->u.object;
+    for (unsigned int i = 0; i < obj->length; ++i) {
+        auto *value = &obj->values[i];
+        if (!std::strcmp(value->name, key) && value->value->type == json_string)
+            return value->value->u.string.ptr;
+    }
+    
+    return nullptr;
+}
+
+}
 
 using namespace ncxmms2;
 
@@ -227,15 +260,26 @@ void Application::setMouseDoubleClickInterval(int msec)
 void Application::setColorSchemeFile(const std::string& file)
 {
     CHECK_INST;
-    try
-    {
-        boost::property_tree::json_parser::read_json(file, inst->d->colorSchemeTree);
+    
+    gchar *contents;
+    size_t length;
+    GError *error = NULL;
+    g_file_get_contents(file.c_str(), &contents, &length, &error);
+    if (error) {
+        std::string errorMsg = std::string("Unable to read color scheme file: ").append(error->message);
+        g_error_free(error);
+        throw std::runtime_error(errorMsg);
     }
-    catch (const boost::property_tree::json_parser::json_parser_error& error)
-    {
-        throw std::runtime_error(
-                std::string("Parsing color scheme file failed: ").append(error.what())
-              );
+    
+    json_settings settings = {0, 0, nullptr, nullptr, nullptr, 0};
+    settings.settings |= json_enable_comments;
+    char jsonError[json_error_max + 1];
+    jsonError[json_error_max] = '\0';
+    inst->d->colorSchemeTree = json_parse_ex(&settings, contents, length, jsonError);
+    g_free(contents);
+    if (!inst->d->colorSchemeTree) {
+        std::string errorMsg = std::string("Parsing color scheme file failed: ").append(jsonError);
+        throw std::runtime_error(errorMsg);
     }
 }
 
@@ -256,8 +300,8 @@ std::shared_ptr<const Palette> Application::getPalette(const std::string&       
     if (it != p->paletteMap.end()) // Already have palette in map
         return it->second;         // no need to parse color scheme again
 
-    const auto classPalette = p->colorSchemeTree.find(className);
-    if (classPalette == p->colorSchemeTree.not_found()) {
+    auto *classPalette = JsonFindObject(p->colorSchemeTree, className.c_str());
+    if (!classPalette) {
         if (oldPalette) // Return empty ptr, if we have no custom palette
             return std::shared_ptr<const Palette>();
 
@@ -281,17 +325,16 @@ std::shared_ptr<const Palette> Application::getPalette(const std::string&       
         {"Highlight",       Palette::RoleHighlight      },
         {"HighlightedText", Palette::RoleHighlightedText}
     };
-    p->parseColorSchemeTree(classPalette->second, palette.get(), standartRolesMap);
-    p->parseColorSchemeTree(classPalette->second, palette.get(), userRolesMap);
+    p->parseObjectPalette(classPalette, palette.get(), standartRolesMap);
+    p->parseObjectPalette(classPalette, palette.get(), userRolesMap);
     
     std::shared_ptr<const Palette> sharedPalette(palette.release());
     p->paletteMap[className] = sharedPalette;
     return sharedPalette;
 }
 
-void ApplicationPrivate::parseColorSchemeTree(const boost::property_tree::ptree&  colorSchemeTree,
-                                              Palette                            *palette,
-                                              const std::map<std::string, int>&   rolesMap)
+void ApplicationPrivate::parseObjectPalette(const json_value *paletteTree, Palette *palette,
+                                            const std::map<std::string, int>& rolesMap)
 {
     static const struct PaletteGroup {const char *name; int group;} paletteGroupes[] =
     {
@@ -315,14 +358,15 @@ void ApplicationPrivate::parseColorSchemeTree(const boost::property_tree::ptree&
 
     const PaletteGroup *paletteGroup = paletteGroupes;
     while (paletteGroup->name) {
-        std::string key(paletteGroup->name);
-        key.push_back('.');
-        const size_t keyStrSize = key.size();
+        auto *paletteGroupObject = JsonFindObject(paletteTree, paletteGroup->name);
+        if (!paletteGroupObject)
+            continue;
+
         for (const auto& role : rolesMap) {
-            key.resize(keyStrSize);
-            key.append(role.first);
-            std::string colorName = colorSchemeTree.get(key, std::string());
-            auto it = colorNamesMap.find(colorName.c_str());
+            const char *colorName = JsonObjectGetString(paletteGroupObject, role.first.c_str());
+            if (!colorName)
+                continue;
+            auto it = colorNamesMap.find(colorName);
             if (it != colorNamesMap.end()) {
                 palette->setColor((Palette::ColorGroup)paletteGroup->group,
                                   role.second,
@@ -535,5 +579,7 @@ Application::~Application()
     termkey_destroy(d->termKey);
     if (d->mouseEnabled)
         d->mouseDisable();
+    
+    json_value_free(d->colorSchemeTree);
 }
 
