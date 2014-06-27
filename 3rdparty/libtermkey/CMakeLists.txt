@@ -10,7 +10,7 @@ set(HEADERS
 
 add_library(libtermkey ${SOURCES})
 
-set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c99")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -std=c99")
 
 find_package(PkgConfig REQUIRED)
 
