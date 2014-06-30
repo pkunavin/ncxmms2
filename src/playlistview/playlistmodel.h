@@ -47,6 +47,8 @@ public:
 
     int totalDuration() const;
 
+    void setLazyLoadPlaylist(bool enable);
+    
     // Signals
     NCXMMS2_SIGNAL(playlistRenamed)
     NCXMMS2_SIGNAL(activeSongPositionChanged, int)
@@ -55,6 +57,8 @@ public:
 private:
     xmms2::Client *m_xmmsClient;
 
+    bool m_lazyLoadPlaylist;
+    
     std::unordered_map<int, Song> m_songInfos;
     std::vector<int> m_idList;
     std::string m_playlist;

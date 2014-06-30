@@ -65,6 +65,12 @@ void PlaylistView::setDisplayFormat(const std::string& format)
     plsDelegate->setDisplayFormat(format);
 }
 
+void PlaylistView::setLazyLoadPlaylist(bool enable)
+{
+    PlaylistModel *plsModel = boost::polymorphic_downcast<PlaylistModel*>(model());
+    plsModel->setLazyLoadPlaylist(enable);
+}
+
 void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
 {
     PlaylistModel *plsModel = boost::polymorphic_downcast<PlaylistModel*>(model());

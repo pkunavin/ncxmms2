@@ -55,6 +55,7 @@ PlaylistsBrowser::PlaylistsBrowser(xmms2::Client *xmmsClient, const Rectangle& r
     {
         throw std::runtime_error(std::string("PlaylistsBrowser: ").append(error.what()));
     }
+    m_plsViewer->setLazyLoadPlaylist(true);
     m_plsViewer->setHideCurrentItemInterval(0);
     m_plsViewer->hideCurrentItem();
     m_plsViewer->focusLost_Connect([this](){

@@ -23,6 +23,7 @@ using namespace ncxmms2;
 PlaylistModel::PlaylistModel(xmms2::Client *xmmsClient, Object *parent) :
     ListModel(parent),
     m_xmmsClient(xmmsClient),
+    m_lazyLoadPlaylist(false),
     m_currentPosition(-1),
     m_totalDuration(0)
 {
@@ -53,7 +54,6 @@ void PlaylistModel::getEntries(const xmms2::List<int>& entries)
     m_songInfos.clear();
     m_songInfos.rehash(m_idList.size() / m_songInfos.max_load_factor() + 1);
 
-    int pos = 0;
     for (auto it = entries.getIterator(); it.isValid(); it.next()) {
         bool ok = false;
         int id = it.value(&ok);
@@ -63,10 +63,15 @@ void PlaylistModel::getEntries(const xmms2::List<int>& entries)
             break;
         }
         m_idList.push_back(id);
-        m_songInfos[id];
-        m_xmmsClient->medialibGetInfo(id)(&PlaylistModel::getSongInfo, this,
-                                          pos, std::placeholders::_1);
-        ++pos;
+    }
+    
+    if (!m_lazyLoadPlaylist) {
+        for (int i = 0; i < (int)m_idList.size(); ++i) {
+            int id = m_idList[i];
+            m_songInfos[id];
+            m_xmmsClient->medialibGetInfo(id)(&PlaylistModel::getSongInfo, this,
+                                              i, std::placeholders::_1);
+        }
     }
     
     reset();
@@ -254,6 +259,11 @@ int PlaylistModel::currentSongItem() const
 int PlaylistModel::totalDuration() const
 {
     return m_totalDuration;
+}
+
+void PlaylistModel::setLazyLoadPlaylist(bool enable)
+{
+    m_lazyLoadPlaylist = enable;
 }
 
 void PlaylistModel::data(int item, ListModelItemData *itemData) const

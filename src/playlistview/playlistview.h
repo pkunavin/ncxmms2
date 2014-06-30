@@ -31,6 +31,8 @@ public:
 
     void setDisplayFormat(const std::string& format);
 
+    void setLazyLoadPlaylist(bool enable);
+    
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
 
     // Signals:
