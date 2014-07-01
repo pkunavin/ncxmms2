@@ -172,7 +172,6 @@ void EqualizerBandsWindow::paint(const Rectangle& rect)
         const char *message = "Terminal too small!";
         painter.move((cols() - std::strlen(message)) / 2, lines() / 2);
         painter.printString(message);
-        painter.flush();
         m_terminalTooSmall = true;
         painter.flush();
         return;
