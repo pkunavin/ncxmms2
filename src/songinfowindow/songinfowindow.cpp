@@ -14,8 +14,6 @@
  *  GNU General Public License for more details.
  */
 
-#include <boost/lexical_cast.hpp>
-
 #include "songinfowindow.h"
 #include "../songdisplayformatparser.h"
 #include "../xmmsutils/client.h"
