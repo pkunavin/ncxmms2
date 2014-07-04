@@ -14,7 +14,6 @@
  *  GNU General Public License for more details.
  */
 
-#include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 
 #include "utils.h"
@@ -26,43 +25,13 @@ using namespace ncxmms2;
 
 std::string ncxmms2::Utils::getTimeStringFromInt(int msec)
 {
-    msec /= 1000;
-    std::string timeString;
-
-    if (msec < 3600) {
-        timeString.reserve(5); // xx:xx
-
-        const int min = msec/60;
-        timeString.append(boost::lexical_cast<std::string>(min));
-
-        timeString.push_back(':');
-
-        const int sec = msec % 60;
-        if (sec < 10)
-            timeString.push_back('0');
-        timeString.append(boost::lexical_cast<std::string>(sec));
-    } else {
-        timeString.reserve(8); // xx:xx:xx
-
-        const int hours = msec / 3600;
-        timeString.append(boost::lexical_cast<std::string>(hours));
-
-        timeString.push_back(':');
-
-        const int min = msec / 60 - 60 * hours;
-        if (min < 10)
-            timeString.push_back('0');
-        timeString.append(boost::lexical_cast<std::string>(min));
-
-        timeString.push_back(':');
-
-        const int sec = msec % 60;
-        if (sec < 10)
-            timeString.push_back('0');
-        timeString.append(boost::lexical_cast<std::string>(sec));
-    }
-
-    return timeString;
+    const int sec = msec / 1000;
+    
+    if (sec < 3600)
+        return format("%d:%02d", sec / 60, sec % 60);
+    
+    const int hours = sec / 3600;
+    return format("%d:%02d:%02d", hours, sec / 60 - 60 * hours, sec % 60);
 }
 
 Utils::FileType Utils::getFileType(const std::string& path)
