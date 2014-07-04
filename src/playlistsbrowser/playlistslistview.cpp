@@ -138,7 +138,7 @@ void PlaylistsListView::createPlaylist(const std::string& playlist)
     }
 
     if (plsModel->playlistExists(playlist)) {
-        StatusArea::showMessage("\"%1%\" playlist already exists!", playlist);
+        StatusArea::showMessage("\"%s\" playlist already exists!", playlist);
         return;
     }
 
@@ -168,7 +168,7 @@ void PlaylistsListView::renamePlaylist(const std::string& oldName, const std::st
     }
 
     if (plsModel->playlistExists(newName)) {
-        StatusArea::showMessage("\"%1%\" playlist already exists!", newName);
+        StatusArea::showMessage("\"%s\" playlist already exists!", newName);
         return;
     }
 

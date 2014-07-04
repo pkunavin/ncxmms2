@@ -189,7 +189,7 @@ void EqualizerBandsWindow::paint(const Rectangle& rect)
     if (bandWidth >= maxBandWidth) {
         for (int band = 0; band < (int)m_bandsGain.size(); ++band) {
             painter.move(xShift + bandWidth * band - 2, 0);
-            painter.printString(Utils::format(" %1%dB", m_bandsGain[band]));
+            painter.printString(Utils::format(" %ddB", m_bandsGain[band]));
             painter.move(xShift + bandWidth * band - 1, lines() - 1);
             painter.printString(bandFrequency(band));
         }
@@ -197,7 +197,7 @@ void EqualizerBandsWindow::paint(const Rectangle& rect)
     
     if (hasFocus() && m_selectedBand >= 0) {
         painter.move(xShift + bandWidth * m_selectedBand - 2, 0);
-        painter.printString(Utils::format(" %1%dB", m_bandsGain[m_selectedBand]));
+        painter.printString(Utils::format(" %ddB", m_bandsGain[m_selectedBand]));
         if (Application::useColors()) {
             painter.setColorPair(palette().color(Palette::GroupActive, Palette::RoleHighlightedText),
                                  palette().color(Palette::GroupActive, Palette::RoleHighlight));

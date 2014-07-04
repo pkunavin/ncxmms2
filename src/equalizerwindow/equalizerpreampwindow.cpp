@@ -94,7 +94,7 @@ void EqualizerPreampWindow::paint(const Rectangle& rect)
     
     Painter painter(this);
     painter.clearWindow();
-    painter.printString(Utils::format(" %1%dB", m_preamp));
+    painter.printString(Utils::format(" %ddB", m_preamp));
     
     if (hasFocus())
         painter.setBold(true);

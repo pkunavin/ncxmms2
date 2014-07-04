@@ -17,7 +17,6 @@
 #include <algorithm>
 #include <iterator>
 #include <cstring>
-#include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -181,11 +180,10 @@ void EqualizerWindow::showEvent()
 
 void EqualizerWindow::loadEqualizerConfig()
 {
-    boost::format fmt("effect.order.%1%");
     std::string effect;
     int i = 0;
     do {
-        effect = m_xmmsClient->configValue((fmt % i).str());
+        effect = m_xmmsClient->configValue(Utils::format("effect.order.%d", i));
         if (effect == "equalizer") {
             m_equalizerPluginEnabled = true;
             break;
@@ -249,15 +247,15 @@ void EqualizerWindow::handleEqualizerConfigChanged(const std::string& key, const
         m_bandsWindow->setBandsNumber(bandsNumber);
         if (useLegacy)
             m_bandsWindow->setLegacyModeEnabled();
-        boost::format fmt(useLegacy ? "equalizer.legacy%1%" : "equalizer.gain%02d");
+        const char *fmt= useLegacy ? "equalizer.legacy%d" : "equalizer.gain%02d";
         for (int i = 0; i < bandsNumber; ++i) {
-            fmt % i;
-            std::string gain = m_xmmsClient->configValue(fmt.str());
+            std::string band = Utils::format(fmt, i);
+            std::string gain = m_xmmsClient->configValue(band);
             m_bandsWindow->setBandGain(i, boost::lexical_cast<double>(gain));
             
             //FIXME: Workaround of xmms2 bug 2581
-            m_xmmsClient->configSetValue(fmt.str(), "0");
-            m_xmmsClient->configSetValue(fmt.str(), gain);
+            m_xmmsClient->configSetValue(band, "0");
+            m_xmmsClient->configSetValue(band, gain);
         }
     }
 }
@@ -289,6 +287,6 @@ void EqualizerWindow::setEqualizerPreamp(int preamp)
 
 void EqualizerWindow::setEqualizerBandGain(int band, int gain)
 {
-    std::string keyFmt = m_bandsWindow->legacyModeEnabled() ? "equalizer.legacy%1%" : "equalizer.gain%02d";
+    const char *keyFmt = m_bandsWindow->legacyModeEnabled() ? "equalizer.legacy%d" : "equalizer.gain%02d";
     m_xmmsClient->configSetValue(Utils::format(keyFmt, band), boost::lexical_cast<std::string>(gain));
 }

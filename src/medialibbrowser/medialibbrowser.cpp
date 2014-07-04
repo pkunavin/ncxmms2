@@ -109,19 +109,19 @@ void MedialibBrowser::keyPressedEvent(const KeyEvent& keyEvent)
             const int currentItem = activeListView->currentItem();
             const std::vector<int>& selectedItems = activeListView->selectedItems();
 
-#define ADD_ITEMS_TO_ACTIVE_PLAYLIST(addFunction, itemDescription)                       \
-    do {                                                                                 \
-        if (!selectedItems.empty()) {                                                    \
-            for (int item : selectedItems) {                                             \
-                addFunction(item, true);                                                 \
-            }                                                                            \
-            StatusArea::showMessage("Adding %1% " itemDescription " to active playlist", \
-                                    selectedItems.size());                               \
-            activeListView->clearSelection();                                            \
-        } else {                                                                         \
-            if (currentItem != -1)                                                       \
-                addFunction(currentItem);                                                \
-        }                                                                                \
+#define ADD_ITEMS_TO_ACTIVE_PLAYLIST(addFunction, itemDescription)                      \
+    do {                                                                                \
+        if (!selectedItems.empty()) {                                                   \
+            for (int item : selectedItems) {                                            \
+                addFunction(item, true);                                                \
+            }                                                                           \
+            StatusArea::showMessage("Adding %s " itemDescription " to active playlist", \
+                                    selectedItems.size());                              \
+            activeListView->clearSelection();                                           \
+        } else {                                                                        \
+            if (currentItem != -1)                                                      \
+                addFunction(currentItem);                                               \
+        }                                                                               \
     } while (0)
 
             if (activeListView == m_songsListView) {
@@ -222,7 +222,7 @@ void MedialibBrowser::activePlaylistAddSong(int item, bool beQuiet)
     SongsListModel *songsModel = static_cast<SongsListModel*>(m_songsListView->model());
     m_xmmsClient->playlistAddId("_active", songsModel->id(item));
     if (!beQuiet)
-        StatusArea::showMessage("Adding \"%1%\" song to active playlist", songsModel->title(item));
+        StatusArea::showMessage("Adding \"%s\" song to active playlist", songsModel->title(item));
 }
 
 void MedialibBrowser::activePlaylistAddAlbum(int item, bool beQuiet)
@@ -236,7 +236,7 @@ void MedialibBrowser::activePlaylistAddAlbum(int item, bool beQuiet)
 
     m_xmmsClient->playlistAddCollection("_active", songs, songsModel->sortingOrder());
     if (!beQuiet)
-        StatusArea::showMessage("Adding \"%1%\" album to active playlist", album);
+        StatusArea::showMessage("Adding \"%s\" album to active playlist", album);
 }
 
 void MedialibBrowser::activePlaylistAddArtist(int item, bool beQuiet)
@@ -269,5 +269,5 @@ void MedialibBrowser::activePlaylistAddAlbums(const std::string& artist,
     }
     
     if (!beQuiet)
-        StatusArea::showMessage("Adding all albums by \"%1%\" to active playlist", artist);
+        StatusArea::showMessage("Adding all albums by \"%s\" to active playlist", artist);
 }

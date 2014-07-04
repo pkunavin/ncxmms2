@@ -147,7 +147,7 @@ using namespace ncxmms2;
 #define CLIENT_CHECK_CONNECTION                                                             \
     do {                                                                                    \
         if (!d->connected)                                                                  \
-            throw ConnectionError("%1% is called while Client is not connected!", __func__);\
+            throw ConnectionError("%s is called while Client is not connected!", __func__); \
     } while (0)
 
 xmms2::Client::Client(Object *parent) :

@@ -188,7 +188,7 @@ void PlaylistView::addPath(const std::string& path)
         m_xmmsClient->playlistAddRecursive(plsModel->playlist(),
                                            std::string("file://").append(path));
         // FIXME: Path may be too long to display
-        StatusArea::showMessage("Adding \"%1%\" directory to \"%2%\" playlist",
+        StatusArea::showMessage("Adding \"%s\" directory to \"%s\" playlist",
                                 path, plsModel->playlist());
     } else {
         StatusArea::showMessage("File is neither a directory nor regular file!");
@@ -209,14 +209,14 @@ void PlaylistView::addFile(const std::string& path)
         case Utils::FileType::Media:
             m_xmmsClient->playlistAddUrl(plsModel->playlist(),
                                          std::string("file://").append(path));
-            StatusArea::showMessage("Adding \"%1%\" file to \"%2%\" playlist",
+            StatusArea::showMessage("Adding \"%s\" file to \"%s\" playlist",
                                     fileName, plsModel->playlist());
             break;
 
         case Utils::FileType::Playlist:
             m_xmmsClient->playlistAddPlaylistFile(plsModel->playlist(),
                                                   std::string("file://").append(path));
-            StatusArea::showMessage("Adding \"%1%\" playlist to \"%2%\" playlist",
+            StatusArea::showMessage("Adding \"%s\" playlist to \"%s\" playlist",
                                     fileName, plsModel->playlist());
             break;
 
@@ -232,7 +232,7 @@ void PlaylistView::addUrl(const std::string& url)
     m_xmmsClient->playlistAddUrl(plsModel->playlist(), url);
 
     // FIXME: Url may be too long to display
-    StatusArea::showMessage("Adding \"%1%\" to \"%2%\" playlist", url, plsModel->playlist());
+    StatusArea::showMessage("Adding \"%s\" to \"%s\" playlist", url, plsModel->playlist());
 }
 
 void PlaylistView::selectSongsByRegExp()
@@ -256,7 +256,7 @@ void PlaylistView::selectSongsByRegExp()
                 return delegate->matchFormattedString(plsModel->song(item), regex);
             });
             g_regex_unref(regex);
-            StatusArea::showMessage("%1% items selected", selectedItems().size());
+            StatusArea::showMessage("%d items selected", selectedItems().size());
         }
     };
     StatusArea::askQuestion("Select items: ", resultCallback, ".*");
@@ -281,7 +281,7 @@ void PlaylistView::unselectSongsByRegExp()
                 return delegate->matchFormattedString(plsModel->song(item), regex);
             });
             g_regex_unref(regex);
-            StatusArea::showMessage("%1% items selected", selectedItems().size());
+            StatusArea::showMessage("%d items selected", selectedItems().size());
         }
     };
     StatusArea::askQuestion("Unselect items: ", resultCallback, ".*");

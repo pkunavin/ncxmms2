@@ -41,10 +41,10 @@ public:
 
     static void showMessage(const std::string& message);
 
-    template <typename T, typename Arg, typename... Args>
-    static void showMessage(T&& str, Arg&& arg, Args&&... args)
+    template <typename Arg, typename... Args>
+    static void showMessage(const char *fmt, Arg&& arg, Args&&... args)
     {
-        showMessage(Utils::format(std::forward<T>(str), std::forward<Arg>(arg), std::forward<Args>(args)...));
+        showMessage(Utils::format(fmt, std::forward<Arg>(arg), std::forward<Args>(args)...));
     }
 
     static void askQuestion(const std::string& question,

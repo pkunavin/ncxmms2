@@ -72,7 +72,7 @@ void LocalFileSystemBrowser::keyPressedEvent(const KeyEvent& keyEvent)
                 for (int item : _selectedItems) {
                     activePlaylistAddFileOrDirectory(item, true);
                 }
-                StatusArea::showMessage("Adding %1% items to active playlist",
+                StatusArea::showMessage("Adding %d items to active playlist",
                                         _selectedItems.size());
                 clearSelection();
             } else {
@@ -110,7 +110,7 @@ void LocalFileSystemBrowser::keyPressedEvent(const KeyEvent& keyEvent)
             if (fsModel->fileName(0) == "..") { // Do not select .. item
                 unselectItem(0);
             }
-            StatusArea::showMessage("%1% items selected", selectedItems().size());
+            StatusArea::showMessage("%d items selected", selectedItems().size());
             break;
 
         case '+': // Select be regexp
@@ -123,7 +123,7 @@ void LocalFileSystemBrowser::keyPressedEvent(const KeyEvent& keyEvent)
                     if (fsModel->fileName(0) == "..") { // Do not select .. item
                         unselectItem(0);
                     }
-                    StatusArea::showMessage("%1% items selected", selectedItems().size());
+                    StatusArea::showMessage("%d items selected", selectedItems().size());
                 }
             };
             StatusArea::askQuestion("Select items: ", resultCallback, ".*");
@@ -151,7 +151,7 @@ bool LocalFileSystemBrowser::setDirectory(const Dir& dir)
         return true;
     }
 
-    StatusArea::showMessage("Can't open %1% : %2%", dir.path(), std::strerror(errno));
+    StatusArea::showMessage("Can't open %s : %s", dir.path(), std::strerror(errno));
     return false;
 }
 
@@ -222,7 +222,7 @@ void LocalFileSystemBrowser::activePlaylistAddFileOrDirectory(int item, bool beQ
              std::string("file://").append(fsModel->filePath(item))
         );
         if (!beQuiet) {
-            StatusArea::showMessage("Adding \"%1%\" directory to active playlist",
+            StatusArea::showMessage("Adding \"%s\" directory to active playlist",
                                     fsModel->fileName(item));
         }
      } else if (fsModel->isRegularFile(item)) {
@@ -243,7 +243,7 @@ void LocalFileSystemBrowser::activePlaylistAddFile(int item, bool beQuiet)
         case Utils::FileType::Playlist:
             m_xmmsClient->playlistAddPlaylistFile("_active", filePath);
             if (!beQuiet) {
-                StatusArea::showMessage("Adding \"%1%\" playlist file to active playlist",
+                StatusArea::showMessage("Adding \"%s\" playlist file to active playlist",
                                         fileName);
             }
             break;
@@ -251,7 +251,7 @@ void LocalFileSystemBrowser::activePlaylistAddFile(int item, bool beQuiet)
         case Utils::FileType::Media:
             m_xmmsClient->playlistAddUrl("_active", filePath);
             if (!beQuiet) {
-                StatusArea::showMessage("Adding \"%1%\" file to active playlist", fileName);
+                StatusArea::showMessage("Adding \"%s\" file to active playlist", fileName);
             }
             break;
 

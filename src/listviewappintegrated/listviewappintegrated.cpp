@@ -34,13 +34,13 @@ void ListViewAppIntegrated::keyPressedEvent(const KeyEvent& keyEvent)
         case KeyEvent::KeyInsert: // Toggle selection
             if (!isCurrentItemHidden()) {
                 ListView::keyPressedEvent(keyEvent);
-                StatusArea::showMessage("%1% items selected", selectedItems().size());
+                StatusArea::showMessage("%d items selected", selectedItems().size());
             }
             break;
 
         case '*': // Invert selection
             ListView::keyPressedEvent(keyEvent);
-            StatusArea::showMessage("%1% items selected", selectedItems().size());
+            StatusArea::showMessage("%d items selected", selectedItems().size());
             break;
 
         case '+': // Select be regexp
@@ -49,7 +49,7 @@ void ListViewAppIntegrated::keyPressedEvent(const KeyEvent& keyEvent)
             {
                 if (result == LineEdit::Result::Accepted) {
                     selectItemsByRegExp(pattern);
-                    StatusArea::showMessage("%1% items selected", selectedItems().size());
+                    StatusArea::showMessage("%d items selected", selectedItems().size());
                 }
             };
             StatusArea::askQuestion("Select items: ", resultCallback, ".*");
@@ -62,7 +62,7 @@ void ListViewAppIntegrated::keyPressedEvent(const KeyEvent& keyEvent)
             {
                 if (result == LineEdit::Result::Accepted) {
                     unselectItemsByRegExp(pattern);
-                    StatusArea::showMessage("%1% items selected", selectedItems().size());
+                    StatusArea::showMessage("%d items selected", selectedItems().size());
                 }
             };
             StatusArea::askQuestion("Unselect items: ", resultCallback, ".*");
