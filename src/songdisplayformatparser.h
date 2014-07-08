@@ -19,6 +19,7 @@
 
 #include <vector>
 #include <utility>
+#include <stdexcept>
 #include <assert.h>
 
 #include "song.h"
