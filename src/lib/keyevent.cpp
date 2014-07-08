@@ -16,7 +16,6 @@
 
 #include <string>
 #include <glib.h>
-#include <boost/lexical_cast.hpp>
 
 #include "keyevent.h"
 #include "../../3rdparty/libtermkey/termkey.h"
@@ -109,7 +108,7 @@ std::string KeyEvent::keyName() const
         key_t keyCode = m_key & KeyCodeMask;
         if (keyCode >= KeyF1 && keyCode <= KeyF12) {
             name.push_back('F');
-            name.append(boost::lexical_cast<std::string>(keyCode - KeyF1 + 1));
+            name.append(std::to_string(keyCode - KeyF1 + 1));
         } else if (keyCode < KeyF1) {
             auto it = keyNames.find(keyCode);
             if (it != keyNames.end()) {

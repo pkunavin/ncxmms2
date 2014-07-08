@@ -16,7 +16,6 @@
 
 #include <vector>
 #include <unordered_map>
-#include <boost/lexical_cast.hpp>
 #include <xmmsclient/xmmsclient.h>
 #include <xmmsclient/xmmsclient-glib.h>
 
@@ -69,7 +68,7 @@ void ClientPrivate::getConfig(const Dict& dict)
         std::string valueStr;
         switch (value.type()) {
             case Variant::Type::Int:
-                valueStr = boost::lexical_cast<std::string>(value.value<int>());
+                valueStr = std::to_string(value.value<int>());
                 break;
                 
             case Variant::Type::String:
@@ -90,7 +89,7 @@ void ClientPrivate::handleConfigChange(const Dict& dict)
         std::string valueStr;
         switch (value.type()) {
             case Variant::Type::Int:
-                valueStr = boost::lexical_cast<std::string>(value.value<int>());
+                valueStr = std::to_string(value.value<int>());
                 break;
                 
             case Variant::Type::String:

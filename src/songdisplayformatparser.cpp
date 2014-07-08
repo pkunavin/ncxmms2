@@ -15,9 +15,9 @@
  */
 
 #include <stdexcept>
+#include <cstdio>
+#include <cstring>
 #include <glib.h>
-#include <boost/version.hpp>
-#include <boost/lexical_cast.hpp>
 
 #include "songdisplayformatparser.h"
 #include "lib/painter.h"
@@ -48,11 +48,10 @@ bool SongDisplayFormatParser::setDisplayFormat(const std::string& formatString)
                 throw ParsingError("Unexpected symbol '%c' at position %d, expected digit.",
                                    *numberEnd, numberEnd - str);
         }
-#if BOOST_VERSION < 105200
-        const int result = boost::lexical_cast<int>(std::string(*p, numberEnd - *p));
-#else
-        const int result = boost::lexical_cast<int>(*p, numberEnd - *p);
-#endif
+        char *endPtr;
+        const int result = g_ascii_strtoll(*p, &endPtr, 10);
+        if (endPtr != numberEnd)
+            throw ParsingError("Parsing int failed at position %d.", *p - str);
         *p = numberEnd;
         return result;
     };
@@ -465,9 +464,14 @@ int SongDisplayFormatParser::Variable::size(const Song& song) const
         case Type::Integer:
         {
             const int value = (song.*m_songIntFuncPtr)();
-            return value != -1
-                   ? boost::lexical_cast<std::string>(value).size()
-                   : 0;
+            if (value != -1) {
+                const size_t maxLength = 16;
+                char buffer[maxLength + 1];
+                buffer[maxLength] = '\0';
+                std::snprintf(buffer, maxLength, "%d", value);
+                return std::strlen(buffer);
+            }
+            return 0;
         }
 
         case Type::None:
@@ -492,7 +496,7 @@ void SongDisplayFormatParser::Variable::print(Painter *painter, const Song& song
         {
             const int value = (song.*m_songIntFuncPtr)();
             if (value != -1)
-                painter->squeezedPrint(boost::lexical_cast<std::string>(value), maxLength);
+                painter->squeezedPrint(std::to_string(value), maxLength);
 
             break;
         }
@@ -515,7 +519,7 @@ std::string SongDisplayFormatParser::Variable::toString(const Song& song) const
         case Type::Integer:
         {
             const int value = (song.*m_songIntFuncPtr)();
-            return value != -1 ? boost::lexical_cast<std::string>(value) : std::string();
+            return value != -1 ? std::to_string(value) : std::string();
         }
 
         case Type::None:
@@ -534,7 +538,7 @@ std::string SongDisplayFormatParser::Variable::bitrateStringGenerator(const Song
     if (song.bitrate() == -1)
         return std::string();
 
-    return std::string(boost::lexical_cast<std::string>(song.bitrate() / 1000)).append("kbps");
+    return std::to_string(song.bitrate() / 1000).append("kbps");
 }
 
 std::string SongDisplayFormatParser::Variable::samplerateStringGenerator(const Song& song)
@@ -542,7 +546,7 @@ std::string SongDisplayFormatParser::Variable::samplerateStringGenerator(const S
     if (song.samplerate() == -1)
         return std::string();
 
-    return std::string(boost::lexical_cast<std::string>(song.samplerate())).append("Hz");
+    return std::to_string(song.samplerate()).append("Hz");
 }
 
 

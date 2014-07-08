@@ -17,7 +17,6 @@
 #include <algorithm>
 #include <iterator>
 #include <cstring>
-#include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 
 #include "equalizerwindow.h"
@@ -216,16 +215,16 @@ void EqualizerWindow::handleEqualizerConfigChanged(const std::string& key, const
     } else if (eqKey == "extra_filtering") {
         m_extraFilteringCheckBox->setChecked(value == "1");
     } else if (eqKey == "preamp") {
-        m_preampWindow->setPreamp(boost::lexical_cast<double>(value));
+        m_preampWindow->setPreamp(std::stod(value));
     } else if (boost::starts_with(eqKey, "legacy")) {
-        m_bandsWindow->setBandGain(boost::lexical_cast<int>(eqKey.back()),
-                                   boost::lexical_cast<double>(value));
+        m_bandsWindow->setBandGain(std::stoi(eqKey.substr(std::strlen("legacy"))),
+                                   std::stod(value));
     } else if (boost::starts_with(eqKey, "gain")) {
         if (m_bandsWindow->legacyModeEnabled())
             return;
-        const int band = boost::lexical_cast<int>(eqKey.substr(std::strlen("gain")));
+        const int band = std::stoi(eqKey.substr(std::strlen("gain")));
         if (band < m_bandsWindow->bandsNumber()) {
-            m_bandsWindow->setBandGain(band, boost::lexical_cast<double>(value));
+            m_bandsWindow->setBandGain(band, std::stod(value));
         }
     } else if (eqKey == "use_legacy" || eqKey == "bands") {
         const bool useLegacy = m_xmmsClient->configValue("equalizer.use_legacy") == "1";
@@ -242,7 +241,7 @@ void EqualizerWindow::handleEqualizerConfigChanged(const std::string& key, const
         }
         
         const int bandsNumber = !useLegacy 
-                                ? boost::lexical_cast<int>(m_bandsNumberGroupBox->checkedRadioButtonText())
+                                ? std::stoi(m_bandsNumberGroupBox->checkedRadioButtonText())
                                 : EqualizerBandsWindow::LegacyBandsNumber;
         m_bandsWindow->setBandsNumber(bandsNumber);
         if (useLegacy)
@@ -251,7 +250,7 @@ void EqualizerWindow::handleEqualizerConfigChanged(const std::string& key, const
         for (int i = 0; i < bandsNumber; ++i) {
             std::string band = Utils::format(fmt, i);
             std::string gain = m_xmmsClient->configValue(band);
-            m_bandsWindow->setBandGain(i, boost::lexical_cast<double>(gain));
+            m_bandsWindow->setBandGain(i, std::stod(gain));
             
             //FIXME: Workaround of xmms2 bug 2581
             m_xmmsClient->configSetValue(band, "0");
@@ -282,11 +281,11 @@ void EqualizerWindow::setEqualizerBandsNumber(int index)
 
 void EqualizerWindow::setEqualizerPreamp(int preamp)
 {
-    m_xmmsClient->configSetValue("equalizer.preamp", boost::lexical_cast<std::string>(preamp));
+    m_xmmsClient->configSetValue("equalizer.preamp", std::to_string(preamp));
 }
 
 void EqualizerWindow::setEqualizerBandGain(int band, int gain)
 {
     const char *keyFmt = m_bandsWindow->legacyModeEnabled() ? "equalizer.legacy%d" : "equalizer.gain%02d";
-    m_xmmsClient->configSetValue(Utils::format(keyFmt, band), boost::lexical_cast<std::string>(gain));
+    m_xmmsClient->configSetValue(Utils::format(keyFmt, band), std::to_string(gain));
 }

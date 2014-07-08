@@ -14,7 +14,6 @@
  *  GNU General Public License for more details.
  */
 
-#include <boost/lexical_cast.hpp>
 #include <stdexcept>
 
 #include "activeplaylistwindow.h"
@@ -64,7 +63,7 @@ void ActivePlaylistWindow::updateWindowTitle()
 
     if (plsModel->itemsCount() > 0) {
         titleString.append(" (");
-        titleString.append(boost::lexical_cast<std::string>(plsModel->itemsCount()));
+        titleString.append(std::to_string(plsModel->itemsCount()));
         titleString.append(" tracks");
         if (plsModel->totalDuration() > 0) {
             titleString.append(", ");
