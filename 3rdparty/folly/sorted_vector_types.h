@@ -15,6 +15,11 @@
  */
 
 /*
+ * Modified by Pavel Kunavin <tusk.kun@gmail.com>
+ *  - Boost dependency removed
+ */ 
+
+/*
  * This header defines two classes that very nearly model
  * AssociativeContainer (but not quite).  These implement set-like and
  * map-like behavior on top of a sorted vector, instead of using
@@ -65,9 +70,8 @@
 #include <iterator>
 #include <utility>
 #include <vector>
-#include <boost/operators.hpp>
-#include <boost/bind.hpp>
-#include <boost/type_traits/is_same.hpp>
+#include <functional>
+#include <type_traits>
 
 namespace folly {
 
@@ -106,7 +110,7 @@ namespace detail {
   template<class Iterator>
   int distance_if_multipass(Iterator first, Iterator last) {
     typedef typename std::iterator_traits<Iterator>::iterator_category categ;
-    if (boost::is_same<categ,std::input_iterator_tag>::value)
+    if (std::is_same<categ,std::input_iterator_tag>::value)
       return -1;
     return std::distance(first, last);
   }
@@ -167,9 +171,7 @@ template<class T,
          class Allocator    = std::allocator<T>,
          class GrowthPolicy = void>
 class sorted_vector_set
-  : boost::totally_ordered1<
-      sorted_vector_set<T,Compare,Allocator,GrowthPolicy>
-    , detail::growth_policy_wrapper<GrowthPolicy> >
+  : detail::growth_policy_wrapper<GrowthPolicy>
 {
   typedef std::vector<T,Allocator> ContainerT;
 
@@ -404,9 +406,7 @@ template<class Key,
          class Allocator      = std::allocator<std::pair<Key,Value> >,
          class GrowthPolicy   = void>
 class sorted_vector_map
-  : boost::totally_ordered1<
-      sorted_vector_map<Key,Value,Compare,Allocator,GrowthPolicy>
-    , detail::growth_policy_wrapper<GrowthPolicy> >
+  : detail::growth_policy_wrapper<GrowthPolicy>
 {
   typedef std::vector<std::pair<Key,Value>,Allocator> ContainerT;
 
@@ -556,22 +556,22 @@ public:
 
   iterator lower_bound(const key_type& key) {
     return std::lower_bound(begin(), end(), key,
-      boost::bind(key_comp(), boost::bind(&value_type::first, _1), _2));
+      std::bind(key_comp(), std::bind(&value_type::first,std::placeholders:: _1), std::placeholders::_2));
   }
 
   const_iterator lower_bound(const key_type& key) const {
     return std::lower_bound(begin(), end(), key,
-      boost::bind(key_comp(), boost::bind(&value_type::first, _1), _2));
+      std::bind(key_comp(), std::bind(&value_type::first, std::placeholders::_1), std::placeholders::_2));
   }
 
   iterator upper_bound(const key_type& key) {
     return std::upper_bound(begin(), end(), key,
-      boost::bind(key_comp(), _1, boost::bind(&value_type::first, _2)));
+      std::bind(key_comp(), std::placeholders::_1, std::bind(&value_type::first, std::placeholders::_2)));
   }
 
   const_iterator upper_bound(const key_type& key) const {
     return std::upper_bound(begin(), end(), key,
-      boost::bind(key_comp(), _1, boost::bind(&value_type::first, _2)));
+      std::bind(key_comp(), std::placeholders::_1, std::bind(&value_type::first, std::placeholders::_2)));
   }
 
   std::pair<iterator,iterator> equal_range(const key_type& key) {
@@ -580,7 +580,7 @@ public:
     // have to do this.
     iterator low = lower_bound(key);
     iterator high = std::upper_bound(low, end(), key,
-      boost::bind(key_comp(), _1, boost::bind(&value_type::first, _2)));
+      std::bind(key_comp(), std::placeholders::_1, std::bind(&value_type::first, std::placeholders::_2)));
     return std::make_pair(low, high);
   }
 

@@ -4,7 +4,6 @@ ncxmms2 uses C++11 features, so you need at least GCC 4.6 or Clang 3.1.
 git
 build-essential
 cmake
-libboost-dev
 libncurses5-dev
 libncursesw5-dev
 libglib2.0-dev

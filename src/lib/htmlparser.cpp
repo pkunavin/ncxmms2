@@ -14,7 +14,7 @@
  *  GNU General Public License for more details.
  */
 
-#include <boost/algorithm/string.hpp>
+#include <algorithm>
 #include <cstdlib>
 #include <glib.h>
 
@@ -339,7 +339,7 @@ const char * readText(const char *p, const HtmlParser::Token *lastTextOrEntityTo
     if (lastTextOrEntityToken) {
         if (lastTextOrEntityToken->type() == HtmlParser::Token::Type::Text) {
             const HtmlParser::TokenText& lastTextToken = lastTextOrEntityToken->text();
-            if (boost::ends_with(lastTextToken.text(), " "))
+            if (endsWith(lastTextToken.text(), " "))
                  p = skipSpaces(p);
         }
     } else {
@@ -466,8 +466,9 @@ HtmlParser::TokenTag::TokenTag(const char *p, const char *tagEnd) :
     char tagName[maxTagNameLength];
     if (tagNameEnd - p > maxTagNameLength - 1)
         return;
-    boost::to_lower_copy(tagName, boost::make_iterator_range(p, tagNameEnd));
+    std::copy(p, tagNameEnd, tagName);
     tagName[tagNameEnd - p] = '\0';
+    toLowerAscii(tagName);
     
     auto it = tagNamesMap.find(tagName);
     if (it != tagNamesMap.end()) {
@@ -500,7 +501,7 @@ HtmlParser::TokenTag::TokenTag(const char *p, const char *tagEnd) :
         
         const char *attrNameEnd = readAttributeName(p, tagEnd);
         std::string attrName(p, attrNameEnd);
-        boost::to_lower(attrName);
+        toLowerAscii(&attrName);
         
         std::string attrValue;
         p = skipSpaces(attrNameEnd, tagEnd);
@@ -522,7 +523,7 @@ HtmlParser::TokenTag::TokenTag(const char *p, const char *tagEnd) :
                 attrValue.assign(p, attrValueEnd);
                 p = attrValueEnd;
             }
-            boost::to_lower(attrValue);
+            toLowerAscii(&attrValue);
         }
         // FIXME: Decode entities inside attribute values
         m_attributes.insert(std::make_pair(std::move(attrName), std::move(attrValue)));
@@ -546,12 +547,12 @@ HtmlParser::TokenEntity::TokenEntity(const std::string& entity) :
 {
     using namespace HtmlParserImpl;
     
-    if (boost::istarts_with(entity, "#x")) {
+    if (startsWith(entity, "#x") || startsWith(entity, "#X")) {
         char *end;
         m_character = std::strtol(entity.c_str() + 2, &end, 16);
         if (*end)
             m_character = 0;
-    } else if (boost::istarts_with(entity, "#")) {
+    } else if (startsWith(entity, "#")) {
         char *end;
         m_character = std::strtol(entity.c_str() + 1, &end, 10);
         if (*end)

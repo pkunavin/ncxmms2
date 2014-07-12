@@ -20,7 +20,8 @@ set(SOURCES
     palette.cpp
     checkbox.cpp
     radiobuttongroupbox.cpp
-    htmlparser.cpp)
+    htmlparser.cpp
+    stringalgo.cpp)
 
 set(HEADERS
     signals.h
@@ -58,9 +59,6 @@ set(HEADERS
 add_library(ncxmms2-lib ${SOURCES})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -Wextra")
-
-find_package(Boost REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
 
 find_package(PkgConfig REQUIRED)
 

@@ -16,7 +16,6 @@
 
 #include <vector>
 #include <algorithm>
-#include <boost/cast.hpp>
 #include <glib.h>
 #include <assert.h>
 
@@ -54,26 +53,25 @@ PlaylistView::PlaylistView(xmms2::Client *xmmsClient, const Rectangle& rect, Win
 
 void PlaylistView::setPlaylist(const std::string& playlist)
 {
-    PlaylistModel *plsModel = boost::polymorphic_downcast<PlaylistModel*>(model());
+    PlaylistModel *plsModel = static_cast<PlaylistModel*>(model());
     plsModel->setPlaylist(playlist);
 }
 
 void PlaylistView::setDisplayFormat(const std::string& format)
 {
-    PlaylistItemDelegate *plsDelegate =
-            boost::polymorphic_downcast<PlaylistItemDelegate*>(itemDelegate());
+    PlaylistItemDelegate *plsDelegate = static_cast<PlaylistItemDelegate*>(itemDelegate());
     plsDelegate->setDisplayFormat(format);
 }
 
 void PlaylistView::setLazyLoadPlaylist(bool enable)
 {
-    PlaylistModel *plsModel = boost::polymorphic_downcast<PlaylistModel*>(model());
+    PlaylistModel *plsModel = static_cast<PlaylistModel*>(model());
     plsModel->setLazyLoadPlaylist(enable);
 }
 
 void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
 {
-    PlaylistModel *plsModel = boost::polymorphic_downcast<PlaylistModel*>(model());
+    PlaylistModel *plsModel = static_cast<PlaylistModel*>(model());
 
     switch (keyEvent.key()) {
         case Hotkeys::PlaylistView::RemoveEntry:
@@ -150,7 +148,7 @@ void PlaylistView::getPlaybackStatus(xmms2::PlaybackStatus status)
 
 void PlaylistView::onItemEntered(int item)
 {
-    PlaylistModel *plsModel = boost::polymorphic_downcast<PlaylistModel*>(model());
+    PlaylistModel *plsModel = static_cast<PlaylistModel*>(model());
 
     if (plsModel->playlist() != m_activePlaylist)
         m_xmmsClient->playlistLoad(plsModel->playlist());
@@ -184,7 +182,7 @@ void PlaylistView::addPath(const std::string& path)
     if (g_file_test(path.c_str(), G_FILE_TEST_IS_REGULAR)) {
         addFile(path);
     } else if (g_file_test(path.c_str(), G_FILE_TEST_IS_DIR)) {
-        PlaylistModel *plsModel = boost::polymorphic_downcast<PlaylistModel*>(model());
+        PlaylistModel *plsModel = static_cast<PlaylistModel*>(model());
         m_xmmsClient->playlistAddRecursive(plsModel->playlist(),
                                            std::string("file://").append(path));
         // FIXME: Path may be too long to display
@@ -197,7 +195,7 @@ void PlaylistView::addPath(const std::string& path)
 
 void PlaylistView::addFile(const std::string& path)
 {
-    PlaylistModel *plsModel = boost::polymorphic_downcast<PlaylistModel*>(model());
+    PlaylistModel *plsModel = static_cast<PlaylistModel*>(model());
 
     const std::string::size_type slashPos = path.rfind('/');
     const std::string fileName = slashPos != std::string::npos
@@ -228,7 +226,7 @@ void PlaylistView::addFile(const std::string& path)
 
 void PlaylistView::addUrl(const std::string& url)
 {
-    PlaylistModel *plsModel = boost::polymorphic_downcast<PlaylistModel*>(model());
+    PlaylistModel *plsModel = static_cast<PlaylistModel*>(model());
     m_xmmsClient->playlistAddUrl(plsModel->playlist(), url);
 
     // FIXME: Url may be too long to display
@@ -248,9 +246,8 @@ void PlaylistView::selectSongsByRegExp()
             if (!regex)
                 return;
 
-            PlaylistModel *plsModel = boost::polymorphic_downcast<PlaylistModel*>(model());
-            PlaylistItemDelegate *delegate =
-                    boost::polymorphic_downcast<PlaylistItemDelegate*>(itemDelegate());
+            PlaylistModel *plsModel = static_cast<PlaylistModel*>(model());
+            PlaylistItemDelegate *delegate = static_cast<PlaylistItemDelegate*>(itemDelegate());
 
             selectItems([plsModel, delegate, regex](int item){
                 return delegate->matchFormattedString(plsModel->song(item), regex);
@@ -273,9 +270,8 @@ void PlaylistView::unselectSongsByRegExp()
             if (!regex)
                 return;
 
-            PlaylistModel *plsModel = boost::polymorphic_downcast<PlaylistModel*>(model());
-            PlaylistItemDelegate *delegate =
-                    boost::polymorphic_downcast<PlaylistItemDelegate*>(itemDelegate());
+            PlaylistModel *plsModel = static_cast<PlaylistModel*>(model());
+            PlaylistItemDelegate *delegate = static_cast<PlaylistItemDelegate*>(itemDelegate());
 
             unselectItems([plsModel, delegate, regex](int item){
                 return delegate->matchFormattedString(plsModel->song(item), regex);
@@ -289,7 +285,7 @@ void PlaylistView::unselectSongsByRegExp()
 
 void PlaylistView::removeSelectedSongs()
 {
-    PlaylistModel *plsModel = boost::polymorphic_downcast<PlaylistModel*>(model());
+    PlaylistModel *plsModel = static_cast<PlaylistModel*>(model());
     if (plsModel->itemsCount() && !isCurrentItemHidden()) {
         //   Actually we don't have to make copy of selectedItems, since removeEntry
         // doesn't modify it immediately, but this is not obvious and may lead to
@@ -309,7 +305,7 @@ void PlaylistView::removeSelectedSongs()
 
 void PlaylistView::moveSelectedSongs()
 {
-    PlaylistModel *plsModel = boost::polymorphic_downcast<PlaylistModel*>(model());
+    PlaylistModel *plsModel = static_cast<PlaylistModel*>(model());
     const std::vector<int> selectedSongs  = selectedItems();
     assert(std::is_sorted(selectedSongs.begin(), selectedSongs.end()));
     

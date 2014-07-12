@@ -19,7 +19,6 @@
 #include <cstring>
 #include <unistd.h>
 #include <assert.h>
-#include <boost/cast.hpp>
 
 #include "localfilesystembrowser.h"
 #include "filesystemmodel.h"
@@ -61,8 +60,7 @@ LocalFileSystemBrowser::~LocalFileSystemBrowser()
 
 void LocalFileSystemBrowser::keyPressedEvent(const KeyEvent& keyEvent)
 {
-    FileSystemModel *fsModel =
-            boost::polymorphic_downcast<FileSystemModel*>(model());
+    FileSystemModel *fsModel = static_cast<FileSystemModel*>(model());
 
     switch (keyEvent.key()) {
         case Hotkeys::Screens::LocalFileSystemBrowser::AddFileOrDirectoryToActivePlaylist:
@@ -141,8 +139,7 @@ void LocalFileSystemBrowser::keyPressedEvent(const KeyEvent& keyEvent)
 bool LocalFileSystemBrowser::setDirectory(const Dir& dir)
 {
     if (access(dir.path().c_str(), R_OK) == 0) {
-        FileSystemModel *fsModel =
-                boost::polymorphic_downcast<FileSystemModel*>(model());
+        FileSystemModel *fsModel = static_cast<FileSystemModel*>(model());
         fsModel->setDirectory(dir.path());
         m_currentDir = dir;
 
@@ -157,8 +154,7 @@ bool LocalFileSystemBrowser::setDirectory(const Dir& dir)
 
 void LocalFileSystemBrowser::onItemEntered(int item)
 {
-    FileSystemModel *fsModel =
-            boost::polymorphic_downcast<FileSystemModel*>(model());
+    FileSystemModel *fsModel = static_cast<FileSystemModel*>(model());
 
     if (fsModel->isDirectory(item)) {
         // FileSystemModel::fileName returns a reference, but next function will
@@ -172,8 +168,7 @@ void LocalFileSystemBrowser::onItemEntered(int item)
 
 void LocalFileSystemBrowser::cd(const std::string& dir)
 {
-    FileSystemModel *fsModel =
-            boost::polymorphic_downcast<FileSystemModel*>(model());
+    FileSystemModel *fsModel = static_cast<FileSystemModel*>(model());
 
     if (dir == "..") { // Cd Up
         const std::string oldDirName = m_currentDir.name();
@@ -213,8 +208,7 @@ void LocalFileSystemBrowser::cd(const std::string& dir)
 
 void LocalFileSystemBrowser::activePlaylistAddFileOrDirectory(int item, bool beQuiet)
 {
-    FileSystemModel *fsModel =
-            boost::polymorphic_downcast<FileSystemModel*>(model());
+    FileSystemModel *fsModel = static_cast<FileSystemModel*>(model());
     assert(item >= 0 && item < fsModel->itemsCount());
 
     if (fsModel->isDirectory(item)) {
@@ -232,8 +226,7 @@ void LocalFileSystemBrowser::activePlaylistAddFileOrDirectory(int item, bool beQ
 
 void LocalFileSystemBrowser::activePlaylistAddFile(int item, bool beQuiet)
 {
-    FileSystemModel *fsModel =
-            boost::polymorphic_downcast<FileSystemModel*>(model());
+    FileSystemModel *fsModel = static_cast<FileSystemModel*>(model());
     assert(item >= 0 && item < fsModel->itemsCount());
 
     const std::string fileName = fsModel->fileName(item);

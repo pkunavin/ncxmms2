@@ -17,6 +17,9 @@
 #ifndef STRINGALGO_H
 #define STRINGALGO_H
 
+#include <glib.h>
+#include <string>
+
 #include "ncxmms2.h"
 
 namespace ncxmms2 {
@@ -115,6 +118,32 @@ void forEachLine(const char *text, Function f)
         }
     }
 }
+
+// Checks whether the string str begins with prefix
+inline bool startsWith(const char *str, const char *prefix)
+{
+    return g_str_has_prefix(str, prefix);
+}
+
+inline bool startsWith(const std::string& str, const char *prefix)
+{
+    return startsWith(str.c_str(), prefix);
+}
+
+// Checks whether the string str ends with suffix
+inline bool endsWith(const char *str, const char *suffix)
+{
+    return g_str_has_suffix(str, suffix);
+}
+
+inline bool endsWith(const std::string& str, const char *suffix)
+{
+    return endsWith(str.c_str(), suffix);
+}
+
+// Converts a string to ASCII lower case
+void toLowerAscii(char *str);
+void toLowerAscii(std::string *str);
 
 } // ncxmms2
 

@@ -15,7 +15,6 @@
  */
 
 #include <vector>
-#include <boost/cast.hpp>
 
 #include "playlistslistview.h"
 #include "playlistslistmodel.h"
@@ -43,17 +42,14 @@ PlaylistsListView::PlaylistsListView(xmms2::Client *xmmsClient, const Rectangle&
 
 const std::string& PlaylistsListView::playlist(int item) const
 {
-    PlaylistsListModel *plsModel =
-            boost::polymorphic_downcast<PlaylistsListModel*>(model());
-
+    PlaylistsListModel *plsModel = static_cast<PlaylistsListModel*>(model());
     return plsModel->playlist(item);
 }
 
 void PlaylistsListView::showEvent()
 {
     if (!m_initialized) {
-        PlaylistsListModel *plsModel =
-                boost::polymorphic_downcast<PlaylistsListModel*>(model());
+        PlaylistsListModel *plsModel = static_cast<PlaylistsListModel*>(model());
         plsModel->init();
         m_initialized = true;
     }
@@ -62,16 +58,13 @@ void PlaylistsListView::showEvent()
 
 void PlaylistsListView::loadPlaylist(int item)
 {
-    PlaylistsListModel *plsModel =
-            boost::polymorphic_downcast<PlaylistsListModel*>(model());
-
+    PlaylistsListModel *plsModel = static_cast<PlaylistsListModel*>(model());
     m_xmmsClient->playlistLoad(plsModel->playlist(item));
 }
 
 void PlaylistsListView::keyPressedEvent(const KeyEvent& keyEvent)
 {
-    PlaylistsListModel *plsModel =
-            boost::polymorphic_downcast<PlaylistsListModel*>(model());
+    PlaylistsListModel *plsModel = static_cast<PlaylistsListModel*>(model());
 
     switch (keyEvent.key()) {
         case Hotkeys::Screens::PlaylistsBrowser::RemovePlaylist:
@@ -124,8 +117,7 @@ void PlaylistsListView::keyPressedEvent(const KeyEvent& keyEvent)
 
 void PlaylistsListView::createPlaylist(const std::string& playlist)
 {
-    PlaylistsListModel *plsModel =
-            boost::polymorphic_downcast<PlaylistsListModel*>(model());
+    PlaylistsListModel *plsModel = static_cast<PlaylistsListModel*>(model());
 
     if (playlist.empty()) {
         StatusArea::showMessage("Can't create playlist with empty name!");
@@ -148,8 +140,7 @@ void PlaylistsListView::createPlaylist(const std::string& playlist)
 
 void PlaylistsListView::renamePlaylist(const std::string& oldName, const std::string& newName)
 {
-    PlaylistsListModel *plsModel =
-            boost::polymorphic_downcast<PlaylistsListModel*>(model());
+    PlaylistsListModel *plsModel = static_cast<PlaylistsListModel*>(model());
 
     if (!plsModel->playlistExists(oldName))
         return;

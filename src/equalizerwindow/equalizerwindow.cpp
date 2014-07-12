@@ -17,7 +17,6 @@
 #include <algorithm>
 #include <iterator>
 #include <cstring>
-#include <boost/algorithm/string.hpp>
 
 #include "equalizerwindow.h"
 #include "equalizerbandswindow.h"
@@ -30,6 +29,7 @@
 #include "../lib/checkbox.h"
 #include "../lib/radiobuttongroupbox.h"
 #include "../lib/keyevent.h"
+#include "../lib/stringalgo.h"
 
 using namespace ncxmms2;
 
@@ -206,7 +206,7 @@ void EqualizerWindow::loadEqualizerConfig()
 
 void EqualizerWindow::handleEqualizerConfigChanged(const std::string& key, const std::string& value)
 {
-    if (!boost::starts_with(key, "equalizer."))
+    if (!startsWith(key, "equalizer."))
         return;
     
     const std::string eqKey = key.substr(std::strlen("equalizer."));
@@ -216,10 +216,10 @@ void EqualizerWindow::handleEqualizerConfigChanged(const std::string& key, const
         m_extraFilteringCheckBox->setChecked(value == "1");
     } else if (eqKey == "preamp") {
         m_preampWindow->setPreamp(std::stod(value));
-    } else if (boost::starts_with(eqKey, "legacy")) {
+    } else if (startsWith(eqKey, "legacy")) {
         m_bandsWindow->setBandGain(std::stoi(eqKey.substr(std::strlen("legacy"))),
                                    std::stod(value));
-    } else if (boost::starts_with(eqKey, "gain")) {
+    } else if (startsWith(eqKey, "gain")) {
         if (m_bandsWindow->legacyModeEnabled())
             return;
         const int band = std::stoi(eqKey.substr(std::strlen("gain")));

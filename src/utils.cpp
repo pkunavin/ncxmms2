@@ -14,10 +14,9 @@
  *  GNU General Public License for more details.
  */
 
-#include <boost/algorithm/string.hpp>
-
 #include "utils.h"
 #include "lib/stringref.h"
+#include "lib/stringalgo.h"
 
 #include "../3rdparty/folly/sorted_vector_types.h"
 
@@ -41,7 +40,7 @@ Utils::FileType Utils::getFileType(const std::string& path)
         return Utils::FileType::Unknown;
 
     std::string suffix = path.substr(dotPos + 1);
-    boost::to_lower(suffix);
+    toLowerAscii(&suffix);
 
     static const folly::sorted_vector_set<StringRef> playlistFileSuffixes
     {"cue", "m3u", "pls", "asx"};

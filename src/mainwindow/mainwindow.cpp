@@ -15,7 +15,6 @@
  */
 
 #include <stdexcept>
-#include <boost/cast.hpp>
 
 #include "mainwindow.h"
 #include "../xmmsutils/client.h"
@@ -75,20 +74,16 @@ MainWindow::MainWindow(xmms2::Client *xmmsClient) :
     }
     setVisibleScreen(StackedPlaylistWindow);
     
-    PlaylistView *plsView =
-             boost::polymorphic_downcast<PlaylistView*>(m_stackedWindow->window(StackedPlaylistWindow));
+    auto *plsView = static_cast<PlaylistView*>(m_stackedWindow->window(StackedPlaylistWindow));
     plsView->showSongInfo_Connect(&MainWindow::showSongInfo, this);
     
-    PlaylistsBrowser *plsBrowser =
-             boost::polymorphic_downcast<PlaylistsBrowser*>(m_stackedWindow->window(StackedPlaylistsBrowser));
+    auto *plsBrowser = static_cast<PlaylistsBrowser*>(m_stackedWindow->window(StackedPlaylistsBrowser));
     plsBrowser->showSongInfo_Connect(&MainWindow::showSongInfo, this);
     
-    MedialibBrowser *medialibBrowser =
-             boost::polymorphic_downcast<MedialibBrowser*>(m_stackedWindow->window(StackedMedialibBrowser));
+    auto *medialibBrowser = static_cast<MedialibBrowser*>(m_stackedWindow->window(StackedMedialibBrowser));
     medialibBrowser->showSongInfo_Connect(&MainWindow::showSongInfo, this);
     
-    SongInfoWindow *songInfoWin =
-            boost::polymorphic_downcast<SongInfoWindow*>(m_stackedWindow->window(StackedSongInfoWindow));
+    auto *songInfoWin = static_cast<SongInfoWindow*>(m_stackedWindow->window(StackedSongInfoWindow));
     songInfoWin->hideRequested_Connect(&MainWindow::showLastVisibleScreen, this);
 }
 
@@ -193,8 +188,7 @@ void MainWindow::handleStackedWindowNameChanged(StackedWindows win, const std::s
 
 void MainWindow::showSongInfo(int id)
 {
-    SongInfoWindow *songInfoWin =
-            boost::polymorphic_downcast<SongInfoWindow*>(m_stackedWindow->window(StackedSongInfoWindow));
+    auto *songInfoWin = static_cast<SongInfoWindow*>(m_stackedWindow->window(StackedSongInfoWindow));
     songInfoWin->showSongInfo(id);
     m_stackedWindow->setCurrentIndex(StackedSongInfoWindow);
     m_headerWindow->setHeaderTitle(songInfoWin->name());
