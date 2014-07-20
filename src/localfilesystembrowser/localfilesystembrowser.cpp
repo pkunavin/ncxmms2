@@ -30,6 +30,7 @@
 #include "../hotkeys.h"
 
 #include "../lib/keyevent.h"
+#include "../lib/stringalgo.h"
 
 using namespace ncxmms2;
 
@@ -39,17 +40,18 @@ LocalFileSystemBrowser::LocalFileSystemBrowser(xmms2::Client *xmmsClient, const 
     m_currentDir("/")
 {
     loadPalette("LocalFileSystemBrowser");
-
+    
     FileSystemModel *fsModel = new FileSystemModel(this);
     setModel(fsModel);
     setItemDelegate(new FileSystemItemDelegate(fsModel));
-
+    
     const std::string lastPath = Settings::value<std::string>("LocalFileSystemBrowser",
                                                               "lastPath", "/");
     if (!setDirectory(lastPath))
         setDirectory(std::string("/"));
 
     itemEntered_Connect(&LocalFileSystemBrowser::onItemEntered, this);
+    fsModel->deleted_Connect(&LocalFileSystemBrowser::directoryDeleted, this);
 }
 
 LocalFileSystemBrowser::~LocalFileSystemBrowser()
@@ -194,7 +196,7 @@ void LocalFileSystemBrowser::cd(const std::string& dir)
             if (index != -1)
                 setCurrentItem(index);
         }
-    } else if (*dir.begin() != '/') { // Subdirectory
+    } else if (!startsWith(dir, '/')) { // Subdirectory
         m_viewportStateHistory.emplace(viewportFirstItem(), currentItem());
         if (!setDirectory(Dir(m_currentDir).cd(dir)))
             m_viewportStateHistory.pop();
@@ -255,6 +257,19 @@ void LocalFileSystemBrowser::activePlaylistAddFile(int item, bool beQuiet)
     }
 }
 
+void LocalFileSystemBrowser::directoryDeleted()
+{
+    std::string dir(m_currentDir.path());
+    while (dir != "/") {
+        auto slashPos = dir.rfind('/');
+        if (slashPos == std::string::npos)
+            break;
+        dir.resize(slashPos);
+        if (setDirectory(dir))
+            break;
+    }
+}
+
 LocalFileSystemBrowser::Dir& LocalFileSystemBrowser::Dir::cd(const std::string& dir)
 {
     if (dir.empty())
@@ -263,7 +278,7 @@ LocalFileSystemBrowser::Dir& LocalFileSystemBrowser::Dir::cd(const std::string& 
     if (dir[0] == '/') {
         m_path = dir;
     } else {
-        if (*m_path.rbegin() != '/')
+        if (!endsWith(m_path, '/'))
             m_path.push_back('/');
         m_path.append(dir);
     }
@@ -273,7 +288,7 @@ LocalFileSystemBrowser::Dir& LocalFileSystemBrowser::Dir::cd(const std::string& 
         m_path = canonicalPath;
     free(canonicalPath);
 
-    if (*m_path.rbegin() == '/' && m_path.size() > 1)
+    if (endsWith(m_path, '/') && m_path.size() > 1)
         m_path.resize(m_path.size() - 1);
 
     return *this;
@@ -281,7 +296,7 @@ LocalFileSystemBrowser::Dir& LocalFileSystemBrowser::Dir::cd(const std::string& 
 
 std::string LocalFileSystemBrowser::Dir::name() const
 {
-    const std::string::size_type slashPos = m_path.rfind('/');
+    const auto slashPos = m_path.rfind('/');
     if (slashPos == std::string::npos || slashPos + 1 >= m_path.size())
         return std::string();
 

@@ -25,6 +25,7 @@ set(SOURCES
     localfilesystembrowser/localfilesystembrowser.cpp
     localfilesystembrowser/filesystemmodel.cpp
     localfilesystembrowser/filesystemitemdelegate.cpp
+    localfilesystembrowser/filesystemwatcher.cpp
 
     headerwindow/headerwindow.cpp
 
@@ -76,6 +77,7 @@ set(HEADERS
     localfilesystembrowser/localfilesystembrowser.h
     localfilesystembrowser/filesystemmodel.h
     localfilesystembrowser/filesystemitemdelegate.h
+    localfilesystembrowser/filesystemwatcher.h
 
     headerwindow/headerwindow.h
 

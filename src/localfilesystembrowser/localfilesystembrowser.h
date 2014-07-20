@@ -36,7 +36,7 @@ public:
 
 private:
     xmms2::Client *m_xmmsClient;
-
+    
     class Dir
     {
     public:
@@ -57,7 +57,8 @@ private:
     void cd(const std::string& dir);
     void activePlaylistAddFileOrDirectory(int item, bool beQuiet = false);
     void activePlaylistAddFile(int item, bool beQuiet = false);
-
+    void directoryDeleted();
+    
     class ViewportState
     {
     public:

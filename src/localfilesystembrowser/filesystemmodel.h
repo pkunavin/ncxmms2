@@ -17,18 +17,18 @@
 #ifndef FILESYSTEMMODEL_H
 #define FILESYSTEMMODEL_H
 
-#include <vector>
-#include <sys/stat.h>
-
 #include "../lib/listmodel.h"
 
 namespace ncxmms2 {
+
+class FileSystemModelPrivate;
 
 class FileSystemModel : public ListModel
 {
 public:
     FileSystemModel(Object *parent = nullptr);
-
+    ~FileSystemModel();
+    
     void setDirectory(const std::string& path);
 
     const std::string& fileName(int item) const;
@@ -47,29 +47,13 @@ public:
     virtual int itemsCount() const;
 
     virtual void refresh();
+    
+    // Signals
+    NCXMMS2_SIGNAL(deleted)
 
 private:
-    std::string m_currentDir;
-
-    struct FileSystemItem
-    {
-        FileSystemItem(const char *name_) : name(name_){}
-
-        bool isDirectory() const     {return S_ISDIR(info.st_mode);}
-        bool isRegularFile() const   {return S_ISREG(info.st_mode);}
-        bool isBlockFile() const     {return S_ISBLK(info.st_mode);}
-        bool isCharacterFile() const {return S_ISCHR(info.st_mode);}
-        bool isFifoFile() const      {return S_ISFIFO(info.st_mode);}
-        bool isSymbolicLink() const  {return S_ISLNK(info.st_mode);}
-        bool isSocketFile() const    {return S_ISSOCK(info.st_mode);}
-
-        std::string name;
-        struct stat64 info;
-    };
-    std::vector<FileSystemItem> m_currentDirEntries;
-
-    static bool isRootPath(const std::string& path);
-
+    std::unique_ptr<FileSystemModelPrivate> d;
+    friend class FileSystemModelPrivate;
 };
 } // ncxmms2
 

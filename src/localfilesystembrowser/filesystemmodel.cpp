@@ -14,137 +14,240 @@
  *  GNU General Public License for more details.
  */
 
+#include <vector>
 #include <utility>
 #include <algorithm>
 #include <dirent.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 
 #include "filesystemmodel.h"
+#include "filesystemwatcher.h"
 
 #include "../lib/listmodelitemdata.h"
+#include "../lib/stringalgo.h"
+
+namespace ncxmms2 {
+
+class FileSystemModelPrivate
+{
+public:
+    FileSystemModelPrivate(FileSystemModel *q_);
+    
+    FileSystemModel *q;
+    FileSystemWatcher *fsWatcher;
+    std::string dir;
+
+    struct FileSystemItem
+    {
+        template <typename T>
+        FileSystemItem(T&& name_) : name(std::forward<T>(name_)) {}
+
+        bool isDirectory() const     {return S_ISDIR(info.st_mode);}
+        bool isRegularFile() const   {return S_ISREG(info.st_mode);}
+        bool isBlockFile() const     {return S_ISBLK(info.st_mode);}
+        bool isCharacterFile() const {return S_ISCHR(info.st_mode);}
+        bool isFifoFile() const      {return S_ISFIFO(info.st_mode);}
+        bool isSymbolicLink() const  {return S_ISLNK(info.st_mode);}
+        bool isSocketFile() const    {return S_ISSOCK(info.st_mode);}
+
+        std::string name;
+        struct stat64 info;
+        
+        friend bool operator<(const FileSystemItem& item1, const FileSystemItem& item2)
+        {
+            if (item1.isDirectory() && !item2.isDirectory())
+                return true;
+    
+            if (!item1.isDirectory() && item2.isDirectory())
+                return false;
+    
+            return item1.name < item2.name;
+        };
+    };
+    std::vector<FileSystemItem> dirEntries;
+
+    struct FindFileCmp
+    {
+        bool operator()(const FileSystemItem& item1, const std::string& item2)
+        {
+            if (item1.isDirectory())
+                return true;
+    
+           return item1.name < item2;
+        }
+    };
+    
+    struct FindDirCmp
+    {
+        bool operator()(const FileSystemItem& item1, const std::string& item2)
+        {
+            if (!item1.isDirectory())
+                return false;
+    
+           return item1.name < item2;
+        }
+    };
+    
+    template <typename Cmp>
+    void itemCreated(const std::string& file)
+    {
+        auto it = std::lower_bound(dirEntries.begin(), dirEntries.end(), file, Cmp());
+        it = dirEntries.emplace(it, file);
+        
+        std::string filePatch = dir;
+        if (!endsWith(filePatch, '/'))
+            filePatch.push_back('/');
+        filePatch.append(file);
+        if (stat64(filePatch.c_str(), &it->info) == -1) {
+            dirEntries.erase(it);
+            return;
+        }
+        
+        q->itemInserted(it - dirEntries.begin());
+    }
+    
+    template <typename Cmp>
+    void itemRemoved(const std::string& file)
+    {
+        auto it = std::lower_bound(dirEntries.begin(), dirEntries.end(), file, Cmp());
+        if (it != dirEntries.end() && it->name == file) {
+            dirEntries.erase(it);
+            q->itemRemoved(it - dirEntries.begin());
+        }
+    }
+    
+    static bool isRootPath(const std::string& path);
+};
+
+} // ncxmms2
 
 using namespace ncxmms2;
 
 FileSystemModel::FileSystemModel(Object *parent) :
-    ListModel(parent)
+    ListModel(parent),
+    d(new FileSystemModelPrivate(this))
 {
+    
+}
 
+FileSystemModel::~FileSystemModel()
+{
+    
 }
 
 void FileSystemModel::setDirectory(const std::string& path)
 {
-    m_currentDir = path;
+    d->dir = path;
+    d->fsWatcher->watch(path);
     refresh();
 }
 
 const std::string& FileSystemModel::fileName(int item) const
 {
-    assert(item >= 0 && (size_t)item < m_currentDirEntries.size());
-    return m_currentDirEntries[item].name;
+    assert(item >= 0 && (size_t)item < d->dirEntries.size());
+    return d->dirEntries[item].name;
 }
 
 std::string FileSystemModel::filePath(int item) const
 {
-    assert(item >= 0 && (size_t)item < m_currentDirEntries.size());
+    assert(item >= 0 && (size_t)item < d->dirEntries.size());
 
-    std::string path = m_currentDir;
-    if (*path.rbegin() != '/')
+    std::string path = d->dir;
+    if (!endsWith(path, '/'))
         path.push_back('/');
-    path.append(m_currentDirEntries[item].name);
+    path.append(d->dirEntries[item].name);
 
-    return std::move(path);
+    return path;
 }
 
 bool FileSystemModel::isDirectory(int item) const
 {
-    assert(item >= 0 && (size_t)item < m_currentDirEntries.size());
-    return m_currentDirEntries[item].isDirectory();
+    assert(item >= 0 && (size_t)item < d->dirEntries.size());
+    return d->dirEntries[item].isDirectory();
 }
 
 bool FileSystemModel::isRegularFile(int item) const
 {
-    assert(item >= 0 && (size_t)item < m_currentDirEntries.size());
-    return m_currentDirEntries[item].isRegularFile();
+    assert(item >= 0 && (size_t)item < d->dirEntries.size());
+    return d->dirEntries[item].isRegularFile();
 }
 
 bool FileSystemModel::isBlockFile(int item) const
 {
-    assert(item >= 0 && (size_t)item < m_currentDirEntries.size());
-    return m_currentDirEntries[item].isBlockFile();
+    assert(item >= 0 && (size_t)item < d->dirEntries.size());
+    return d->dirEntries[item].isBlockFile();
 }
 
 bool FileSystemModel::isCharacterFile(int item) const
 {
-    assert(item >= 0 && (size_t)item < m_currentDirEntries.size());
-    return m_currentDirEntries[item].isCharacterFile();
+    assert(item >= 0 && (size_t)item < d->dirEntries.size());
+    return d->dirEntries[item].isCharacterFile();
 }
 
 bool FileSystemModel::isFifoFile(int item) const
 {
-    assert(item >= 0 && (size_t)item < m_currentDirEntries.size());
-    return m_currentDirEntries[item].isFifoFile();
+    assert(item >= 0 && (size_t)item < d->dirEntries.size());
+    return d->dirEntries[item].isFifoFile();
 }
 
 bool FileSystemModel::isSymbolicLink(int item) const
 {
-    assert(item >= 0 && (size_t)item < m_currentDirEntries.size());
-    return m_currentDirEntries[item].isSymbolicLink();
+    assert(item >= 0 && (size_t)item < d->dirEntries.size());
+    return d->dirEntries[item].isSymbolicLink();
 }
 
 bool FileSystemModel::isSocketFile(int item) const
 {
-    assert(item >= 0 && (size_t)item < m_currentDirEntries.size());
-    return m_currentDirEntries[item].isSocketFile();
+    assert(item >= 0 && (size_t)item < d->dirEntries.size());
+    return d->dirEntries[item].isSocketFile();
 }
 
 int FileSystemModel::fileIndex(const std::string& name) const
 {
-    auto pred = [&name](const FileSystemItem& item)
+    auto pred = [&name](const FileSystemModelPrivate::FileSystemItem& item)
     {
         return item.name == name;
     };
-    auto it = std::find_if(m_currentDirEntries.begin(), m_currentDirEntries.end(),
-                           pred);
-    return it != m_currentDirEntries.end() ? it - m_currentDirEntries.begin() : -1;
+    auto it = std::find_if(d->dirEntries.begin(), d->dirEntries.end(), pred);
+    return it != d->dirEntries.end() ? it - d->dirEntries.begin() : -1;
 }
 
 void FileSystemModel::data(int item, ListModelItemData *itemData) const
 {
-    assert(item >= 0 && (size_t)item < m_currentDirEntries.size());
-    itemData->textPtr = &m_currentDirEntries[item].name;
+    assert(item >= 0 && (size_t)item < d->dirEntries.size());
+    itemData->textPtr = &d->dirEntries[item].name;
 }
 
 int FileSystemModel::itemsCount() const
 {
-    return m_currentDirEntries.size();
+    return d->dirEntries.size();
 }
 
 void FileSystemModel::refresh()
 {
-    // TODO: Automatic refresh via inotify on Linux
+    d->dirEntries.clear();
 
-    m_currentDirEntries.clear();
-
-    DIR *newDir = opendir(m_currentDir.c_str());
+    DIR *newDir = opendir(d->dir.c_str());
     if (!newDir) {
         reset();
         return;
     }
 
-    std::string fileDir = m_currentDir;
-    if (*fileDir.rbegin() != '/')
-        fileDir.push_back('/');
-    const std::string::size_type fileDirStrSize = fileDir.size();
+    std::string filePath = d->dir;
+    if (!endsWith(filePath, '/'))
+        filePath.push_back('/');
+    const auto filePathStrSize = filePath.size();
 
     // Explicitly add .. item, because directory stream may not contain it.
-    if (!isRootPath(m_currentDir)) {
-        m_currentDirEntries.emplace_back("..");
-        fileDir.append("..");
-        struct stat64 *info = &m_currentDirEntries.rbegin()->info;
-        stat64(fileDir.c_str(), info); // FIXME: What to do if it fails?
+    if (!FileSystemModelPrivate::isRootPath(d->dir)) {
+        d->dirEntries.emplace_back("..");
+        filePath.append("..");
+        struct stat64 *info = &d->dirEntries.back().info;
+        stat64(filePath.c_str(), info); // FIXME: What to do if it fails?
     }
 
     struct dirent *dirEntry;
@@ -152,36 +255,36 @@ void FileSystemModel::refresh()
         if (strcmp(dirEntry->d_name, ".") == 0 || strcmp(dirEntry->d_name, "..") == 0)
             continue;
 
-        m_currentDirEntries.emplace_back(dirEntry->d_name);
-        struct stat64 *info = &m_currentDirEntries.rbegin()->info;
-        fileDir.resize(fileDirStrSize);
-        fileDir.append(dirEntry->d_name);
-        if (stat64(fileDir.c_str(), info) == -1) {
-            m_currentDirEntries.pop_back();
+        d->dirEntries.emplace_back(dirEntry->d_name);
+        struct stat64 *info = &d->dirEntries.back().info;
+        filePath.resize(filePathStrSize);
+        filePath.append(dirEntry->d_name);
+        if (stat64(filePath.c_str(), info) == -1) {
+            d->dirEntries.pop_back();
         }
     }
     closedir(newDir);
 
-    auto itBegin = m_currentDirEntries.begin();
-    if (!isRootPath(m_currentDir) && !m_currentDirEntries.empty())
+    auto itBegin = d->dirEntries.begin();
+    if (!FileSystemModelPrivate::isRootPath(d->dir) && !d->dirEntries.empty())
         ++itBegin; // Skip .. item
 
-    auto fileCompare = [](const FileSystemItem& item1, const FileSystemItem& item2)
-    {
-        if (item1.isDirectory() && !item2.isDirectory())
-            return true;
-
-        if (!item1.isDirectory() && item2.isDirectory())
-            return false;
-
-        return item1.name < item2.name;
-    };
-
-    std::sort(itBegin, m_currentDirEntries.end(), fileCompare);
+    std::sort(itBegin, d->dirEntries.end());
     reset();
 }
 
-bool FileSystemModel::isRootPath(const std::string& path)
+FileSystemModelPrivate::FileSystemModelPrivate(FileSystemModel *q_) :
+    q(q_)
+{
+    fsWatcher = new FileSystemWatcher(q);
+    fsWatcher->fileCreated_Connect(&FileSystemModelPrivate::itemCreated<FindFileCmp>, this);
+    fsWatcher->directoryCreated_Connect(&FileSystemModelPrivate::itemCreated<FindDirCmp>, this);
+    fsWatcher->fileDeleted_Connect(&FileSystemModelPrivate::itemRemoved<FindFileCmp>, this);
+    fsWatcher->directoryDeleted_Connect(&FileSystemModelPrivate::itemRemoved<FindDirCmp>, this);
+    fsWatcher->selfDeleted_Connect([this](){q->deleted();});
+}
+
+bool FileSystemModelPrivate::isRootPath(const std::string& path)
 {
     if (path == "/")
         return true;

@@ -130,6 +130,16 @@ inline bool startsWith(const std::string& str, const char *prefix)
     return startsWith(str.c_str(), prefix);
 }
 
+inline bool startsWith(const char *str, char prefix)
+{
+    return str[0] == prefix;
+}
+
+inline bool startsWith(const std::string& str, char prefix)
+{
+    return startsWith(str.c_str(), prefix);
+}
+
 // Checks whether the string str ends with suffix
 inline bool endsWith(const char *str, const char *suffix)
 {
@@ -139,6 +149,14 @@ inline bool endsWith(const char *str, const char *suffix)
 inline bool endsWith(const std::string& str, const char *suffix)
 {
     return endsWith(str.c_str(), suffix);
+}
+
+inline bool endsWith(const std::string& str, char suffix)
+{
+    if (str.empty())
+        return false;
+    
+    return str.back() == suffix;
 }
 
 // Converts a string to ASCII lower case
