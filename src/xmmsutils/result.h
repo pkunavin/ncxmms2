@@ -106,17 +106,17 @@ public:
     template <typename Obj>
     void operator()(void (Obj::*func)(T), Obj *obj)
     {
-        //   NOTE: Potentially unasafe, as threre is no guarantee
+        //   NOTE: Potentially unsafe, as there is no guarantee
         // that at the moment of callback call the object will be alive
-        return operator()(Signals::memFnBind(func, obj));
+        operator()(Signals::memFnBind(func, obj));
     }
     
     template <typename Obj, typename... Signature, typename Arg0, typename... Args>
     void operator()(void (Obj::*func)(Signature...), Obj *obj, Arg0&& arg0, Args&&... args)
     {
-        //   NOTE: Potentially unasafe, as threre is no guarantee
+        //   NOTE: Potentially unsafe, as there is no guarantee
         // that at the moment of callback call the object will be alive
-        return operator()(std::bind(func, obj, std::forward<Arg0>(arg0), std::forward<Args>(args)...));
+        operator()(std::bind(func, obj, std::forward<Arg0>(arg0), std::forward<Args>(args)...));
     }
 };
 
