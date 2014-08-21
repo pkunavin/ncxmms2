@@ -34,8 +34,11 @@ PlaybackProgressBar::PlaybackProgressBar(int xPos, int yPos, int cols, Window *p
 
 void PlaybackProgressBar::setValue(int value)
 {
-    m_value = value;
-    update();
+    value = m_maxValue > 0 ? ((double)value / (double)m_maxValue) * cols() : 0;
+    if (m_value != value) {
+        m_value = value;
+        update();
+    }
 }
 
 void PlaybackProgressBar::setMaxValue(int maxValue)
@@ -55,13 +58,12 @@ void PlaybackProgressBar::mouseEvent(const MouseEvent& ev)
 void PlaybackProgressBar::paint(const Rectangle& rect)
 {
     NCXMMS2_UNUSED(rect);
-
+    
     Painter painter(this);
     painter.drawHLine(0, 0, cols());
     if (m_maxValue > 0) {
-        const int pos = ((double)m_value / (double)m_maxValue) * cols();
         painter.setBold(true);
-        painter.drawHLine(0, 0, pos);
+        painter.drawHLine(0, 0, m_value);
     }
     painter.flush();
 }

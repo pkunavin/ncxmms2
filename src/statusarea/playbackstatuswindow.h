@@ -41,7 +41,7 @@ private:
     xmms2::Client *m_xmmsClient;
     xmms2::PlaybackStatus m_playbackStatus;
     Song m_currentSong;
-    int m_playbackPlaytime;
+    std::string m_playbackPlaytime;
     bool m_useTerminalWindowTitle;
     SongDisplayFormatParser m_songDisplayFormatter;
     SongDisplayFormatParser m_terminalWindowTitleFormatter;

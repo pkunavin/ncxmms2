@@ -31,7 +31,7 @@ PlaybackStatusWindow::PlaybackStatusWindow(xmms2::Client *client, int xPos, int 
     Window(Rectangle(xPos, yPos, cols, 1), parent),
     m_xmmsClient(client),
     m_playbackStatus(xmms2::PlaybackStatus::Stopped),
-    m_playbackPlaytime(0),
+    m_playbackPlaytime(Utils::getTimeStringFromInt(0)),
     m_useTerminalWindowTitle(true)
 {
     loadPalette("PlaybackStatusWindow");
@@ -98,8 +98,11 @@ void PlaybackStatusWindow::getCurrentIdInfo(const xmms2::PropDict& info)
 
 void PlaybackStatusWindow::getPlaytime(int playtime)
 {
-    m_playbackPlaytime = playtime;
-    update();
+    std::string playtimeStr = Utils::getTimeStringFromInt(playtime);
+    if (m_playbackPlaytime != playtimeStr) {
+        m_playbackPlaytime.swap(playtimeStr);
+        update();
+    }
 }
 
 void PlaybackStatusWindow::handleIdInfoChanged(int id)
@@ -111,7 +114,7 @@ void PlaybackStatusWindow::handleIdInfoChanged(int id)
 void PlaybackStatusWindow::paint(const Rectangle& rect)
 {
     NCXMMS2_UNUSED(rect);
-
+    
     const Palette::ColorGroup colorGroup = hasFocus()
                                            ? Palette::GroupActive
                                            : Palette::GroupInactive;
@@ -128,9 +131,9 @@ void PlaybackStatusWindow::paint(const Rectangle& rect)
     painter.setBold(false);
 
     std::string timeString;
-    timeString.reserve(19); // [xx:xx;xx/xx;xx;xx]
+    timeString.reserve(19); // [xx:xx:xx/xx:xx:xx]
     timeString.push_back('[');
-    timeString.append(Utils::getTimeStringFromInt(m_playbackPlaytime));
+    timeString.append(m_playbackPlaytime);
     if (m_currentSong.duration() > 0) {
         timeString.push_back('/');
         timeString.append(Utils::getTimeStringFromInt(m_currentSong.duration()));
