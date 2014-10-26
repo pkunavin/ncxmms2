@@ -32,6 +32,7 @@ public:
         m_id(0),
         m_durartion(-1),
         m_trackNumber(-1),
+        m_timesPlayed(-1),
         m_bitrate(-1),
         m_samplerate(-1) {}
 
