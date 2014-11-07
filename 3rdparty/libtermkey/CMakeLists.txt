@@ -9,6 +9,7 @@ set(HEADERS
     termkey-internal.h)
 
 add_library(libtermkey ${SOURCES})
+SET_TARGET_PROPERTIES(libtermkey PROPERTIES PREFIX "")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -std=c99")
 

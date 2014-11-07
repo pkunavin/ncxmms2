@@ -56,7 +56,8 @@ set(HEADERS
     stringref.h
     stringalgo.h)
 
-add_library(ncxmms2-lib ${SOURCES})
+add_library(libncxmms2 ${SOURCES})
+SET_TARGET_PROPERTIES(libncxmms2 PROPERTIES PREFIX "")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -Wextra")
 
@@ -68,7 +69,7 @@ include_directories(${NCURSESW_INCLUDE_DIRS})
 pkg_check_modules(GLIB glib-2.0 REQUIRED)
 include_directories(${GLIB_INCLUDE_DIRS})
 
-target_link_libraries(ncxmms2-lib libtermkey
+target_link_libraries(libncxmms2 libtermkey
                                   json-parser
                                   ${NCURSESW_LIBRARIES}
                                   ${GLIB_LIBRARIES})

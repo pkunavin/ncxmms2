@@ -123,7 +123,7 @@ include_directories(${XMMS2_C_INCLUDE_DIRS})
 pkg_check_modules(XMMS2_C_GLIB xmms2-client-glib REQUIRED)
 include_directories(${XMMS2_C_GLIB_INCLUDE_DIRS})
 
-target_link_libraries(ncxmms2 ncxmms2-lib
+target_link_libraries(ncxmms2 libncxmms2
                               ${GLIB_LIBRARIES}
                               ${XMMS2_C_LIBRARIES}
                               ${XMMS2_C_GLIB_LIBRARIES})
