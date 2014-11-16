@@ -17,13 +17,13 @@
 #ifndef SONGINFOWINDOW_H
 #define SONGINFOWINDOW_H
 
+#include "../xmmsutils/result.h"
 #include "../lib/textview.h"
 
 namespace ncxmms2 {
 
 namespace xmms2 {
     class Client;
-    class PropDict;
 }
 
 class SongInfoWindow : public TextView
@@ -42,8 +42,8 @@ private:
     xmms2::Client *m_xmmsClient;
     int m_id;
     
-    void getSongInfo(const ncxmms2::xmms2::PropDict& info);
-    void handleSongInfoUpdate(int id);
+    void getSongInfo(const xmms2::Expected<xmms2::PropDict>& info);
+    void handleSongInfoUpdate(const xmms2::Expected<int>& id);
 };
 } // ncxmms2
 

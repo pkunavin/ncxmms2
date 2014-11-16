@@ -18,7 +18,7 @@
 #define SONGSLISTMODEL_H
 
 #include <vector>
-#include "../xmmsutils/types.h"
+#include "../xmmsutils/result.h"
 #include "../lib/listmodel.h"
 
 namespace ncxmms2 {
@@ -60,7 +60,7 @@ private:
 
     void getSongsList(const std::string& artist,
                       const std::string& album,
-                      const xmms2::List<xmms2::Dict>& list);
+                      const xmms2::Expected<xmms2::List<xmms2::Dict>>& list);
 };
 } // ncxmms2
 

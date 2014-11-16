@@ -19,6 +19,8 @@
 
 #include <functional>
 #include <vector>
+#include <string>
+#include <type_traits>
 
 #include "types.h"
 #include "../lib/signals.h"
@@ -30,25 +32,153 @@ typedef struct xmmsv_St xmmsv_t;
 namespace ncxmms2 {
 namespace xmms2 {
 
+/*   Expected<T> is a variant type to represent that xmms2 can either
+ * return a value (of type T) or an error (represented by string).
+ * This class is inspired by Alexandrescu's Expected<T>.
+ */
+class ExpectedValueTag{};
+class ExpectedErrorTag{};
+
+template <typename T>
+class Expected
+{
+public:
+    typedef T Type;
+    
+    template <typename... Args>
+    Expected(ExpectedValueTag, Args&&... args) :
+        m_value(std::forward<Args>(args)...),
+        m_isValid(true) {}
+    
+    template <typename... Args>
+    Expected(ExpectedErrorTag, Args&&... args) :
+        m_error(std::forward<Args>(args)...),
+        m_isValid(false) {}
+    
+    bool isValid() const  {return m_isValid;}
+    bool isError() const  {return !isValid();}
+    
+    T& value()
+    {
+        assert(isValid());
+        return m_value;
+    }
+    
+    const T& value() const
+    {
+        assert(isValid());
+        return m_value;
+    }
+    
+          T * operator->()       {return &value();}
+    const T * operator->() const {return &value();}
+    
+          T& operator*()       {return value();}
+    const T& operator*() const {return value();}
+    
+    const std::string& error() const
+    {
+        assert(isError());
+        return m_error;
+    }
+    
+    ~Expected()
+    {
+        destruct();
+    }
+    
+    Expected(const Expected& other) = delete;
+    Expected& operator=(const Expected& other) = delete;
+    
+    Expected(Expected&& other) noexcept:
+        m_isValid(other.m_isValid)
+    {
+        construct(std::move(other));
+    }
+    
+    Expected& operator=(Expected&& other) noexcept
+    {
+        if (this != &other) {
+            destruct();
+            m_isValid = other.m_isValid;
+            construct(std::move(other));
+        }
+        return *this;
+    } 
+    
+private:
+    union
+    {
+        T m_value;
+        std::string m_error;
+    };
+    bool m_isValid;
+    
+    void construct(Expected&& other)
+    {
+        if (m_isValid) {
+            new (&m_value) T(std::move(other.m_value));
+        } else {
+            new (&m_error) std::string(std::move(other.m_error));
+        }
+    }
+    
+    void destruct()
+    {
+        using std::string;
+        if (m_isValid) {
+            m_value.~T();
+        } else {
+            m_error.~string();
+        }
+    }
+    
+};
+
+template <typename T>
+inline Expected<typename std::decay<T>::type> expectedFromValue(T&& value)
+{
+    return Expected<typename std::decay<T>::type>(ExpectedValueTag(), std::forward<T>(value));
+}
+
+template <typename T, typename... Args>
+inline Expected<T> expectedConstructValue(Args&&... args)
+{
+    return Expected<T>(ExpectedValueTag(), std::forward<Args>(args)...);
+}
+
+template <typename T, typename Str>
+inline Expected<T> expectedFromError(Str&& error)
+{
+    return Expected<T>(ExpectedErrorTag(), std::forward<Str>(error));
+}
+
 namespace detail {
-void decodeValue(xmmsv_t *value, const std::function<void (int)>& callback);
-void decodeValue(xmmsv_t *value, const std::function<void (PlaybackStatus)>& callback);
-void decodeValue(xmmsv_t *value, const std::function<void (const Dict&)>& callback);
-void decodeValue(xmmsv_t *value, const std::function<void (const PropDict&)>& callback);
-void decodeValue(xmmsv_t *value, const std::function<void (StringRef)>& callback);
+StringRef getErrorString(xmmsv_t *value);
+
+template <typename T>
+void decodeValue(xmmsv_t *value, const std::function<void (const Expected<T>&)>& callback)
+{
+    callback(expectedConstructValue<T>(value));
+}
+
+void decodeValue(xmmsv_t *value, const std::function<void (const Expected<int>&)>& callback);
+void decodeValue(xmmsv_t *value, const std::function<void (const Expected<PlaybackStatus>&)>& callback);
+void decodeValue(xmmsv_t *value, const std::function<void (const Expected<PropDict>&)>& callback);
+void decodeValue(xmmsv_t *value, const std::function<void (const Expected<StringRef>&)>& callback);
+void decodeValue(xmmsv_t *value, const std::function<void (const Expected<Collection>&)>& callback);
 void decodeValue(xmmsv_t *value, const std::function<void (const PlaylistChangeEvent&)>& callback);
 void decodeValue(xmmsv_t *value, const std::function<void (const CollectionChangeEvent&)>& callback);
-void decodeValue(xmmsv_t *value, const std::function<void (const List<int>&)>& callback);
-void decodeValue(xmmsv_t *value, const std::function<void (const List<StringRef>&)>& callback);
-void decodeValue(xmmsv_t *value, const std::function<void (const List<Dict>&)>& callback);
-void decodeValue(xmmsv_t *value, const std::function<void (const Collection&)>& callback);
 } // detail
 
 template <typename T>
-class XmmsValueFunctionWrapper
+class XmmsValueFunctionWrapper;
+
+template <typename T>
+class XmmsValueFunctionWrapper<const T&>
 {
 public:
-    typedef std::function<void (T)> FunctionType;
+    typedef std::function<void (const T&)> FunctionType;
     typedef int (*PlainFunctionType)(xmmsv_t*, void*);
 
     template <typename F>
@@ -67,7 +197,42 @@ private:
 
     static int plainFunction(xmmsv_t *value, void *data)
     {
-        detail::decodeValue(value, static_cast<XmmsValueFunctionWrapper*>(data)->m_function);
+        auto *wrapper = static_cast<XmmsValueFunctionWrapper*>(data);
+        detail::decodeValue(value, wrapper->m_function);
+        return 1;
+    }
+};
+
+template <typename T>
+class XmmsValueFunctionWrapper<const Expected<T>&>
+{
+public:
+    typedef std::function<void (const Expected<T>&)> FunctionType;
+    typedef int (*PlainFunctionType)(xmmsv_t*, void*);
+
+    template <typename F>
+    XmmsValueFunctionWrapper(F&& f) :
+        m_function(std::forward<F>(f)) {}
+
+    PlainFunctionType get() const {return &plainFunction;}
+
+    static void free(void *ptr)
+    {
+        delete static_cast<XmmsValueFunctionWrapper*>(ptr);
+    }
+    
+private:
+    FunctionType m_function;
+
+    static int plainFunction(xmmsv_t *value, void *data)
+    {
+        auto *wrapper = static_cast<XmmsValueFunctionWrapper*>(data);
+        const StringRef error = detail::getErrorString(value);
+        if (!error.isNull()) {
+            wrapper->m_function(expectedFromError<T>(error.c_str()));
+        } else {
+            detail::decodeValue(value, wrapper->m_function);
+        }
         return 1;
     }
 };
@@ -128,16 +293,16 @@ public:
         ResultBase(connection, result) {}
 };
 
-typedef Result<void> VoidResult;
-typedef Result<int> IntResult;
-typedef Result<PlaybackStatus> PlaybackStatusResult;
-typedef Result<const Dict&> DictResult;
-typedef Result<const PropDict&> PropDictResult;
-typedef Result<StringRef> StringResult;
-typedef Result<const List<int>&> IntListResult;
-typedef Result<const List<StringRef>&> StringListResult;
-typedef Result<const List<Dict>&> DictListResult;
-typedef Result<const Collection&> CollectionResult;
+typedef Result<void>                             VoidResult;
+typedef Result<const Expected<int>&>             IntResult;
+typedef Result<const Expected<PlaybackStatus>&>  PlaybackStatusResult;
+typedef Result<const Expected<Dict>&>            DictResult;
+typedef Result<const Expected<PropDict>&>        PropDictResult;
+typedef Result<const Expected<StringRef>&>       StringResult;
+typedef Result<const Expected<List<int>>&>       IntListResult;
+typedef Result<const Expected<List<StringRef>>&> StringListResult;
+typedef Result<const Expected<List<Dict>>&>      DictListResult;
+typedef Result<const Expected<Collection>&>      CollectionResult;
 
 } // xmms2
 } // ncxmms2

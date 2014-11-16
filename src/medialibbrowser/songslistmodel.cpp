@@ -17,7 +17,10 @@
 #include <assert.h>
 
 #include "songslistmodel.h"
+#include "../statusarea/statusarea.h"
 #include "../xmmsutils/client.h"
+#include "../log.h"
+
 #include "../lib/listmodelitemdata.h"
 
 using namespace ncxmms2;
@@ -77,13 +80,19 @@ void SongsListModel::refresh()
 
 void SongsListModel::getSongsList(const std::string& artist,
                                   const std::string& album,
-                                  const xmms2::List<xmms2::Dict>& list)
+                                  const xmms2::Expected<xmms2::List<xmms2::Dict>>& list)
 {
+    if (list.isError()) {
+        StatusArea::showMessage("Failed to get songs of \"%s\":\"%s\": %s!", artist, album, list.error());
+        NCXMMS2_LOG_ERROR("%s", list.error().c_str());
+        return;
+    }
+    
     if (artist != m_artist || album != m_album)
         return;
 
     m_songs.clear();
-    for (auto it = list.getIterator(); it.isValid(); it.next()) {
+    for (auto it = list->getIterator(); it.isValid(); it.next()) {
         bool ok = false;
         xmms2::Dict dict = it.value(&ok);
         if (NCXMMS2_UNLIKELY(!ok))

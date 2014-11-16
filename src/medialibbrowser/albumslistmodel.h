@@ -18,7 +18,7 @@
 #define ALBUMSLISTMODEL_H
 
 #include <vector>
-#include "../xmmsutils/types.h"
+#include "../xmmsutils/result.h"
 #include "../lib/listmodel.h"
 
 namespace ncxmms2 {
@@ -49,7 +49,8 @@ private:
     std::vector<std::string> m_sortingOrder;
     std::vector<std::string> m_albums;
 
-    void getAlbumsList(const std::string& artist, const xmms2::List<xmms2::Dict>& list);
+    void getAlbumsList(const std::string& artist,
+                       const xmms2::Expected<xmms2::List<xmms2::Dict>>& list);
 };
 } // ncxmms2
 

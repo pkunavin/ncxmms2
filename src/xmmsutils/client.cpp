@@ -56,15 +56,21 @@ public:
     bool configLoadRequested;
     std::unordered_map<std::string, std::string> config;
     
-    void getConfig(const Dict& dict);
-    void handleConfigChange(const Dict& dict);
+    void getConfig(const Expected<Dict>& dict);
+    void handleConfigChange(const Expected<Dict>& dict);
     
     static void disconnectCallback(void *data);
 };
 
-void ClientPrivate::getConfig(const Dict& dict)
+void ClientPrivate::getConfig(const Expected<Dict>& dict)
 {
-    dict.forEach([this](StringRef key, Variant value){
+    if (dict.isError()) {
+        NCXMMS2_LOG_ERROR("%s", dict.error().c_str());
+        // TODO: handle error properly
+        return;
+    }
+    
+    dict->forEach([this](StringRef key, Variant value){
         std::string valueStr;
         switch (value.type()) {
             case Variant::Type::Int:
@@ -83,9 +89,14 @@ void ClientPrivate::getConfig(const Dict& dict)
     q->configLoaded();
 }
 
-void ClientPrivate::handleConfigChange(const Dict& dict)
+void ClientPrivate::handleConfigChange(const Expected<Dict>& dict)
 {
-    dict.forEach([this](StringRef key, Variant value){
+    if (dict.isError()) {
+        NCXMMS2_LOG_ERROR("%s", dict.error().c_str());
+        return;
+    }
+    
+    dict->forEach([this](StringRef key, Variant value){
         std::string valueStr;
         switch (value.type()) {
             case Variant::Type::Int:
@@ -343,8 +354,9 @@ xmms2::VoidResult xmms2::Client::playlistAddIdList(const std::string& playlist, 
 void xmms2::Client::playlistAddPlaylistFile(const std::string& playlist, const std::string& file)
 {
     CLIENT_CHECK_CONNECTION;
-    collectionIdListFromPlaylistFile(file)([playlist, this](const Collection& idlist){
-        playlistAddIdList(playlist, idlist);
+    collectionIdListFromPlaylistFile(file)([playlist, this](const Expected<Collection>& idlist){
+        if (idlist.isValid())
+            playlistAddIdList(playlist, idlist.value());
     });
 }
 

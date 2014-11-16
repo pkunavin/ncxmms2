@@ -41,31 +41,32 @@ void xmms2::ResultBase::setResultCallback(int (*callback)(xmmsv_t *, void *), vo
     xmmsc_result_notifier_set_full(m_result, callback, userData, freeCallback);
 }
 
-void xmms2::detail::decodeValue(xmmsv_t *value, const std::function<void (int)> &callback)
+StringRef xmms2::detail::getErrorString(xmmsv_t *value)
 {
-    if (xmmsv_is_error(value)) {
-        NCXMMS2_LOG_ERROR("value is an error");
-        return;
+    const char *error = nullptr;
+    if (xmmsv_get_error(value, &error)) {
+        return error;
     }
-    
-    int result;
-    if (!xmmsv_get_int(value, &result)) {
-         NCXMMS2_LOG_ERROR("xmmsv_get_int failed");
-         return;
-    }
-    callback(result);
+    return nullptr;
 }
 
-void xmms2::detail::decodeValue(xmmsv_t *value, const std::function<void (xmms2::PlaybackStatus)>& callback)
+void xmms2::detail::decodeValue(xmmsv_t *value,
+                                const std::function<void (const Expected<int>&)>& callback)
 {
-    if (xmmsv_is_error(value)) {
-        NCXMMS2_LOG_ERROR("value is an error");
+    int result;
+    if (!xmmsv_get_int(value, &result)) {
+        callback(expectedFromError<int>("xmmsv_get_int failed"));
         return;
     }
-    
+    callback(expectedFromValue(result));
+}
+
+void xmms2::detail::decodeValue(xmmsv_t *value,
+                                const std::function<void (const Expected<PlaybackStatus>&)>& callback)
+{
     int intStatus;
     if (!xmmsv_get_int(value, &intStatus)) {
-         NCXMMS2_LOG_ERROR("xmmsv_get_int failed");
+         callback(expectedFromError<PlaybackStatus>("xmmsv_get_int failed"));
          return;
     }
     
@@ -84,47 +85,42 @@ void xmms2::detail::decodeValue(xmmsv_t *value, const std::function<void (xmms2:
             break;
             
         default:
+            callback(expectedFromError<PlaybackStatus>("Unknown status value"));
             return;
     }
-    callback(status);
+    callback(expectedFromValue(status));
 }
 
-
-void xmms2::detail::decodeValue(xmmsv_t *value, const std::function<void (const xmms2::Dict&)>& callback)
+void xmms2::detail::decodeValue(xmmsv_t *value,
+                                const std::function<void (const Expected<PropDict>&)>& callback)
 {
-    if (xmmsv_is_error(value)) {
-        NCXMMS2_LOG_ERROR("value is an error");
-        return;
-    }
-    callback(Dict(value));
-}
-
-void xmms2::detail::decodeValue(xmmsv_t *value, const std::function<void (const xmms2::PropDict &)>& callback)
-{
-    if (xmmsv_is_error(value)) {
-        NCXMMS2_LOG_ERROR("value is an error");
-        return;
-    }
-    
     xmmsv_t *dict;
     dict = xmmsv_propdict_to_dict(value, NULL);
-    callback(PropDict(dict));
+    callback(expectedConstructValue<PropDict>(dict));
     xmmsv_unref(dict);
 }
 
-void xmms2::detail::decodeValue(xmmsv_t *value, const std::function<void (StringRef)>& callback)
+void xmms2::detail::decodeValue(xmmsv_t *value,
+                                const std::function<void (const Expected<StringRef>&)>& callback)
 {
-    if (xmmsv_is_error(value)) {
-        NCXMMS2_LOG_ERROR("value is an error");
-        return;
-    }
-    
     const char *str = nullptr;
     if (!xmmsv_get_string(value, &str)) {
-        NCXMMS2_LOG_ERROR("xmmsv_get_string failed");
+        callback(expectedFromError<StringRef>("xmmsv_get_string failed"));
         return;
     }
-    callback(StringRef(str));
+    callback(expectedConstructValue<StringRef>(str));
+}
+
+void xmms2::detail::decodeValue(xmmsv_t *value,
+                                const std::function<void (const Expected<Collection>&)>& callback)
+{
+    xmmsv_coll_t *coll;
+    if (!xmmsv_get_coll(value, &coll)) {
+        callback(expectedFromError<Collection>("xmmsv_get_coll failed"));
+        return;
+    }
+    xmmsv_coll_ref(coll);
+    callback(expectedConstructValue<Collection>(coll));
 }
 
 void xmms2::detail::decodeValue(xmmsv_t *value,
@@ -151,51 +147,4 @@ void xmms2::detail::decodeValue(xmmsv_t *value,
     CollectionChangeEvent collChangeEvent;
     if (collChangeEvent.init(value))
         callback(collChangeEvent);
-}
-
-void xmms2::detail::decodeValue(xmmsv_t *value, const std::function<void (const List<int>&)>& callback)
-{
-    if (xmmsv_is_error(value)) {
-        NCXMMS2_LOG_ERROR("value is an error");
-        return;
-    }
-    callback(List<int>(value));
-}
-
-
-void xmms2::detail::decodeValue(xmmsv_t *value, const std::function<void (const List<StringRef>&)>& callback)
-{
-    if (xmmsv_is_error(value)) {
-        NCXMMS2_LOG_ERROR("value is an error");
-        return;
-    }
-    callback(List<StringRef>(value));
-}
-
-
-
-void xmms2::detail::decodeValue(xmmsv_t *value, const std::function<void (const List<xmms2::Dict>&)>& callback)
-{
-    if (xmmsv_is_error(value)) {
-        NCXMMS2_LOG_ERROR("value is an error");
-        return;
-    }
-    callback(List<Dict>(value));
-}
-
-
-void xmms2::detail::decodeValue(xmmsv_t *value, const std::function<void (const xmms2::Collection &)>& callback)
-{
-    if (xmmsv_is_error(value)) {
-        NCXMMS2_LOG_ERROR("value is an error");
-        return;
-    }
-    
-    xmmsv_coll_t *coll;
-    if (!xmmsv_get_coll(value, &coll)) {
-        NCXMMS2_LOG_ERROR("xmmsv_get_coll failed");
-        return;
-    }
-    xmmsv_coll_ref(coll);
-    callback(Collection(coll));
 }

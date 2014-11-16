@@ -16,6 +16,8 @@
 
 #include "playlistmodel.h"
 #include "../xmmsutils/client.h"
+#include "../log.h"
+
 #include "../lib/listmodelitemdata.h"
 
 using namespace ncxmms2;
@@ -38,7 +40,6 @@ void PlaylistModel::setPlaylist(const std::string& playlist)
     m_playlist = playlist;
     m_currentPosition = -1;
     m_xmmsClient->playlistListEntries(m_playlist)(&PlaylistModel::getEntries, this);
-    m_xmmsClient->playlistCurrentPosition(m_playlist)(&PlaylistModel::getCurrentPosition, this);
 }
 
 const std::string& PlaylistModel::playlist() const
@@ -46,15 +47,26 @@ const std::string& PlaylistModel::playlist() const
     return m_playlist;
 }
 
-void PlaylistModel::getEntries(const xmms2::List<int>& entries)
+void PlaylistModel::getEntries(const xmms2::Expected<xmms2::List<int>>& entries)
 {
     m_totalDuration = 0;
     m_idList.clear();
-    m_idList.reserve(entries.size());
     m_songInfos.clear();
+    
+    if (entries.isError()) {
+        NCXMMS2_LOG_ERROR("%s", entries.error().c_str());
+        // Empty playlist name indicates that model data is not valid,
+        // we can't recover from this error
+        m_playlist.clear();
+        reset();
+        totalDurationChanged();
+        return;
+    }
+    
+    m_idList.reserve(entries->size());
     m_songInfos.rehash(m_idList.size() / m_songInfos.max_load_factor() + 1);
 
-    for (auto it = entries.getIterator(); it.isValid(); it.next()) {
+    for (auto it = entries->getIterator(); it.isValid(); it.next()) {
         bool ok = false;
         int id = it.value(&ok);
         if (NCXMMS2_UNLIKELY(!ok)) {
@@ -64,6 +76,9 @@ void PlaylistModel::getEntries(const xmms2::List<int>& entries)
         }
         m_idList.push_back(id);
     }
+    
+    if (!m_idList.empty())
+        m_xmmsClient->playlistCurrentPosition(m_playlist)(&PlaylistModel::getCurrentPosition, this);
     
     if (!m_lazyLoadPlaylist) {
         for (int i = 0; i < (int)m_idList.size(); ++i) {
@@ -78,11 +93,19 @@ void PlaylistModel::getEntries(const xmms2::List<int>& entries)
     totalDurationChanged();
 }
 
-void PlaylistModel::getEntriesOrder(const xmms2::List<int>& entries)
+void PlaylistModel::getEntriesOrder(const xmms2::Expected<xmms2::List<int>>& entries)
 {
     m_idList.clear();
-    m_idList.reserve(entries.size());
-    for (auto it = entries.getIterator(); it.isValid(); it.next()) {
+    if (entries.isError()) {
+        NCXMMS2_LOG_ERROR("%s", entries.error().c_str());
+        m_playlist.clear();
+        reset();
+        totalDurationChanged();
+        return;
+    }
+    
+    m_idList.reserve(entries->size());
+    for (auto it = entries->getIterator(); it.isValid(); it.next()) {
         bool ok = false;
         int id = it.value(&ok);
         if (NCXMMS2_UNLIKELY(!ok)) {
@@ -95,16 +118,21 @@ void PlaylistModel::getEntriesOrder(const xmms2::List<int>& entries)
     itemsChanged(0, m_idList.size() - 1);
 }
 
-void PlaylistModel::getSongInfo(int position, const xmms2::PropDict& info)
+void PlaylistModel::getSongInfo(int position, const xmms2::Expected<xmms2::PropDict>& info)
 {
-    const int id = info.value<int>("id");
+    if (info.isError()) {
+        NCXMMS2_LOG_ERROR("%s", info.error().c_str());
+        return;
+    }
+    
+    const int id = info->value<int>("id");
     auto it = m_songInfos.find(id);
     if (it == m_songInfos.end())
         return;
 
     Song *song = &(*it).second;
     int durationDiff = song->duration() > 0 ? -song->duration() : 0;
-    song->loadInfo(info);
+    song->loadInfo(*info);
 
     if (position == -1
         || (std::vector<int>::size_type)position >= m_idList.size()
@@ -123,7 +151,7 @@ void PlaylistModel::getSongInfo(int position, const xmms2::PropDict& info)
 
 void PlaylistModel::processPlaylistChange(const xmms2::PlaylistChangeEvent& change)
 {
-    if (change.playlist() != m_playlist)
+    if (m_playlist.empty() || change.playlist() != m_playlist)
         return;
 
     typedef xmms2::PlaylistChangeEvent::Type ChangeType;
@@ -144,6 +172,10 @@ void PlaylistModel::processPlaylistChange(const xmms2::PlaylistChangeEvent& chan
         {
             const int id = change.id();
             const int position = change.position();
+            if (position < 0 || (size_t)position > m_idList.size()) {
+                NCXMMS2_LOG_ERROR("Wrong insert position: %d, playlist size: %zu", position, m_idList.size());
+                return;
+            }
             m_idList.insert(m_idList.begin() + position, id);
             m_songInfos[id];
             m_xmmsClient->medialibGetInfo(id)(&PlaylistModel::getSongInfo, this,
@@ -156,6 +188,10 @@ void PlaylistModel::processPlaylistChange(const xmms2::PlaylistChangeEvent& chan
         case ChangeType::Remove:
         {
             const int position = change.position();
+            if (position < 0 || (size_t)position >= m_idList.size()) {
+                NCXMMS2_LOG_ERROR("Wrong insert position: %d, playlist size: %zu", position, m_idList.size());
+                return;
+            }
             const int id = m_idList[position];
             m_idList.erase(m_idList.begin() + position);
             m_totalDuration -= m_songInfos[id].duration();
@@ -170,6 +206,14 @@ void PlaylistModel::processPlaylistChange(const xmms2::PlaylistChangeEvent& chan
         {
             const int position = change.position();
             const int newPosition = change.newPosition();
+            if (position < 0 || (size_t)position >= m_idList.size()) {
+                NCXMMS2_LOG_ERROR("Wrong insert position: %d, playlist size: %zu", position, m_idList.size());
+                return;
+            }
+            if (newPosition < 0 || (size_t)newPosition >= m_idList.size()) {
+                NCXMMS2_LOG_ERROR("Wrong insert position: %d, playlist size: %zu", newPosition, m_idList.size());
+                return;
+            }
             const int id = m_idList[position];
             m_idList.erase(m_idList.begin() + position);
             m_idList.insert(m_idList.begin() + newPosition, id);
@@ -192,12 +236,20 @@ void PlaylistModel::processPlaylistChange(const xmms2::PlaylistChangeEvent& chan
     }
 }
 
-void PlaylistModel::getCurrentPosition(const xmms2::Dict& position)
+void PlaylistModel::getCurrentPosition(const xmms2::Expected<xmms2::Dict>& position)
 {
-    if (m_playlist != position.value<StringRef>("name", "").c_str())
+    if (position.isError()) {
+        NCXMMS2_LOG_ERROR("%s", position.error().c_str());
+        return;
+    }
+    
+    if (m_playlist.empty())
+        return;
+    
+    if (m_playlist != position->value<StringRef>("name", "").c_str())
         return;
 
-    const int newPosition = position.value<int>("position", -1);
+    const int newPosition = position->value<int>("position", -1);
     if (newPosition != -1) {
         const int oldPosition = m_currentPosition;
         m_currentPosition = newPosition;
@@ -210,6 +262,9 @@ void PlaylistModel::getCurrentPosition(const xmms2::Dict& position)
 
 void PlaylistModel::handlePlaylistRename(const xmms2::CollectionChangeEvent& change)
 {
+    if (m_playlist.empty())
+        return;
+    
     typedef xmms2::CollectionChangeEvent::Type ChangeType;
     if (change.type() == ChangeType::Rename && change.kind() == "Playlists") {
         if (change.name() == m_playlist) {
@@ -219,11 +274,15 @@ void PlaylistModel::handlePlaylistRename(const xmms2::CollectionChangeEvent& cha
     }
 }
 
-void PlaylistModel::handleSongInfoUpdate(int id)
+void PlaylistModel::handleSongInfoUpdate(const xmms2::Expected<int>& id)
 {
-    if (m_songInfos.find(id) != m_songInfos.end()) {
-        m_xmmsClient->medialibGetInfo(id)(&PlaylistModel::getSongInfo, this,
-                                          -1, std::placeholders::_1);
+    if (id.isError()) {
+        NCXMMS2_LOG_ERROR("%s", id.error().c_str());
+        return;
+    }
+    
+    if (m_songInfos.find(*id) != m_songInfos.end()) {
+        m_xmmsClient->medialibGetInfo(*id)(&PlaylistModel::getSongInfo, this, -1, std::placeholders::_1);
     }
 }
 

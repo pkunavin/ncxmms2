@@ -22,6 +22,7 @@
 #include "questionwindow.h"
 
 #include "../xmmsutils/client.h"
+#include "../log.h"
 
 #include "../lib/label.h"
 #include "../lib/stackedwindow.h"
@@ -64,8 +65,8 @@ StatusArea::StatusArea(xmms2::Client *xmmsClient, int xPos, int yPos, int cols, 
     
     m_playbackProgressBar = new PlaybackProgressBar(0, 0, cols, this);
     
-    xmmsClient->playbackPlaytime()(&PlaybackProgressBar::setValue, m_playbackProgressBar);
-    xmmsClient->playbackPlaytimeChanged_Connect(&PlaybackProgressBar::setValue, m_playbackProgressBar);
+    xmmsClient->playbackPlaytime()(&StatusArea::getPlaytime, this);
+    xmmsClient->playbackPlaytimeChanged_Connect(&StatusArea::getPlaytime, this);
     
     m_playbackProgressBar->progressChangeRequested_Connect([xmmsClient](int value){
         xmmsClient->playbackSeekMs(value);
@@ -131,6 +132,16 @@ void StatusArea::_askQuestion(const std::string& question,
     questionWin->askQuestion(question, resultCallback, initialAnswer);
     m_stackedWindow->setCurrentIndex(StackedQuestionWindow);
     m_timer.stop();
+}
+
+void StatusArea::getPlaytime(const xmms2::Expected<int>& playtime)
+{
+    if (playtime.isError()) {
+        NCXMMS2_LOG_ERROR("%s", playtime.error().c_str());
+        return;
+    }
+    
+    m_playbackProgressBar->setValue(playtime.value());
 }
 
 xmms2::PlaybackStatus StatusArea::playbackStatus() const

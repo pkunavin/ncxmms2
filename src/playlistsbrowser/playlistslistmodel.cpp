@@ -19,6 +19,8 @@
 
 #include "playlistslistmodel.h"
 #include "../xmmsutils/client.h"
+#include "../log.h"
+
 #include "../lib/listmodelitemdata.h"
 
 using namespace ncxmms2;
@@ -68,17 +70,22 @@ int PlaylistsListModel::indexOf(const std::string& playlist) const
     return it != m_playlists.end() ? it - m_playlists.begin() : -1;
 }
 
-const std::string &PlaylistsListModel::currentPlaylist() const
+const std::string& PlaylistsListModel::currentPlaylist() const
 {
     return m_currentPlaylist;
 }
 
-void PlaylistsListModel::getPlaylists(const xmms2::List<StringRef>& playlists)
+void PlaylistsListModel::getPlaylists(const xmms2::Expected<xmms2::List<StringRef>>& playlists)
 {
-    m_playlists.clear();
-    m_playlists.reserve(playlists.size());
+    if (playlists.isError()) {
+        NCXMMS2_LOG_ERROR("%s", playlists.error().c_str());
+        return;
+    }
     
-    for (auto it = playlists.getIterator(); it.isValid(); it.next()) {
+    m_playlists.clear();
+    m_playlists.reserve(playlists->size());
+    
+    for (auto it = playlists->getIterator(); it.isValid(); it.next()) {
         bool ok;
         StringRef strRef = it.value(&ok);
         if (NCXMMS2_UNLIKELY(!ok || strRef.isNull()))
@@ -90,13 +97,18 @@ void PlaylistsListModel::getPlaylists(const xmms2::List<StringRef>& playlists)
     reset();
 }
 
-void PlaylistsListModel::getCurrentPlaylist(StringRef playlist)
+void PlaylistsListModel::getCurrentPlaylist(const xmms2::Expected<StringRef>& playlist)
 {
+    if (playlist.isError()) {
+        NCXMMS2_LOG_ERROR("%s", playlist.error().c_str());
+        return;
+    }
+    
     auto it = std::find(m_playlists.begin(), m_playlists.end(), m_currentPlaylist);
-    m_currentPlaylist = playlist.c_str();
+    m_currentPlaylist = playlist->c_str();
     if (it != m_playlists.end())
         itemsChanged(it - m_playlists.begin(), it - m_playlists.begin());
-
+    
     it = std::find(m_playlists.begin(), m_playlists.end(), m_currentPlaylist);
     if (it != m_playlists.end())
         itemsChanged(it - m_playlists.begin(), it - m_playlists.begin());

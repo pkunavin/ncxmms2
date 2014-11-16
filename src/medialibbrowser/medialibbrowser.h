@@ -17,7 +17,7 @@
 #ifndef MEDIALIBBROWSER_H
 #define MEDIALIBBROWSER_H
 
-#include "../xmmsutils/types.h"
+#include "../xmmsutils/result.h"
 #include "../lib/window.h"
 
 namespace ncxmms2 {
@@ -55,7 +55,8 @@ private:
     void activePlaylistAddSong(int item, bool beQuiet = false);
     void activePlaylistAddAlbum(int item, bool beQuiet = false);
     void activePlaylistAddArtist(int item, bool beQuiet = false);
-    void activePlaylistAddAlbums(const std::string& artist, const xmms2::List<xmms2::Dict>& list,
+    void activePlaylistAddAlbums(const std::string& artist,
+                                 const xmms2::Expected<xmms2::List<xmms2::Dict>>& list,
                                  bool beQuiet = false);
 };
 } // ncxmms2

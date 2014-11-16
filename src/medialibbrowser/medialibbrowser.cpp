@@ -28,6 +28,7 @@
 #include "../listviewappintegrated/listviewappintegrated.h"
 #include "../statusarea/statusarea.h"
 #include "../hotkeys.h"
+#include "../log.h"
 
 #include "../lib/painter.h"
 #include "../lib/rectangle.h"
@@ -69,7 +70,7 @@ MedialibBrowser::MedialibBrowser(xmms2::Client *xmmsClient, const Rectangle& rec
 
     // This will reload the whole medialib on adding new medialib entry.
     // TODO: Can it be done in a more clever way?
-    m_xmmsClient->medialibEntryAdded_Connect([this](int id)
+    m_xmmsClient->medialibEntryAdded_Connect([this](const xmms2::Expected<int>& id)
     {
         NCXMMS2_UNUSED(id);
         m_artistsListView->model()->refresh();
@@ -254,11 +255,17 @@ void MedialibBrowser::activePlaylistAddArtist(int item, bool beQuiet)
 }
 
 void MedialibBrowser::activePlaylistAddAlbums(const std::string& artist,
-                                              const xmms2::List<xmms2::Dict>& list, bool beQuiet)
+                                              const xmms2::Expected<xmms2::List<xmms2::Dict>>& list,
+                                              bool beQuiet)
 {
+    if (list.isError()) {
+        NCXMMS2_LOG_ERROR("%s", list.error().c_str());
+        return;
+    }
+    
     SongsListModel *songsModel = static_cast<SongsListModel*>(m_songsListView->model());
     
-    for (auto it = list.getIterator(); it.isValid(); it.next()) {
+    for (auto it = list->getIterator(); it.isValid(); it.next()) {
         bool ok = false;
         xmms2::Dict dict = it.value(&ok);
         if (NCXMMS2_UNLIKELY(!ok))

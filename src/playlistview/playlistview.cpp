@@ -25,6 +25,7 @@
 
 #include "../statusarea/statusarea.h"
 #include "../hotkeys.h"
+#include "../log.h"
 
 #include "../lib/keyevent.h"
 
@@ -136,14 +137,24 @@ void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
     }
 }
 
-void PlaylistView::getActivePlaylist(StringRef playlist)
+void PlaylistView::getActivePlaylist(const xmms2::Expected<StringRef>& playlist)
 {
-    m_activePlaylist = playlist.c_str();
+    if (playlist.isError()) {
+        NCXMMS2_LOG_ERROR("%s", playlist.error().c_str());
+        return;
+    }
+    
+    m_activePlaylist = playlist->c_str();
 }
 
-void PlaylistView::getPlaybackStatus(xmms2::PlaybackStatus status)
+void PlaylistView::getPlaybackStatus(const xmms2::Expected<xmms2::PlaybackStatus>& status)
 {
-    m_playbackStatus = status;
+    if (status.isError()) {
+        NCXMMS2_LOG_ERROR("%s", status.error().c_str());
+        return;
+    }
+    
+    m_playbackStatus = status.value();
 }
 
 void PlaylistView::onItemEntered(int item)

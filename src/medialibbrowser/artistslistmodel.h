@@ -18,7 +18,7 @@
 #define ARTISTSLISTMODEL_H
 
 #include <vector>
-#include "../xmmsutils/types.h"
+#include "../xmmsutils/result.h"
 #include "../lib/listmodel.h"
 
 namespace ncxmms2 {
@@ -42,7 +42,7 @@ public:
 private:
     xmms2::Client *m_xmmsClient;
     std::vector<std::string> m_artists;
-    void getArtistsList(const xmms2::List<xmms2::Dict>& list);
+    void getArtistsList(const xmms2::Expected<xmms2::List<xmms2::Dict>>& list);
 };
 } // ncxmms2
 

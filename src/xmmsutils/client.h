@@ -54,9 +54,9 @@ public:
     VoidResult playbackSeekMs(int ms);
     VoidResult playbackSeekMsRel(int ms);
     
-    NCXMMS2_SIGNAL(playbackPlaytimeChanged, int)
-    NCXMMS2_SIGNAL(playbackStatusChanged, PlaybackStatus)
-    NCXMMS2_SIGNAL(playbackCurrentIdChanged, int)
+    NCXMMS2_SIGNAL(playbackPlaytimeChanged, const Expected<int>&)
+    NCXMMS2_SIGNAL(playbackStatusChanged, const Expected<PlaybackStatus>&)
+    NCXMMS2_SIGNAL(playbackCurrentIdChanged, const Expected<int>&)
     
     /* **************************************
        ********* Playlist subsystem *********
@@ -86,8 +86,8 @@ public:
     IntListResult playlistListEntries(const std::string& playlist);
     StringListResult playlistList();
     
-    NCXMMS2_SIGNAL(playlistLoaded, StringRef)
-    NCXMMS2_SIGNAL(playlistCurrentPositionChanged, const Dict&)
+    NCXMMS2_SIGNAL(playlistLoaded, const Expected<StringRef>&)
+    NCXMMS2_SIGNAL(playlistCurrentPositionChanged, const Expected<Dict>&)
     NCXMMS2_SIGNAL(playlistChanged, const PlaylistChangeEvent&)
     
     /* **************************************
@@ -96,8 +96,8 @@ public:
 public:
     PropDictResult medialibGetInfo(int id);
     
-    NCXMMS2_SIGNAL(medialibEntryChanged, int)
-    NCXMMS2_SIGNAL(medialibEntryAdded, int)
+    NCXMMS2_SIGNAL(medialibEntryChanged, const Expected<int>&)
+    NCXMMS2_SIGNAL(medialibEntryAdded, const Expected<int>&)
         
     /* **************************************
        ********* Collection subsystem *******
@@ -126,7 +126,7 @@ public:
     const std::string& configValue(const std::string& key) const;
     
     NCXMMS2_SIGNAL(configLoaded)
-    NCXMMS2_SIGNAL(configValuesChanged, const Dict&)
+    NCXMMS2_SIGNAL(configValuesChanged, const Expected<Dict>&)
     NCXMMS2_SIGNAL(configValueChanged, const std::string&, const std::string&)
     
     /* **************************************

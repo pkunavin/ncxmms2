@@ -18,6 +18,7 @@
 #define ACTIVEPLAYLISTWINDOW_H
 
 #include "../playlistview/playlistview.h"
+#include "../xmmsutils/result.h"
 
 namespace ncxmms2 {
 
@@ -35,7 +36,7 @@ private:
     bool m_autoScrollToActiveSong;
 
     void updateWindowTitle();
-    void getActivePlaylist(StringRef playlist);
+    void getActivePlaylist(const xmms2::Expected<StringRef>& playlist);
     void scrollToActiveSong(int item);
 };
 } // ncxmms2

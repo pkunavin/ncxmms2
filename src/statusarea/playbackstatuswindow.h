@@ -49,11 +49,11 @@ private:
     void updateTerminalWindowTitle();
      
     // Callbacks
-    void getPlaybackStatus(xmms2::PlaybackStatus status);
-    void getCurrentId(int id);
-    void getCurrentIdInfo(const xmms2::PropDict& info);
-    void getPlaytime(int playtime);
-    void handleIdInfoChanged(int id);
+    void getPlaybackStatus(const xmms2::Expected<xmms2::PlaybackStatus>& status);
+    void getCurrentId(const xmms2::Expected<int>& id);
+    void getCurrentIdInfo(const xmms2::Expected<xmms2::PropDict>& info);
+    void getPlaytime(const xmms2::Expected<int>& playtime);
+    void handleIdInfoChanged(const xmms2::Expected<int>& id);
 };
 } // ncxmms2
 

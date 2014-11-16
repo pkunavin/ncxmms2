@@ -111,6 +111,7 @@ include_directories(${CMAKE_BINARY_DIR}/src)
 add_executable(ncxmms2 ${SOURCES})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -Wextra")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__FILENAME__='\"$(subst ${CMAKE_SOURCE_DIR}/,,$(abspath $<))\"'")
 
 find_package(PkgConfig REQUIRED)
 

@@ -18,7 +18,7 @@
 #define PLAYLISTSLISTMODEL_H
 
 #include <vector>
-#include "../xmmsutils/types.h"
+#include "../xmmsutils/result.h"
 #include "../lib/listmodel.h"
 
 namespace ncxmms2 {
@@ -51,8 +51,8 @@ private:
     std::string m_currentPlaylist;
 
     // Callbacks
-    void getPlaylists(const xmms2::List<StringRef>& playlists);
-    void getCurrentPlaylist(StringRef playlist);
+    void getPlaylists(const xmms2::Expected<xmms2::List<StringRef>>& playlists);
+    void getCurrentPlaylist(const xmms2::Expected<StringRef>& playlist);
     void handlePlaylistsChange(const xmms2::CollectionChangeEvent& change);
 };
 } // ncxmms2

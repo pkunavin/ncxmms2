@@ -18,7 +18,7 @@
 #define STATUSAREA_H
 
 #include "../utils.h"
-#include "../xmmsutils/types.h"
+#include "../xmmsutils/result.h"
 
 #include "../lib/window.h"
 #include "../lib/lineedit.h"
@@ -83,6 +83,8 @@ private:
     void _askQuestion(const std::string& question,
                       const LineEdit::ResultCallback& answerCallback,
                       const std::string& initialAnswer = std::string());
+    
+    void getPlaytime(const xmms2::Expected<int>& playtime);
 };
 } // ncxmms2
 

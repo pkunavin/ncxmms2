@@ -17,6 +17,8 @@
 #include "songinfowindow.h"
 #include "../songdisplayformatparser.h"
 #include "../xmmsutils/client.h"
+#include "../utils.h"
+#include "../log.h"
 
 #include "../lib/htmlparser.h"
 #include "../lib/keyevent.h"
@@ -55,10 +57,17 @@ void SongInfoWindow::keyPressedEvent(const KeyEvent& keyEvent)
     }
 }
 
-void SongInfoWindow::getSongInfo(const xmms2::PropDict& info)
+void SongInfoWindow::getSongInfo(const xmms2::Expected<xmms2::PropDict>& info)
 {
+    if (info.isError()) {
+        NCXMMS2_LOG_ERROR("%s", info.error().c_str());
+        const std::string msg = Utils::format("Can't load song info: %s", info.error());
+        setText(msg);
+        return;
+    }
+    
     Song song;
-    song.loadInfo(info);
+    song.loadInfo(info.value());
     
     const char songVariables[] = {'t', 'a', 'b', 'p', 'g', 'y', 'F', 'i', 'n', 'N', 'l', 'B', 'S'};
     std::string text;
@@ -78,9 +87,14 @@ void SongInfoWindow::getSongInfo(const xmms2::PropDict& info)
     setText(text);
 }
 
-void SongInfoWindow::handleSongInfoUpdate(int id)
+void SongInfoWindow::handleSongInfoUpdate(const xmms2::Expected<int>& id)
 {
-    if (id == m_id) {
+    if (id.isError()) {
+        NCXMMS2_LOG_ERROR("%s", id.error().c_str());
+        return;
+    }
+    
+    if (id.value() == m_id) {
         m_xmmsClient->medialibGetInfo(m_id)(&SongInfoWindow::getSongInfo, this);
     }
 }

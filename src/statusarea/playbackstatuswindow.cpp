@@ -19,6 +19,7 @@
 #include "playbackstatuswindow.h"
 #include "../utils.h"
 #include "../settings.h"
+#include "../log.h"
 
 #include "../lib/painter.h"
 #include "../lib/rectangle.h"
@@ -76,39 +77,62 @@ PlaybackStatusWindow::PlaybackStatusWindow(xmms2::Client *client, int xPos, int 
     m_xmmsClient->playbackPlaytimeChanged_Connect(&PlaybackStatusWindow::getPlaytime, this);
 }
 
-void PlaybackStatusWindow::getPlaybackStatus(xmms2::PlaybackStatus status)
+void PlaybackStatusWindow::getPlaybackStatus(const xmms2::Expected<xmms2::PlaybackStatus>& status)
 {
-    m_playbackStatus = status;
+    if (status.isError()) {
+        NCXMMS2_LOG_ERROR("%s", status.error().c_str());
+        return;
+    }
+    
+    m_playbackStatus = status.value();
     update();
 }
 
-void PlaybackStatusWindow::getCurrentId(int id)
+void PlaybackStatusWindow::getCurrentId(const xmms2::Expected<int>& id)
 {
-    m_xmmsClient->medialibGetInfo(id)(&PlaybackStatusWindow::getCurrentIdInfo, this);
+    if (id.isError()) {
+        NCXMMS2_LOG_ERROR("%s", id.error().c_str());
+        return;
+    }
+    
+    m_xmmsClient->medialibGetInfo(id.value())(&PlaybackStatusWindow::getCurrentIdInfo, this);
 }
 
-void PlaybackStatusWindow::getCurrentIdInfo(const xmms2::PropDict& info)
+void PlaybackStatusWindow::getCurrentIdInfo(const xmms2::Expected<xmms2::PropDict>& info)
 {
-    m_currentSong.loadInfo(info);
+    if (info.isError()) {
+        NCXMMS2_LOG_ERROR("%s", info.error().c_str());
+        return;
+    }
+    
+    m_currentSong.loadInfo(info.value());
     currentSongChanged(m_currentSong);
     if (m_useTerminalWindowTitle)
         updateTerminalWindowTitle();
     update();
 }
 
-void PlaybackStatusWindow::getPlaytime(int playtime)
+void PlaybackStatusWindow::getPlaytime(const xmms2::Expected<int>& playtime)
 {
-    std::string playtimeStr = Utils::getTimeStringFromInt(playtime);
+    if (playtime.isError())
+        return;
+    
+    std::string playtimeStr = Utils::getTimeStringFromInt(playtime.value());
     if (m_playbackPlaytime != playtimeStr) {
         m_playbackPlaytime.swap(playtimeStr);
         update();
     }
 }
 
-void PlaybackStatusWindow::handleIdInfoChanged(int id)
+void PlaybackStatusWindow::handleIdInfoChanged(const xmms2::Expected<int>& id)
 {
-    if (m_currentSong.id() == id)
-        m_xmmsClient->medialibGetInfo(id)(&PlaybackStatusWindow::getCurrentIdInfo, this);
+    if (id.isError()) {
+        NCXMMS2_LOG_ERROR("%s", id.error().c_str());
+        return;
+    }
+    
+    if (m_currentSong.id() == id.value())
+        m_xmmsClient->medialibGetInfo(id.value())(&PlaybackStatusWindow::getCurrentIdInfo, this);
 }
 
 void PlaybackStatusWindow::paint(const Rectangle& rect)

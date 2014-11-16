@@ -43,8 +43,8 @@ private:
     std::string m_activePlaylist;
     xmms2::PlaybackStatus m_playbackStatus;
 
-    void getActivePlaylist(StringRef playlist);
-    void getPlaybackStatus(xmms2::PlaybackStatus status);
+    void getActivePlaylist(const xmms2::Expected<StringRef>& playlist);
+    void getPlaybackStatus(const xmms2::Expected<xmms2::PlaybackStatus>& status);
     void onItemEntered(int item);
     void addPath(const std::string& path);
     void addFile(const std::string& path);

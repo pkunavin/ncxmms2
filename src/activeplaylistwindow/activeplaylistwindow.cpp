@@ -21,6 +21,7 @@
 #include "../xmmsutils/client.h"
 #include "../settings.h"
 #include "../utils.h"
+#include "../log.h"
 
 using namespace ncxmms2;
 
@@ -76,9 +77,14 @@ void ActivePlaylistWindow::updateWindowTitle()
 }
 
 
-void ActivePlaylistWindow::getActivePlaylist(StringRef playlist)
+void ActivePlaylistWindow::getActivePlaylist(const xmms2::Expected<StringRef>& playlist)
 {
-    setPlaylist(playlist.c_str());
+    if (playlist.isError()) {
+        NCXMMS2_LOG_ERROR("%s", playlist.error().c_str());
+        return;
+    }
+    
+    setPlaylist(playlist->c_str());
     updateWindowTitle();
 }
 

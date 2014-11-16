@@ -22,7 +22,7 @@
 #include <unordered_map>
 
 #include "../song.h"
-#include "../xmmsutils/types.h"
+#include "../xmmsutils/result.h"
 #include "../lib/listmodel.h"
 
 namespace ncxmms2 {
@@ -67,13 +67,13 @@ private:
     int m_totalDuration;
 
     // Callbacks
-    void getEntries(const xmms2::List<int>& entries);
-    void getEntriesOrder(const xmms2::List<int>& entries);
-    void getSongInfo(int position, const xmms2::PropDict& info);
+    void getEntries(const xmms2::Expected<xmms2::List<int>>& entries);
+    void getEntriesOrder(const xmms2::Expected<xmms2::List<int>>& entries);
+    void getSongInfo(int position, const xmms2::Expected<xmms2::PropDict>& info);
     void processPlaylistChange(const xmms2::PlaylistChangeEvent& change);
-    void getCurrentPosition(const xmms2::Dict& position);
+    void getCurrentPosition(const xmms2::Expected<xmms2::Dict>& position);
     void handlePlaylistRename(const xmms2::CollectionChangeEvent& change);
-    void handleSongInfoUpdate(int id);
+    void handleSongInfoUpdate(const xmms2::Expected<int>& id);
 };
 } // ncxmms2
 

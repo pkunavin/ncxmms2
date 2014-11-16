@@ -18,6 +18,8 @@
 
 #include "artistslistmodel.h"
 #include "../xmmsutils/client.h"
+#include "../log.h"
+
 #include "../lib/listmodelitemdata.h"
 
 using namespace ncxmms2;
@@ -59,10 +61,15 @@ void ArtistsListModel::refresh()
     m_xmmsClient->collectionQueryInfos(allMedia, fetch, order, groupBy)(&ArtistsListModel::getArtistsList, this);
 }
 
-void ArtistsListModel::getArtistsList(const xmms2::List<xmms2::Dict>& list)
+void ArtistsListModel::getArtistsList(const xmms2::Expected<xmms2::List<xmms2::Dict>>& list)
 {
+    if (list.isError()) {
+        NCXMMS2_LOG_ERROR("%s", list.error().c_str());
+        return;
+    }
+    
     m_artists.clear();
-    for (auto it = list.getIterator(); it.isValid(); it.next()) {
+    for (auto it = list->getIterator(); it.isValid(); it.next()) {
         bool ok = false;
         xmms2::Dict dict = it.value(&ok);
         if (NCXMMS2_UNLIKELY(!ok))
