@@ -145,7 +145,7 @@ void MainWindow::keyPressedEvent(const KeyEvent& keyEvent)
             break;
 
         case Hotkeys::Quit:
-            Application::shutdown();
+            Application::quit();
             break;
 
         default : Window::keyPressedEvent(keyEvent);

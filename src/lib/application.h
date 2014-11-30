@@ -35,6 +35,7 @@ class Application
 public:
     static void init(bool useColors = true, bool mouseEnable = false);
     static void run();
+    static void quit();
     static void shutdown();
     static void setMainWindow(Window *window);
 

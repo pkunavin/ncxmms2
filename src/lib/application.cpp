@@ -217,6 +217,14 @@ void Application::run()
     g_main_loop_run(inst->d->mainLoop);
 }
 
+void Application::quit()
+{
+    CHECK_INST;
+    
+    if (g_main_loop_is_running(inst->d->mainLoop))
+        g_main_loop_quit(inst->d->mainLoop);
+}
+
 void Application::setMainWindow(Window* window)
 {
     CHECK_INST;
