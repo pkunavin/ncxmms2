@@ -30,7 +30,8 @@ class ActivePlaylistWindow : public PlaylistView
 {
 public:
     ActivePlaylistWindow(xmms2::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
-
+    ~ActivePlaylistWindow();
+    
 private:
     // Settings
     bool m_autoScrollToActiveSong;

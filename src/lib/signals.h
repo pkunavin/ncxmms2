@@ -189,7 +189,7 @@ public:
     SignalBase(){}
     SignalBase(const SignalBase& other) = delete;
     SignalBase& operator=(const SignalBase& other) = delete;
-    virtual ~SignalBase(){}
+    virtual ~SignalBase();
     
 protected:
     virtual void eraseConnection(Connection connection) = 0;

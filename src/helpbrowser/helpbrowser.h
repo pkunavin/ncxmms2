@@ -25,6 +25,7 @@ class HelpBrowser : public TextView
 {
 public:
     HelpBrowser(const Rectangle& rect, Window *parent = nullptr);
+    ~HelpBrowser();
 };
 } // ncxmms2
 

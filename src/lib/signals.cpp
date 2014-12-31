@@ -80,6 +80,11 @@ bool Signals::Connection::isBlocked() const
     return false;
 }
 
+Signals::SignalBase::~SignalBase()
+{
+    
+}
+
 Signals::Connection Signals::SignalBase::creatConnection(SignalBase *signal)
 {
     using namespace SignalsImpl;

@@ -142,3 +142,8 @@ HelpBrowser::HelpBrowser(const Rectangle& rect, Window *parent) :
     setMode(Mode::RichText);
     setText(text);
 }
+
+HelpBrowser::~HelpBrowser()
+{
+    
+}

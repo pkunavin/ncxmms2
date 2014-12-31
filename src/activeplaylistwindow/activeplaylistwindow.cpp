@@ -55,6 +55,11 @@ ActivePlaylistWindow::ActivePlaylistWindow(xmms2::Client *xmmsClient, const Rect
     }
 }
 
+ActivePlaylistWindow::~ActivePlaylistWindow()
+{
+    
+}
+
 void ActivePlaylistWindow::updateWindowTitle()
 {
     PlaylistModel *plsModel = static_cast<PlaylistModel*>(model());
