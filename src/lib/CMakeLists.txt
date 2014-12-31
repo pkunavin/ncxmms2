@@ -59,8 +59,6 @@ set(HEADERS
 add_library(libncxmms2 ${SOURCES})
 SET_TARGET_PROPERTIES(libncxmms2 PROPERTIES PREFIX "")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -Wextra")
-
 find_package(PkgConfig REQUIRED)
 
 pkg_check_modules(NCURSESW ncursesw REQUIRED)

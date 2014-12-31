@@ -1,3 +1,12 @@
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -Wextra")
+
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weverything -Wno-documentation -Wno-c++98-compat -Wno-c++98-compat-pedantic")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-gnu-zero-variadic-macro-arguments -Wno-old-style-cast -Wno-sign-conversion")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-padded -Wno-implicit-fallthrough -Wno-conversion")
+endif()
+
 add_subdirectory(lib)
 
 set(SOURCES
@@ -130,4 +139,3 @@ target_link_libraries(ncxmms2 libncxmms2
                               ${XMMS2_C_GLIB_LIBRARIES})
 
 install (TARGETS ncxmms2 DESTINATION bin)
-
