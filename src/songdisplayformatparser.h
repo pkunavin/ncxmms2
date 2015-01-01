@@ -337,6 +337,7 @@ private:
     std::string m_errorString;
     std::vector<Column> m_columns;
 
+    void calculateColumnsSize(const Rectangle& rect);
     static int getColorByKey(char key);
 };
 } // ncxmms2

@@ -170,12 +170,8 @@ bool SongDisplayFormatParser::setDisplayFormat(const std::string& formatString)
     return true;
 }
 
-void SongDisplayFormatParser::paint(const Song& song, Painter *painter,
-                                    const Rectangle& rect, bool ignoreColors)
+void SongDisplayFormatParser::calculateColumnsSize(const Rectangle& rect)
 {
-    if (G_UNLIKELY(m_columns.empty()))
-        return;
-
     int factorsSum = 0;
     int sizeLeft = rect.cols();
     int notFixedColumnCount = 0;
@@ -209,8 +205,16 @@ void SongDisplayFormatParser::paint(const Song& song, Painter *painter,
     }
     if (lastNotFixedColumn >= 0)
         m_columns[lastNotFixedColumn].setSize(sizeLeft);
+}
 
-
+void SongDisplayFormatParser::paint(const Song& song, Painter *painter,
+                                    const Rectangle& rect, bool ignoreColors)
+{
+    if (G_UNLIKELY(m_columns.empty()))
+        return;
+    
+    calculateColumnsSize(rect);
+    
     int xPos = rect.x();
     for (auto& column : m_columns) {
         int sizeLeft = 0;

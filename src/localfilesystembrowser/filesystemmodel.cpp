@@ -66,7 +66,7 @@ public:
                 return false;
     
             return item1.name < item2.name;
-        };
+        }
     };
     std::vector<FileSystemItem> dirEntries;
 
