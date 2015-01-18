@@ -114,6 +114,12 @@ public:
     NCXMMS2_SIGNAL(collectionChanged, const CollectionChangeEvent&)
     
     /* **************************************
+       ********* XForm subsystem ************
+       ************************************** */
+public:
+    DictListResult xformMediaBrowse(const std::string& url);
+        
+    /* **************************************
        ********* Config subsystem ***********
        ************************************** */
 public:

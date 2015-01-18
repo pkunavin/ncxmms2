@@ -39,7 +39,8 @@ public:
     {
         StackedHelpBrowser,
         StackedPlaylistWindow,
-        StackedLocalFileBrowserWindow,
+        StackedLocalFileBrowser,
+        StackedServerSideBrowser,
         StackedMedialibBrowser,
         StackedPlaylistsBrowser,
         StackedEqualizerWindow,

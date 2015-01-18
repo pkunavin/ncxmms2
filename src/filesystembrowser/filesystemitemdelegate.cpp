@@ -15,7 +15,7 @@
  */
 
 #include "filesystemitemdelegate.h"
-#include "filesystemmodel.h"
+#include "abstractfilesystemmodel.h"
 
 #include "../lib/painter.h"
 #include "../lib/palette.h"
@@ -24,12 +24,12 @@
 
 using namespace ncxmms2;
 
-FileSystemItemDelegate::FileSystemItemDelegate(const FileSystemModel *fsModel) :
+FileSystemItemDelegate::FileSystemItemDelegate(const AbstractFileSystemModel *fsModel) :
     ListModelItemDelegate(fsModel)
 {
 }
 
-void FileSystemItemDelegate::paint(Painter *painter, const ListItemPaintOptions &options, int item)
+void FileSystemItemDelegate::paint(Painter *painter, const ListItemPaintOptions& options, int item)
 {
     const Palette *palette = options.palette;
     const Palette::ColorGroup colorGroup = options.hasFocus
@@ -62,7 +62,7 @@ void FileSystemItemDelegate::paint(Painter *painter, const ListItemPaintOptions 
     }
 
 
-    const FileSystemModel *fsModel = static_cast<const FileSystemModel*>(model());
+    const AbstractFileSystemModel *fsModel = static_cast<const AbstractFileSystemModel*>(model());
     if (fsModel->isDirectory(item) && !(options.state & ListItemStateCurrent)) {
         painter->setBold(true);
     }

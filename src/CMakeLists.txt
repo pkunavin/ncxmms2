@@ -13,7 +13,6 @@ endif()
 add_subdirectory(lib)
 
 set(SOURCES
-    main.cpp
     utils.cpp
     settings.cpp
     commandlineoptions.cpp
@@ -34,10 +33,14 @@ set(SOURCES
 
     listviewappintegrated/listviewappintegrated.cpp
 
-    localfilesystembrowser/localfilesystembrowser.cpp
-    localfilesystembrowser/filesystemmodel.cpp
-    localfilesystembrowser/filesystemitemdelegate.cpp
-    localfilesystembrowser/filesystemwatcher.cpp
+    filesystembrowser/dir.cpp
+    filesystembrowser/filesystembrowser.cpp
+    filesystembrowser/serversidebrowser.cpp
+    filesystembrowser/serversidebrowsermodel.cpp
+    filesystembrowser/localfilesystembrowser.cpp
+    filesystembrowser/filesystemmodel.cpp
+    filesystembrowser/filesystemitemdelegate.cpp
+    filesystembrowser/filesystemwatcher.cpp
 
     headerwindow/headerwindow.cpp
 
@@ -86,10 +89,15 @@ set(HEADERS
 
     listviewappintegrated/listviewappintegrated.h
 
-    localfilesystembrowser/localfilesystembrowser.h
-    localfilesystembrowser/filesystemmodel.h
-    localfilesystembrowser/filesystemitemdelegate.h
-    localfilesystembrowser/filesystemwatcher.h
+    filesystembrowser/dir.h
+    filesystembrowser/abstractfilesystemmodel.h
+    filesystembrowser/filesystembrowser.h
+    filesystembrowser/serversidebrowser.h
+    filesystembrowser/serversidebrowsermodel.h
+    filesystembrowser/localfilesystembrowser.h
+    filesystembrowser/filesystemmodel.h
+    filesystembrowser/filesystemitemdelegate.h
+    filesystembrowser/filesystemwatcher.h
 
     headerwindow/headerwindow.h
 
@@ -120,9 +128,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 include_directories(${CMAKE_BINARY_DIR}/src)
 
-add_executable(ncxmms2 ${SOURCES})
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -Wextra")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__FILENAME__='\"$(subst ${CMAKE_SOURCE_DIR}/,,$(abspath $<))\"'")
 
 find_package(PkgConfig REQUIRED)
@@ -136,9 +141,13 @@ include_directories(${XMMS2_C_INCLUDE_DIRS})
 pkg_check_modules(XMMS2_C_GLIB xmms2-client-glib REQUIRED)
 include_directories(${XMMS2_C_GLIB_INCLUDE_DIRS})
 
-target_link_libraries(ncxmms2 libncxmms2
-                              ${GLIB_LIBRARIES}
-                              ${XMMS2_C_LIBRARIES}
-                              ${XMMS2_C_GLIB_LIBRARIES})
+add_library(libncxmms2-app ${SOURCES})
+set_target_properties(libncxmms2-app PROPERTIES PREFIX "")
+target_link_libraries(libncxmms2-app libncxmms2
+                                     ${GLIB_LIBRARIES}
+                                     ${XMMS2_C_LIBRARIES}
+                                     ${XMMS2_C_GLIB_LIBRARIES})
+add_executable(ncxmms2 main.cpp)
+target_link_libraries(ncxmms2 libncxmms2-app)
 
 install (TARGETS ncxmms2 DESTINATION bin)

@@ -23,11 +23,11 @@
 //  "Window", "TextView", "ListView", "LineEdit", "Label", "CheckBox",
 //  "RadioButtonGroupBox",
 //  "ActivePlaylistWindow", "HeaderWindow", "ListViewAppIntegrated",
-//  "LocalFileSystemBrowser", "MedialibBrowser", "PlaylistsBrowser",
-//  "PlaylistsListView", "PlaylistView", "PlaybackProgressBar",
-//  "PlaybackStatusWindow", "QuestionWindow", "StatusMessageWindow",
-//  "EqualizerBandsWindow", "EqualizerPreampWindow", "HelpBrowser",
-//  "SongInfoWindow".
+//  "LocalFileSystemBrowser", "ServerSideBrowser", "MedialibBrowser",
+//  "PlaylistsBrowser", "PlaylistsListView", "PlaylistView", 
+//  "PlaybackProgressBar", "PlaybackStatusWindow", "QuestionWindow",
+//  "StatusMessageWindow", "EqualizerBandsWindow", "EqualizerPreampWindow",
+//  "HelpBrowser", "SongInfoWindow".
 {
    "Window":
     {

@@ -21,7 +21,8 @@
 #include "../statusarea/statusarea.h"
 #include "../helpbrowser/helpbrowser.h"
 #include "../activeplaylistwindow/activeplaylistwindow.h"
-#include "../localfilesystembrowser/localfilesystembrowser.h"
+#include "../filesystembrowser/localfilesystembrowser.h"
+#include "../filesystembrowser/serversidebrowser.h"
 #include "../equalizerwindow/equalizerwindow.h"
 #include "../medialibbrowser/medialibbrowser.h"
 #include "../playlistsbrowser/playlistsbrowser.h"
@@ -57,13 +58,14 @@ MainWindow::MainWindow(xmms2::Client *xmmsClient) :
     const Rectangle stackedSubWinRect(0, 0, stackedWindowRect.cols(), stackedWindowRect.lines());
     const folly::sorted_vector_map<StackedWindows, Window*> stakedWindows
     {
-        {StackedHelpBrowser,            new HelpBrowser           (              stackedSubWinRect, m_stackedWindow)},
-        {StackedPlaylistWindow,         new ActivePlaylistWindow  (m_xmmsClient, stackedSubWinRect, m_stackedWindow)},
-        {StackedLocalFileBrowserWindow, new LocalFileSystemBrowser(m_xmmsClient, stackedSubWinRect, m_stackedWindow)},
-        {StackedMedialibBrowser,        new MedialibBrowser       (m_xmmsClient, stackedSubWinRect, m_stackedWindow)},
-        {StackedPlaylistsBrowser,       new PlaylistsBrowser      (m_xmmsClient, stackedSubWinRect, m_stackedWindow)},
-        {StackedEqualizerWindow,        new EqualizerWindow       (m_xmmsClient, stackedSubWinRect, m_stackedWindow)},
-        {StackedSongInfoWindow,         new SongInfoWindow        (m_xmmsClient, stackedSubWinRect, m_stackedWindow)}
+        {StackedHelpBrowser,       new HelpBrowser           (              stackedSubWinRect, m_stackedWindow)},
+        {StackedPlaylistWindow,    new ActivePlaylistWindow  (m_xmmsClient, stackedSubWinRect, m_stackedWindow)},
+        {StackedLocalFileBrowser,  new LocalFileSystemBrowser(m_xmmsClient, stackedSubWinRect, m_stackedWindow)},
+        {StackedServerSideBrowser, new ServerSideBrowser     (m_xmmsClient, stackedSubWinRect, m_stackedWindow)},        
+        {StackedMedialibBrowser,   new MedialibBrowser       (m_xmmsClient, stackedSubWinRect, m_stackedWindow)},
+        {StackedPlaylistsBrowser,  new PlaylistsBrowser      (m_xmmsClient, stackedSubWinRect, m_stackedWindow)},
+        {StackedEqualizerWindow,   new EqualizerWindow       (m_xmmsClient, stackedSubWinRect, m_stackedWindow)},
+        {StackedSongInfoWindow,    new SongInfoWindow        (m_xmmsClient, stackedSubWinRect, m_stackedWindow)}
     };
 
     for (const auto& pair : stakedWindows) {
@@ -99,7 +101,11 @@ void MainWindow::keyPressedEvent(const KeyEvent& keyEvent)
             break;
 
         case Hotkeys::Screens::LocalFileSystemBrowser::Activate:
-            setVisibleScreen(StackedLocalFileBrowserWindow);
+            setVisibleScreen(StackedLocalFileBrowser);
+            break;
+            
+        case Hotkeys::Screens::ServerSideBrowser::Activate:
+            setVisibleScreen(StackedServerSideBrowser);
             break;
 
         case Hotkeys::Screens::Equalizer::Activate:

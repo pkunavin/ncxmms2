@@ -69,15 +69,27 @@ enum
 };
 }
 
+namespace FileSystemBrowser {
+enum
+{
+    AddItemToActivePlaylist  = ' ',
+    GoUp                     = KeyEvent::KeyLeft,
+    ChangeDirectory          = 'g',
+    ReloadDirectory          = 'R'
+};
+}
+
 namespace LocalFileSystemBrowser {
 enum
 {
-    Activate = '3',
+    Activate = '3'
+};
+}
 
-    AddFileOrDirectoryToActivePlaylist = ' ',
-    GoUp                               = KeyEvent::KeyLeft,
-    ChangeDirectory                    = 'g',
-    ReloadDirectory                    = 'R'
+namespace ServerSideBrowser {
+enum
+{
+    Activate = '4'
 };
 }
 

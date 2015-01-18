@@ -211,8 +211,9 @@ bool xmms2::Client::connect(const std::string& patch)
 void xmms2::Client::disconnect()
 {
     if (d->connected) {
-        for (xmmsc_result_t *res : d->broadcastsAndSignals)
+        for (xmmsc_result_t *res : d->broadcastsAndSignals) {
             xmmsc_result_disconnect(res);
+        }
         d->broadcastsAndSignals.clear();
        
         xmmsc_mainloop_gmain_shutdown(d->connection, d->ml);
@@ -434,6 +435,12 @@ xmms2::DictListResult xmms2::Client::collectionQueryInfos(const xmms2::Collectio
                                                   start, limit,
                                                   !fetch.empty() ? StringListHelper(fetch).get() : nullptr,
                                                   !groupBy.empty() ? StringListHelper(groupBy).get() : nullptr)};
+}
+
+xmms2::DictListResult xmms2::Client::xformMediaBrowse(const std::string& url)
+{
+    CLIENT_CHECK_CONNECTION;
+    return {d->connection, xmmsc_xform_media_browse(d->connection, url.c_str())};
 }
 
 xmms2::DictResult xmms2::Client::configValueList()

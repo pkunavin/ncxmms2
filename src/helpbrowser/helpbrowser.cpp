@@ -34,6 +34,7 @@ HelpBrowser::HelpBrowser(const Rectangle& rect, Window *parent) :
         {"Help",                      Hotkeys::Screens::Help::Activate                  },
         {"Active playlist",           Hotkeys::Screens::ActivePlaylist::Activate        },
         {"Local file system browser", Hotkeys::Screens::LocalFileSystemBrowser::Activate},
+        {"Server side browser",       Hotkeys::Screens::ServerSideBrowser::Activate     },
         {"Medialib browser",          Hotkeys::Screens::MedialibBrowser::Activate       },
         {"Playlists browser",         Hotkeys::Screens::PlaylistsBrowser::Activate      },
         {"Equalizer",                 Hotkeys::Screens::Equalizer::Activate             },
@@ -79,13 +80,13 @@ HelpBrowser::HelpBrowser(const Rectangle& rect, Window *parent) :
         {nullptr, 0}
     };
 
-    namespace LocalFileSystemBrowser = Hotkeys::Screens::LocalFileSystemBrowser;
-    const KeyDescription localFileSystemBrowserKeys[] =
+    namespace FileSystemBrowser = Hotkeys::Screens::FileSystemBrowser;
+    const KeyDescription fileSystemBrowserKeys[] =
     {
-        {"Add file or directory to active playlist", LocalFileSystemBrowser::AddFileOrDirectoryToActivePlaylist},
-        {"Go up",                                    LocalFileSystemBrowser::GoUp                              },
-        {"Change directory",                         LocalFileSystemBrowser::ChangeDirectory                   },
-        {"Reload directory",                         LocalFileSystemBrowser::ReloadDirectory                   },
+        {"Add item to active playlist", FileSystemBrowser::AddItemToActivePlaylist},
+        {"Go up",                       FileSystemBrowser::GoUp                   },
+        {"Change directory",            FileSystemBrowser::ChangeDirectory        },
+        {"Reload directory",            FileSystemBrowser::ReloadDirectory        },
         {nullptr, 0}
     };
 
@@ -110,13 +111,13 @@ HelpBrowser::HelpBrowser(const Rectangle& rect, Window *parent) :
 
     const struct Section {const char *name; const KeyDescription *keys;} help[] =
     {
-        {"Screens switching",         screensSwitchingKeys      },
-        {"Playback control",          playbackControlKeys       },
-        {"List view",                 listViewKeys              },
-        {"Playlist view",             playlistViewKeys          },
-        {"Local file system browser", localFileSystemBrowserKeys},
-        {"Medialib browser",          medialibBrowserKeys       },
-        {"Playlists browser",         playlistsBrowserKeys      }
+        {"Screens switching",   screensSwitchingKeys },
+        {"Playback control",    playbackControlKeys  },
+        {"List view",           listViewKeys         },
+        {"Playlist view",       playlistViewKeys     },
+        {"File system browser", fileSystemBrowserKeys},
+        {"Medialib browser",    medialibBrowserKeys  },
+        {"Playlists browser",   playlistsBrowserKeys }
     };
 
     std::string text;

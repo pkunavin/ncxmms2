@@ -19,6 +19,7 @@
 
 #include <glib.h>
 #include <string>
+#include <cstring>
 
 #include "ncxmms2.h"
 
@@ -162,6 +163,39 @@ inline bool endsWith(const std::string& str, char suffix)
 // Converts a string to ASCII lower case
 void toLowerAscii(char *str);
 void toLowerAscii(std::string *str);
+
+// Checks whether two strings are equal
+inline bool stringsEqual(const char *s1, const char *s2)
+{
+    return std::strcmp(s1, s2) == 0;
+}
+
+inline bool stringsEqual(const char *s1, const char *s2, size_t n)
+{
+    return std::strncmp(s1, s2, n) == 0;
+}
+
+/*   forEachToken calls a function object f for the each token in the text.
+ * Token separators must be known at compile time. Empty tokens are skipped.
+ *  Function should be of the form:
+ * void f(const char *tokenBegin, const char *tokenEnd)
+ */
+template <char... Separators, typename Function>
+void forEachToken(const char *text, Function f)
+{
+    auto readToken = [](const char *p){return readUntil<Separators...>(p);};
+    
+    const char *p = text;
+    while (*p) {
+        const char *tokenEnd = readToken(p);
+        if (tokenEnd != p)
+            f(p, tokenEnd);
+ 
+        if (!*tokenEnd)
+            break;
+        p = tokenEnd + 1;
+    }
+}
 
 } // ncxmms2
 

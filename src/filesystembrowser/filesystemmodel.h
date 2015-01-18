@@ -17,40 +17,31 @@
 #ifndef FILESYSTEMMODEL_H
 #define FILESYSTEMMODEL_H
 
-#include "../lib/listmodel.h"
+#include "abstractfilesystemmodel.h"
 
 namespace ncxmms2 {
 
 class FileSystemModelPrivate;
 
-class FileSystemModel : public ListModel
+class FileSystemModel : public AbstractFileSystemModel
 {
 public:
     FileSystemModel(Object *parent = nullptr);
     ~FileSystemModel();
     
-    void setDirectory(const std::string& path);
+    virtual void setDirectory(const Dir& dir);
+    virtual const Dir& directory() const;
 
-    const std::string& fileName(int item) const;
-    std::string filePath(int item) const;
-    bool isDirectory(int item) const;
-    bool isRegularFile(int item) const;
-    bool isBlockFile(int item) const;
-    bool isCharacterFile(int item) const;
-    bool isFifoFile(int item) const;
-    bool isSymbolicLink(int item) const;
-    bool isSocketFile(int item) const;
-
+    virtual const std::string& fileName(int item) const;
+    virtual std::string fileUrl(int item) const;
+    virtual bool isDirectory(int item) const;
+    
     int fileIndex(const std::string& name) const;
 
     virtual void data(int item, ListModelItemData *itemData) const;
     virtual int itemsCount() const;
-
     virtual void refresh();
     
-    // Signals
-    NCXMMS2_SIGNAL(deleted)
-
 private:
     std::unique_ptr<FileSystemModelPrivate> d;
     friend class FileSystemModelPrivate;

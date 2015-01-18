@@ -16,6 +16,7 @@ Currently supported features:
   * Help
   * Active playlist
   * Local file system browser
+  * Server side browser
   * Medialib browser
   * Playlists browser
   * Equalizer
@@ -25,6 +26,7 @@ Screens switching:
  * `1` - Help 
  * `2` - Active playlist
  * `3` - Local file system browser
+ * `4` - Server side browser
  * `5` - Medialib browser
  * `6` - Playlists browser
  * `7` - Equalizer
@@ -64,7 +66,7 @@ Playlist view:
  * `Ctrl + U` - Add url
  * `i` - Show song info
   
-Local file system browser:
+File system browser:
  * `space` - Add file or directory to active playlist
  * `enter` - Add file to active playlist
  * `left arrow` - Go up

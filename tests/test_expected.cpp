@@ -20,7 +20,7 @@
 
 using namespace ncxmms2::xmms2;
 
-TEST(test_Expected, Basics)
+TEST(Expected, Basics)
 {
     {
         Expected<int> v(ExpectedValueTag(), 10);
@@ -79,7 +79,7 @@ TEST(test_Expected, Basics)
     }
 }
 
-TEST(test_Expected, VariadicConstructor)
+TEST(Expected, VariadicConstructor)
 {
     {
         auto v = expectedConstructValue<std::string>();
@@ -97,7 +97,7 @@ TEST(test_Expected, VariadicConstructor)
     }
 }
 
-TEST(test_Expected, MoveSemantics)
+TEST(Expected, MoveSemantics)
 {
     auto v1 = expectedFromValue(20);
     Expected<int> v2(std::move(v1));

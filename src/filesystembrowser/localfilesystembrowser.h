@@ -14,22 +14,26 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef FILESYSTEMITEMDELEGATE_H
-#define FILESYSTEMITEMDELEGATE_H
+#ifndef LOCALFILESYSTEMBROWSER_H
+#define LOCALFILESYSTEMBROWSER_H
 
-#include "../lib/listmodelitemdelegate.h"
+#include "filesystembrowser.h"
 
 namespace ncxmms2 {
 
-class FileSystemModel;
+namespace xmms2 {
+class Client;
+}
 
-class FileSystemItemDelegate : public ListModelItemDelegate
+class LocalFileSystemBrowser : public FileSystemBrowser
 {
 public:
-    FileSystemItemDelegate(const FileSystemModel *fsModel);
-
-    virtual void paint(Painter *painter, const ListItemPaintOptions& options, int item);
+    LocalFileSystemBrowser(xmms2::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
+    ~LocalFileSystemBrowser();
+    
+private:
+    void onDirectoryLoaded(const Dir& dir);
 };
 } // ncxmms2
 
-#endif // FILESYSTEMITEMDELEGATE_H
+#endif // LOCALFILESYSTEMBROWSER_H
