@@ -12,6 +12,9 @@ before_script:
   
 script: make
 
+after_script:
+  - ./tests/test_all
+
 notifications:
   email:
      - tusk.kun@gmail.com
