@@ -1,0 +1,22 @@
+language: cpp
+
+compiler:
+  - gcc
+  - clang
+  
+before_install:
+  - sudo apt-get update && sudo apt-get install -y libncursesw5-dev libglib2.0-dev libxmmsclient-dev libxmmsclient-glib-dev
+  
+before_script:
+  - cmake .
+  
+script: make
+
+notifications:
+  email:
+     - tusk.kun@gmail.com
+   on_success: change
+   on_failure: always
+   
+os:
+  - linux 
