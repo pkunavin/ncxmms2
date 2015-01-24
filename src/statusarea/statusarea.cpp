@@ -137,7 +137,7 @@ void StatusArea::_askQuestion(const std::string& question,
 void StatusArea::getPlaytime(const xmms2::Expected<int>& playtime)
 {
     if (playtime.isError()) {
-        NCXMMS2_LOG_ERROR("%s", playtime.error().c_str());
+        NCXMMS2_LOG_ERROR("%s", playtime.error().toString().c_str());
         return;
     }
     

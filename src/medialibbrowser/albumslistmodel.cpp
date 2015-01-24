@@ -83,8 +83,8 @@ void AlbumsListModel::getAlbumsList(const std::string& artist,
                                     const xmms2::Expected<xmms2::List<xmms2::Dict>>& list)
 {
     if (list.isError()) {
-        StatusArea::showMessage("Failed to get albums for \"%s\": %s!", artist, list.error());
-        NCXMMS2_LOG_ERROR("%s", list.error().c_str());
+        StatusArea::showMessage("Failed to get albums for \"%s\": %s!", artist, list.error().toString());
+        NCXMMS2_LOG_ERROR("%s", list.error().toString().c_str());
         return;
     }
     

@@ -32,27 +32,45 @@ typedef struct xmmsv_St xmmsv_t;
 namespace ncxmms2 {
 namespace xmms2 {
 
+class Error
+{
+public:
+    template <typename Str>
+    Error(Str&& error) : m_error(std::forward<Str>(error)) {}
+    
+    const std::string& toString() const {return m_error;}
+    
+    Error(Error&&) = default;
+    Error& operator=(Error&&) = default;
+    
+private:
+    std::string m_error;
+};
+
 /*   Expected<T> is a variant type to represent that xmms2 can either
  * return a value (of type T) or an error (represented by string).
  * This class is inspired by Alexandrescu's Expected<T>.
  */
-class ExpectedValueTag{};
-class ExpectedErrorTag{};
-
 template <typename T>
 class Expected
 {
 public:
     typedef T Type;
     
-    template <typename... Args>
-    Expected(ExpectedValueTag, Args&&... args) :
-        m_value(std::forward<Args>(args)...),
+    Expected(const T& value) :
+        m_value(value),
         m_isValid(true) {}
     
-    template <typename... Args>
-    Expected(ExpectedErrorTag, Args&&... args) :
-        m_error(std::forward<Args>(args)...),
+    Expected(T&& value) :
+        m_value(std::move(value)),
+        m_isValid(true) {}
+    
+    Expected(const Error& error) :
+        m_error(error),
+        m_isValid(false) {}
+    
+    Expected(Error&& error) :
+        m_error(std::move(error)),
         m_isValid(false) {}
     
     bool isValid() const  {return m_isValid;}
@@ -76,7 +94,7 @@ public:
           T& operator*()       {return value();}
     const T& operator*() const {return value();}
     
-    const std::string& error() const
+    const Error& error() const
     {
         assert(isError());
         return m_error;
@@ -110,7 +128,7 @@ private:
     union
     {
         T m_value;
-        std::string m_error;
+        Error m_error;
     };
     bool m_isValid;
     
@@ -119,17 +137,16 @@ private:
         if (m_isValid) {
             new (&m_value) T(std::move(other.m_value));
         } else {
-            new (&m_error) std::string(std::move(other.m_error));
+            new (&m_error) Error(std::move(other.m_error));
         }
     }
     
     void destruct()
     {
-        using std::string;
         if (m_isValid) {
             m_value.~T();
         } else {
-            m_error.~string();
+            m_error.~Error();
         }
     }
     
@@ -138,19 +155,19 @@ private:
 template <typename T>
 inline Expected<typename std::decay<T>::type> expectedFromValue(T&& value)
 {
-    return Expected<typename std::decay<T>::type>(ExpectedValueTag(), std::forward<T>(value));
+    return Expected<typename std::decay<T>::type>(std::forward<T>(value));
 }
 
 template <typename T, typename... Args>
 inline Expected<T> expectedConstructValue(Args&&... args)
 {
-    return Expected<T>(ExpectedValueTag(), std::forward<Args>(args)...);
+    return Expected<T>(T(std::forward<Args>(args)...));
 }
 
 template <typename T, typename Str>
 inline Expected<T> expectedFromError(Str&& error)
 {
-    return Expected<T>(ExpectedErrorTag(), std::forward<Str>(error));
+    return Expected<T>(Error(std::forward<Str>(error)));
 }
 
 namespace detail {
@@ -159,7 +176,7 @@ StringRef getErrorString(xmmsv_t *value);
 template <typename T>
 void decodeValue(xmmsv_t *value, const std::function<void (const Expected<T>&)>& callback)
 {
-    callback(expectedConstructValue<T>(value));
+    callback(T(value));
 }
 
 void decodeValue(xmmsv_t *value, const std::function<void (const Expected<int>&)>& callback);
@@ -229,7 +246,7 @@ private:
         auto *wrapper = static_cast<XmmsValueFunctionWrapper*>(data);
         const StringRef error = detail::getErrorString(value);
         if (!error.isNull()) {
-            wrapper->m_function(expectedFromError<T>(error.c_str()));
+            wrapper->m_function(Error(error.c_str()));
         } else {
             detail::decodeValue(value, wrapper->m_function);
         }

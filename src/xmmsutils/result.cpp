@@ -55,10 +55,10 @@ void xmms2::detail::decodeValue(xmmsv_t *value,
 {
     int result;
     if (!xmmsv_get_int(value, &result)) {
-        callback(expectedFromError<int>("xmmsv_get_int failed"));
+        callback(Error("xmmsv_get_int failed"));
         return;
     }
-    callback(expectedFromValue(result));
+    callback(result);
 }
 
 void xmms2::detail::decodeValue(xmmsv_t *value,
@@ -66,7 +66,7 @@ void xmms2::detail::decodeValue(xmmsv_t *value,
 {
     int intStatus;
     if (!xmmsv_get_int(value, &intStatus)) {
-         callback(expectedFromError<PlaybackStatus>("xmmsv_get_int failed"));
+         callback(Error("xmmsv_get_int failed"));
          return;
     }
     
@@ -85,10 +85,10 @@ void xmms2::detail::decodeValue(xmmsv_t *value,
             break;
             
         default:
-            callback(expectedFromError<PlaybackStatus>("Unknown status value"));
+            callback(Error("Unknown status value"));
             return;
     }
-    callback(expectedFromValue(status));
+    callback(status);
 }
 
 void xmms2::detail::decodeValue(xmmsv_t *value,
@@ -96,7 +96,7 @@ void xmms2::detail::decodeValue(xmmsv_t *value,
 {
     xmmsv_t *dict;
     dict = xmmsv_propdict_to_dict(value, NULL);
-    callback(expectedConstructValue<PropDict>(dict));
+    callback(PropDict(dict));
     xmmsv_unref(dict);
 }
 
@@ -105,10 +105,10 @@ void xmms2::detail::decodeValue(xmmsv_t *value,
 {
     const char *str = nullptr;
     if (!xmmsv_get_string(value, &str)) {
-        callback(expectedFromError<StringRef>("xmmsv_get_string failed"));
+        callback(Error("xmmsv_get_string failed"));
         return;
     }
-    callback(expectedConstructValue<StringRef>(str));
+    callback(StringRef(str));
 }
 
 void xmms2::detail::decodeValue(xmmsv_t *value,
@@ -116,11 +116,11 @@ void xmms2::detail::decodeValue(xmmsv_t *value,
 {
     xmmsv_coll_t *coll;
     if (!xmmsv_get_coll(value, &coll)) {
-        callback(expectedFromError<Collection>("xmmsv_get_coll failed"));
+        callback(Error("xmmsv_get_coll failed"));
         return;
     }
     xmmsv_coll_ref(coll);
-    callback(expectedConstructValue<Collection>(coll));
+    callback(Collection(coll));
 }
 
 void xmms2::detail::decodeValue(xmmsv_t *value,

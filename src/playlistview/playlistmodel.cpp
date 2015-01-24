@@ -54,7 +54,7 @@ void PlaylistModel::getEntries(const xmms2::Expected<xmms2::List<int>>& entries)
     m_songInfos.clear();
     
     if (entries.isError()) {
-        NCXMMS2_LOG_ERROR("%s", entries.error().c_str());
+        NCXMMS2_LOG_ERROR("%s", entries.error().toString().c_str());
         // Empty playlist name indicates that model data is not valid,
         // we can't recover from this error
         m_playlist.clear();
@@ -97,7 +97,7 @@ void PlaylistModel::getEntriesOrder(const xmms2::Expected<xmms2::List<int>>& ent
 {
     m_idList.clear();
     if (entries.isError()) {
-        NCXMMS2_LOG_ERROR("%s", entries.error().c_str());
+        NCXMMS2_LOG_ERROR("%s", entries.error().toString().c_str());
         m_playlist.clear();
         reset();
         totalDurationChanged();
@@ -121,7 +121,7 @@ void PlaylistModel::getEntriesOrder(const xmms2::Expected<xmms2::List<int>>& ent
 void PlaylistModel::getSongInfo(int position, const xmms2::Expected<xmms2::PropDict>& info)
 {
     if (info.isError()) {
-        NCXMMS2_LOG_ERROR("%s", info.error().c_str());
+        NCXMMS2_LOG_ERROR("%s", info.error().toString().c_str());
         return;
     }
     
@@ -239,7 +239,7 @@ void PlaylistModel::processPlaylistChange(const xmms2::PlaylistChangeEvent& chan
 void PlaylistModel::getCurrentPosition(const xmms2::Expected<xmms2::Dict>& position)
 {
     if (position.isError()) {
-        NCXMMS2_LOG_ERROR("%s", position.error().c_str());
+        NCXMMS2_LOG_ERROR("%s", position.error().toString().c_str());
         return;
     }
     
@@ -277,7 +277,7 @@ void PlaylistModel::handlePlaylistRename(const xmms2::CollectionChangeEvent& cha
 void PlaylistModel::handleSongInfoUpdate(const xmms2::Expected<int>& id)
 {
     if (id.isError()) {
-        NCXMMS2_LOG_ERROR("%s", id.error().c_str());
+        NCXMMS2_LOG_ERROR("%s", id.error().toString().c_str());
         return;
     }
     

@@ -47,7 +47,7 @@ enum class PlaybackStatus
 class Variant
 {
 public:
-    Variant(xmmsv_t *value) : m_value(value) {}
+    explicit Variant(xmmsv_t *value) : m_value(value) {}
     
     enum class Type
     {
@@ -77,7 +77,7 @@ class Dict
 {
 public:
     Dict() : m_dict(nullptr) {}
-    Dict(xmmsv_t *dict);
+    explicit Dict(xmmsv_t *dict);
     ~Dict();
     
     Dict(const Dict&) = delete;
@@ -129,7 +129,7 @@ private:
 class PropDict : public Dict
 {
 public:
-    PropDict(xmmsv_t *dict) : Dict(dict) {}
+    explicit PropDict(xmmsv_t *dict) : Dict(dict) {}
 };
 
 /* **************************************
@@ -138,7 +138,7 @@ public:
 class ListIteratorBase
 {
 public:
-    ListIteratorBase(xmmsv_t *list);
+    explicit ListIteratorBase(xmmsv_t *list);
     
     bool isValid() const;
     void next();
@@ -155,7 +155,7 @@ template <typename T>
 class ListIterator : public ListIteratorBase
 {
 public:
-    ListIterator(xmmsv_t *list) : ListIteratorBase(list) {}
+    explicit ListIterator(xmmsv_t *list) : ListIteratorBase(list) {}
     
     T value(bool *ok) const
     {
@@ -168,7 +168,7 @@ public:
 class ListBase
 {
 public:
-    ListBase(xmmsv_t *list);
+    explicit ListBase(xmmsv_t *list);
     ~ListBase();
     
     ListBase(const ListBase&) = delete;
@@ -199,7 +199,7 @@ template <typename T>
 class List : public ListBase
 {
 public:
-    List(xmmsv_t *list) : ListBase(list) {}
+    explicit List(xmmsv_t *list) : ListBase(list) {}
     
     ListIterator<T> getIterator() const {return ListIterator<T>(m_list);}
 };
@@ -311,7 +311,7 @@ public:
     };
 
     Collection(Type type);
-    Collection(xmmsv_coll_t *coll) : m_coll(coll) {}
+    explicit Collection(xmmsv_coll_t *coll) : m_coll(coll) {}
     ~Collection();
     
     Collection(const Collection&) = delete;

@@ -80,7 +80,7 @@ void xmms2::Dict::forEach(const xmms2::Dict::ForEachFunction& func) const
 
 void xmms2::Dict::forEachPlain(const char *key, xmmsv_t *value, void *func)
 {
-    static_cast<ForEachFunction*>(func)->operator()(key, value);
+    static_cast<ForEachFunction*>(func)->operator()(key, Variant(value));
 }
 
 xmms2::Variant xmms2::Dict::operator[](const char *key) const
@@ -285,7 +285,7 @@ void xmms2::Collection::addOperand(const xmms2::Collection& operand)
 
 xmms2::Collection xmms2::Collection::universe()
 {
-    return xmmsc_coll_universe();
+    return Collection(xmmsc_coll_universe());
 }
 
 xmms2::Collection xmms2::Collection::allByArtist(const std::string& artist, const xmms2::Collection& source)

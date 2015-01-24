@@ -99,7 +99,7 @@ void ServerSideBrowserModel::getDirectoryItems(const Dir& dir,
                                                const xmms2::Expected<xmms2::List<xmms2::Dict>>& list)
 {
     if (list.isError()) {
-        directoryLoadFailed(dir, list.error());
+        directoryLoadFailed(dir, list.error().toString());
         return;
     }
     

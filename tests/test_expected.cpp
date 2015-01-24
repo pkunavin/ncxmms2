@@ -23,7 +23,7 @@ using namespace ncxmms2::xmms2;
 TEST(Expected, Basics)
 {
     {
-        Expected<int> v(ExpectedValueTag(), 10);
+        Expected<int> v(10);
         EXPECT_TRUE(v.isValid());
         EXPECT_FALSE(v.isError());
         EXPECT_EQ(10, v.value());
@@ -41,10 +41,10 @@ TEST(Expected, Basics)
     }
     
     {
-        Expected<int> v(ExpectedErrorTag(), "error");
+        Expected<int> v(Error("error"));
         EXPECT_FALSE(v.isValid());
         EXPECT_TRUE(v.isError());
-        EXPECT_EQ("error", v.error());
+        EXPECT_EQ("error", v.error().toString());
     }
     
     {
@@ -75,7 +75,7 @@ TEST(Expected, Basics)
         auto v = expectedFromError<int>("error");
         EXPECT_FALSE(v.isValid());
         EXPECT_TRUE(v.isError());
-        EXPECT_EQ("error", v.error());
+        EXPECT_EQ("error", v.error().toString());
     }
 }
 
@@ -107,5 +107,5 @@ TEST(Expected, MoveSemantics)
     auto v3 = expectedFromError<int>("error");
     v2 = std::move(v3);
     EXPECT_TRUE(v2.isError());
-    EXPECT_EQ("error", v2.error());    
+    EXPECT_EQ("error", v2.error().toString());    
 }

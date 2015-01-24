@@ -65,7 +65,7 @@ public:
 void ClientPrivate::getConfig(const Expected<Dict>& dict)
 {
     if (dict.isError()) {
-        NCXMMS2_LOG_ERROR("%s", dict.error().c_str());
+        NCXMMS2_LOG_ERROR("%s", dict.error().toString().c_str());
         // TODO: handle error properly
         return;
     }
@@ -92,7 +92,7 @@ void ClientPrivate::getConfig(const Expected<Dict>& dict)
 void ClientPrivate::handleConfigChange(const Expected<Dict>& dict)
 {
     if (dict.isError()) {
-        NCXMMS2_LOG_ERROR("%s", dict.error().c_str());
+        NCXMMS2_LOG_ERROR("%s", dict.error().toString().c_str());
         return;
     }
     

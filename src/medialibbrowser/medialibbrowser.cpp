@@ -259,7 +259,7 @@ void MedialibBrowser::activePlaylistAddAlbums(const std::string& artist,
                                               bool beQuiet)
 {
     if (list.isError()) {
-        NCXMMS2_LOG_ERROR("%s", list.error().c_str());
+        NCXMMS2_LOG_ERROR("%s", list.error().toString().c_str());
         return;
     }
     

@@ -60,8 +60,8 @@ void SongInfoWindow::keyPressedEvent(const KeyEvent& keyEvent)
 void SongInfoWindow::getSongInfo(const xmms2::Expected<xmms2::PropDict>& info)
 {
     if (info.isError()) {
-        NCXMMS2_LOG_ERROR("%s", info.error().c_str());
-        const std::string msg = Utils::format("Can't load song info: %s", info.error());
+        NCXMMS2_LOG_ERROR("%s", info.error().toString().c_str());
+        const std::string msg = Utils::format("Can't load song info: %s", info.error().toString());
         setText(msg);
         return;
     }
@@ -90,7 +90,7 @@ void SongInfoWindow::getSongInfo(const xmms2::Expected<xmms2::PropDict>& info)
 void SongInfoWindow::handleSongInfoUpdate(const xmms2::Expected<int>& id)
 {
     if (id.isError()) {
-        NCXMMS2_LOG_ERROR("%s", id.error().c_str());
+        NCXMMS2_LOG_ERROR("%s", id.error().toString().c_str());
         return;
     }
     
