@@ -78,7 +78,7 @@ const std::string& PlaylistsListModel::currentPlaylist() const
 void PlaylistsListModel::getPlaylists(const xmms2::Expected<xmms2::List<StringRef>>& playlists)
 {
     if (playlists.isError()) {
-        NCXMMS2_LOG_ERROR("%s", playlists.error().toString().c_str());
+        NCXMMS2_LOG_ERROR("%s", playlists.error());
         return;
     }
     
@@ -100,7 +100,7 @@ void PlaylistsListModel::getPlaylists(const xmms2::Expected<xmms2::List<StringRe
 void PlaylistsListModel::getCurrentPlaylist(const xmms2::Expected<StringRef>& playlist)
 {
     if (playlist.isError()) {
-        NCXMMS2_LOG_ERROR("%s", playlist.error().toString().c_str());
+        NCXMMS2_LOG_ERROR("%s", playlist.error());
         return;
     }
     

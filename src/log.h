@@ -17,24 +17,27 @@
 #ifndef LOG_H
 #define LOG_H
 
-#include <cstdio>
+#include <fstream>
+#include "../3rdparty/tinyformat/tinyformat.h"
 
 namespace ncxmms2 {
 
 class Log
 {
 public:
-    static void logPrintf(const char *format, ...)
-#ifdef __GNUC__
-    __attribute__((format (printf, 1, 2)))
-#endif
-;
+    template <typename ... Args>
+    static void logPrintf(const char *format, Args&&... args)
+    {
+        tfm::format(instance().m_logFile, format, std::forward<Args>(args)...);
+        instance().m_logFile.flush();
+    }
 
-    static void debugPrintf(const char *format, ...)
-#ifdef __GNUC__
-    __attribute__((format (printf, 1, 2)))
-#endif
-;
+    template <typename ... Args>
+    static void debugPrintf(const char *format, Args&&... args)
+    {
+        instance().m_logFile << "[DEBUG] ";
+        logPrintf(format, std::forward<Args>(args)...);
+    }
 
 private:
     Log();
@@ -48,7 +51,7 @@ private:
         return inst;
     }
 
-    std::FILE *m_logFile;
+    std::fstream m_logFile;
 };
 } // ncxmms2
 

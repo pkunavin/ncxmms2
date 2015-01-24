@@ -84,7 +84,7 @@ void AlbumsListModel::getAlbumsList(const std::string& artist,
 {
     if (list.isError()) {
         StatusArea::showMessage("Failed to get albums for \"%s\": %s!", artist, list.error().toString());
-        NCXMMS2_LOG_ERROR("%s", list.error().toString().c_str());
+        NCXMMS2_LOG_ERROR("%s", list.error());
         return;
     }
     

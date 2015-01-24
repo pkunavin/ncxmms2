@@ -37,7 +37,7 @@
 #include "../lib/stackedwindow.h"
 
 #include "../../3rdparty/folly/sorted_vector_types.h"
-
+#include "../log.h"
 using namespace ncxmms2;
 
 MainWindow::MainWindow(xmms2::Client *xmmsClient) :

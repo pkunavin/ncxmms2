@@ -64,7 +64,7 @@ void ArtistsListModel::refresh()
 void ArtistsListModel::getArtistsList(const xmms2::Expected<xmms2::List<xmms2::Dict>>& list)
 {
     if (list.isError()) {
-        NCXMMS2_LOG_ERROR("%s", list.error().toString().c_str());
+        NCXMMS2_LOG_ERROR("%s", list.error());
         return;
     }
     

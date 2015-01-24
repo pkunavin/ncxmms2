@@ -15,7 +15,6 @@
  */
 
 #include <glib.h>
-#include <stdarg.h>
 #include <string>
 #include <stdexcept>
 
@@ -23,26 +22,7 @@
 
 using namespace ncxmms2;
 
-void Log::logPrintf(const char *format, ...)
-{
-    va_list args;
-    va_start(args, format);
-    std::vfprintf(instance().m_logFile, format, args);
-    va_end(args);
-    std::fflush(instance().m_logFile);
-}
-
-void Log::debugPrintf(const char *format, ...)
-{
-    va_list args;
-    va_start(args, format);
-    std::fprintf(instance().m_logFile, "[DEBUG] ");
-    std::vfprintf(instance().m_logFile, format, args);
-    va_end(args);
-    std::fflush(instance().m_logFile);
-}
-
-Log::Log() : m_logFile(nullptr)
+Log::Log()
 {
     std::string logFilePath(g_get_user_config_dir());
     logFilePath.append("/ncxmms2/ncxmms2.log");
@@ -55,14 +35,14 @@ Log::Log() : m_logFile(nullptr)
     if (err == -1)
         throw std::runtime_error("Can't create config directory!");
 
-    if (!(m_logFile = std::fopen(logFilePath.c_str(), "a")))
+    m_logFile.open(logFilePath.c_str(), std::ios_base::app);
+    if (!m_logFile.is_open())
         throw std::runtime_error("Can't create log file!");
 
-    std::fprintf(m_logFile, "ncxmms2 logging system started!\n");
+    m_logFile << "ncxmms2 logging system started!" << std::endl;
 }
 
 Log::~Log()
 {
-    std::fprintf(m_logFile, "ncxmms2 logging system halted!\n");
-    std::fclose(m_logFile);
+    m_logFile << "ncxmms2 logging system halted!\n";
 }

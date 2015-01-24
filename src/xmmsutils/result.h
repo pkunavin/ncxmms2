@@ -21,6 +21,7 @@
 #include <vector>
 #include <string>
 #include <type_traits>
+#include <ostream>
 
 #include "types.h"
 #include "../lib/signals.h"
@@ -43,6 +44,8 @@ public:
 private:
     std::string m_error;
 };
+
+std::ostream& operator<<(std::ostream& os, const Error& error);
 
 /*   Expected<T> is a variant type to represent that xmms2 can either
  * return a value (of type T) or an error (represented by string).

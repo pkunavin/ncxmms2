@@ -22,6 +22,12 @@
 
 using namespace ncxmms2;
 
+std::ostream& xmms2::operator<<(std::ostream& os, const xmms2::Error& error)
+{
+    os << error.toString();
+    return os;
+}
+
 xmms2::ResultBase::ResultBase(xmmsc_connection_t *connection, xmmsc_result_t *result) :
     m_connection(connection),
     m_result(result)

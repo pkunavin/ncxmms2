@@ -80,7 +80,7 @@ PlaybackStatusWindow::PlaybackStatusWindow(xmms2::Client *client, int xPos, int 
 void PlaybackStatusWindow::getPlaybackStatus(const xmms2::Expected<xmms2::PlaybackStatus>& status)
 {
     if (status.isError()) {
-        NCXMMS2_LOG_ERROR("%s", status.error().toString().c_str());
+        NCXMMS2_LOG_ERROR("%s", status.error());
         return;
     }
     
@@ -91,7 +91,7 @@ void PlaybackStatusWindow::getPlaybackStatus(const xmms2::Expected<xmms2::Playba
 void PlaybackStatusWindow::getCurrentId(const xmms2::Expected<int>& id)
 {
     if (id.isError()) {
-        NCXMMS2_LOG_ERROR("%s", id.error().toString().c_str());
+        NCXMMS2_LOG_ERROR("%s", id.error());
         return;
     }
     
@@ -101,7 +101,7 @@ void PlaybackStatusWindow::getCurrentId(const xmms2::Expected<int>& id)
 void PlaybackStatusWindow::getCurrentIdInfo(const xmms2::Expected<xmms2::PropDict>& info)
 {
     if (info.isError()) {
-        NCXMMS2_LOG_ERROR("%s", info.error().toString().c_str());
+        NCXMMS2_LOG_ERROR("%s", info.error());
         return;
     }
     
@@ -127,7 +127,7 @@ void PlaybackStatusWindow::getPlaytime(const xmms2::Expected<int>& playtime)
 void PlaybackStatusWindow::handleIdInfoChanged(const xmms2::Expected<int>& id)
 {
     if (id.isError()) {
-        NCXMMS2_LOG_ERROR("%s", id.error().toString().c_str());
+        NCXMMS2_LOG_ERROR("%s", id.error());
         return;
     }
     

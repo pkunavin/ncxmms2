@@ -85,7 +85,7 @@ void ActivePlaylistWindow::updateWindowTitle()
 void ActivePlaylistWindow::getActivePlaylist(const xmms2::Expected<StringRef>& playlist)
 {
     if (playlist.isError()) {
-        NCXMMS2_LOG_ERROR("%s", playlist.error().toString().c_str());
+        NCXMMS2_LOG_ERROR("%s", playlist.error());
         return;
     }
     

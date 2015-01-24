@@ -140,7 +140,7 @@ void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
 void PlaylistView::getActivePlaylist(const xmms2::Expected<StringRef>& playlist)
 {
     if (playlist.isError()) {
-        NCXMMS2_LOG_ERROR("%s", playlist.error().toString().c_str());
+        NCXMMS2_LOG_ERROR("%s", playlist.error());
         return;
     }
     
@@ -150,7 +150,7 @@ void PlaylistView::getActivePlaylist(const xmms2::Expected<StringRef>& playlist)
 void PlaylistView::getPlaybackStatus(const xmms2::Expected<xmms2::PlaybackStatus>& status)
 {
     if (status.isError()) {
-        NCXMMS2_LOG_ERROR("%s", status.error().toString().c_str());
+        NCXMMS2_LOG_ERROR("%s", status.error());
         return;
     }
     
