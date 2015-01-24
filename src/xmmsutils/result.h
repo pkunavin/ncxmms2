@@ -40,9 +40,6 @@ public:
     
     const std::string& toString() const {return m_error;}
     
-    Error(Error&&) = default;
-    Error& operator=(Error&&) = default;
-    
 private:
     std::string m_error;
 };
