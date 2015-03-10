@@ -1,2 +1,5 @@
 missingInclude
 unusedFunction
+variableScope
+
+*:*/json.h
