@@ -51,6 +51,7 @@ public:
         mainLoop(nullptr),
         termKey(nullptr),
         termKeyReadTimeoutId(0),
+        mouseEnabled(false),
         mouseDoubleClickInterval(300),
         mouseDoubleClickTimeExpired(true),
         mouseDoubleClickHaveReleaseEvent(false),
@@ -160,8 +161,8 @@ Application::Application(bool useColors, bool mouseEnable) :
     setlocale(LC_ALL, "");
 
     // Mouse support
-    if (mouseEnable) {
-        d->mouseEnabled = true;
+    d->mouseEnabled = mouseEnable;
+    if (d->mouseEnabled) {
         d->mouseEnable();
     }
 
