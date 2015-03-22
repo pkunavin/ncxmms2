@@ -7,7 +7,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-padded -Wno-implicit-fallthrough -Wno-conversion -Wno-covered-switch-default")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-exit-time-destructors -Wno-global-constructors -Wno-missing-prototypes")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-missing-variable-declarations -Wno-shadow -Wno-switch-enum -Wno-weak-vtables")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-exception-parameter -Wno-zero-length-array")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-exception-parameter -Wno-zero-length-array -Wno-reserved-id-macro")
 endif()
 
 add_subdirectory(lib)
