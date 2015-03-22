@@ -75,7 +75,8 @@ File system browser:
  
 Medialib browser:
  * `R` - Refresh
- * `space`, `enter` - Add artist / album / song to active playlist
+ * `space` - Add artist / album / song to active playlist
+ * `enter` - Play artist / album / song in active playlist
  * `i` - Show song info
 
 ## Settings
