@@ -83,19 +83,21 @@ HelpBrowser::HelpBrowser(const Rectangle& rect, Window *parent) :
     namespace FileSystemBrowser = Hotkeys::Screens::FileSystemBrowser;
     const KeyDescription fileSystemBrowserKeys[] =
     {
-        {"Add item to active playlist", FileSystemBrowser::AddItemToActivePlaylist},
-        {"Go up",                       FileSystemBrowser::GoUp                   },
-        {"Change directory",            FileSystemBrowser::ChangeDirectory        },
-        {"Reload directory",            FileSystemBrowser::ReloadDirectory        },
+        {"Play item in active playlist", KeyEvent::KeyEnter                        },
+        {"Add item to active playlist",  FileSystemBrowser::AddItemToActivePlaylist},
+        {"Go up",                        FileSystemBrowser::GoUp                   },
+        {"Change directory",             FileSystemBrowser::ChangeDirectory        },
+        {"Reload directory",             FileSystemBrowser::ReloadDirectory        },
         {nullptr, 0}
     };
 
     namespace MedialibBrowser = Hotkeys::Screens::MedialibBrowser;
     const KeyDescription medialibBrowserKeys[] =
     {
-        {"Add item to active playlist", MedialibBrowser::AddItemToActivePlaylist},
-        {"Refresh",                     MedialibBrowser::Refresh                },
-        {"Show song info",              MedialibBrowser::ShowSongInfo           },
+        {"Play item in active playlist", KeyEvent::KeyEnter                      },
+        {"Add item to active playlist",  MedialibBrowser::AddItemToActivePlaylist},
+        {"Refresh",                      MedialibBrowser::Refresh                },
+        {"Show song info",               MedialibBrowser::ShowSongInfo           },
         {nullptr, 0}
     };
 
