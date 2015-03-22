@@ -127,7 +127,7 @@ void FileSystemBrowser::activePlaylistAddFileOrDirectory(int item, bool beQuiet)
     assert(item >= 0 && item < fsModel()->itemsCount());
 
     if (fsModel()->isDirectory(item)) {
-        m_xmmsClient->playlistAddRecursive("_active", fsModel()->fileUrl(item));
+        m_xmmsClient->playlistAddRecursive(m_xmmsClient->playlistCurrentActive(), fsModel()->fileUrl(item));
         if (!beQuiet) {
             StatusArea::showMessage("Adding \"%s\" directory to active playlist", fsModel()->fileName(item));
         }
@@ -145,13 +145,13 @@ void FileSystemBrowser::activePlaylistAddFile(int item, bool beQuiet)
 
     switch (Utils::getFileType(fileName)) {
         case Utils::FileType::Playlist:
-            m_xmmsClient->playlistAddPlaylistFile("_active", fileUrl);
+            m_xmmsClient->playlistAddPlaylistFile(m_xmmsClient->playlistCurrentActive(), fileUrl);
             if (!beQuiet)
                 StatusArea::showMessage("Adding \"%s\" playlist file to active playlist", fileName);
             break;
 
         case Utils::FileType::Media:
-            m_xmmsClient->playlistAddUrl("_active", fileUrl);
+            m_xmmsClient->playlistAddUrl(m_xmmsClient->playlistCurrentActive(), fileUrl);
             if (!beQuiet)
                 StatusArea::showMessage("Adding \"%s\" file to active playlist", fileName);
             break;

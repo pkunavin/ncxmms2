@@ -43,9 +43,9 @@ public:
        ********* Playback subsystem *********
        ************************************** */
 public:
-    PlaybackStatusResult playbackStatus();
-    IntResult playbackPlaytime();
-    IntResult playbackCurrentId();
+    PlaybackStatusResult playbackGetStatus();
+    IntResult playbackGetPlaytime();
+    IntResult playbackGetCurrentId();
     
     VoidResult playbackStart();
     VoidResult playbackStop();
@@ -62,7 +62,7 @@ public:
        ********* Playlist subsystem *********
        ************************************** */
 public:
-    StringResult playlistCurrentActive();
+    StringResult playlistGetCurrentActive();
     VoidResult playlistLoad(const std::string& playlist);
     VoidResult playlistCreat(const std::string& playlist);
     VoidResult playlistRemove(const std::string& playlist);
@@ -82,9 +82,14 @@ public:
     
     VoidResult playlistSetNext(int item);
     VoidResult playlistSetNextRel(int next);
-    DictResult playlistCurrentPosition(const std::string& playlist);
-    IntListResult playlistListEntries(const std::string& playlist);
-    StringListResult playlistList();
+    DictResult playlistGetCurrentPosition(const std::string& playlist);
+    IntListResult playlistGetEntries(const std::string& playlist);
+    StringListResult playlistGetList();
+    
+    void playlistPlayItem(const std::string& playlist, int item);
+    void playlistPlayId(const std::string& playlist, int id);
+    
+    const std::string& playlistCurrentActive() const;
     
     NCXMMS2_SIGNAL(playlistLoaded, const Expected<StringRef>&)
     NCXMMS2_SIGNAL(playlistCurrentPositionChanged, const Expected<Dict>&)
@@ -104,7 +109,7 @@ public:
        ************************************** */
 public:
     VoidResult collectionRename(const std::string& oldName, const std::string& newName, const std::string& kind);
-    CollectionResult collectionIdListFromPlaylistFile(const std::string& file);
+    CollectionResult collectionGetIdListFromPlaylistFile(const std::string& file);
     DictListResult collectionQueryInfos(const Collection& coll,
                                         const std::vector<std::string>& fetch,
                                         const std::vector<std::string>& order,
@@ -123,7 +128,7 @@ public:
        ********* Config subsystem ***********
        ************************************** */
 public:
-    DictResult configValueList();
+    DictResult configGetValueList();
     VoidResult configSetValue(const std::string& key, const std::string& value);
     
     void configLoad();

@@ -33,8 +33,7 @@ using namespace ncxmms2;
 
 PlaylistView::PlaylistView(xmms2::Client *xmmsClient, const Rectangle& rect, Window *parent) :
     ListViewAppIntegrated(rect, parent),
-    m_xmmsClient(xmmsClient),
-    m_playbackStatus(xmms2::PlaybackStatus::Stopped)
+    m_xmmsClient(xmmsClient)
 {
     loadPalette("PlaylistView");
 
@@ -44,12 +43,6 @@ PlaylistView::PlaylistView(xmms2::Client *xmmsClient, const Rectangle& rect, Win
     setHideCurrentItemInterval(10);
 
     itemEntered_Connect(&PlaylistView::onItemEntered, this);
-
-    m_xmmsClient->playlistCurrentActive()(&PlaylistView::getActivePlaylist, this);
-    m_xmmsClient->playlistLoaded_Connect(&PlaylistView::getActivePlaylist, this);
-
-    m_xmmsClient->playbackStatus()(&PlaylistView::getPlaybackStatus, this);
-    m_xmmsClient->playbackStatusChanged_Connect(&PlaylistView::getPlaybackStatus, this);
 }
 
 void PlaylistView::setPlaylist(const std::string& playlist)
@@ -137,48 +130,10 @@ void PlaylistView::keyPressedEvent(const KeyEvent& keyEvent)
     }
 }
 
-void PlaylistView::getActivePlaylist(const xmms2::Expected<StringRef>& playlist)
-{
-    if (playlist.isError()) {
-        NCXMMS2_LOG_ERROR("%s", playlist.error());
-        return;
-    }
-    
-    m_activePlaylist = playlist->c_str();
-}
-
-void PlaylistView::getPlaybackStatus(const xmms2::Expected<xmms2::PlaybackStatus>& status)
-{
-    if (status.isError()) {
-        NCXMMS2_LOG_ERROR("%s", status.error());
-        return;
-    }
-    
-    m_playbackStatus = status.value();
-}
-
 void PlaylistView::onItemEntered(int item)
 {
     PlaylistModel *plsModel = static_cast<PlaylistModel*>(model());
-
-    if (plsModel->playlist() != m_activePlaylist)
-        m_xmmsClient->playlistLoad(plsModel->playlist());
-
-    m_xmmsClient->playlistSetNext(item);
-    m_xmmsClient->playbackTickle();
-    switch (m_playbackStatus) {
-        case xmms2::PlaybackStatus::Stopped:
-            m_xmmsClient->playbackStart();
-            break;
-            
-        case xmms2::PlaybackStatus::Playing:
-            m_xmmsClient->playbackTickle();
-            break;
-            
-        case xmms2::PlaybackStatus::Paused:
-            m_xmmsClient->playbackStart();
-            m_xmmsClient->playbackTickle();
-    }
+    m_xmmsClient->playlistPlayItem(plsModel->playlist(), item);
 }
 
 void PlaylistView::addPath(const std::string& path)

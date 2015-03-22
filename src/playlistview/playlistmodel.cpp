@@ -39,7 +39,7 @@ void PlaylistModel::setPlaylist(const std::string& playlist)
 {
     m_playlist = playlist;
     m_currentPosition = -1;
-    m_xmmsClient->playlistListEntries(m_playlist)(&PlaylistModel::getEntries, this);
+    m_xmmsClient->playlistGetEntries(m_playlist)(&PlaylistModel::getEntries, this);
 }
 
 const std::string& PlaylistModel::playlist() const
@@ -78,7 +78,7 @@ void PlaylistModel::getEntries(const xmms2::Expected<xmms2::List<int>>& entries)
     }
     
     if (!m_idList.empty())
-        m_xmmsClient->playlistCurrentPosition(m_playlist)(&PlaylistModel::getCurrentPosition, this);
+        m_xmmsClient->playlistGetCurrentPosition(m_playlist)(&PlaylistModel::getCurrentPosition, this);
     
     if (!m_lazyLoadPlaylist) {
         for (int i = 0; i < (int)m_idList.size(); ++i) {
@@ -231,7 +231,7 @@ void PlaylistModel::processPlaylistChange(const xmms2::PlaylistChangeEvent& chan
             break;
 
         case ChangeType::Reorder:
-            m_xmmsClient->playlistListEntries(m_playlist)(&PlaylistModel::getEntriesOrder, this);
+            m_xmmsClient->playlistGetEntries(m_playlist)(&PlaylistModel::getEntriesOrder, this);
             break;
     }
 }

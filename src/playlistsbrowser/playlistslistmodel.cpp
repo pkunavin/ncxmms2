@@ -46,8 +46,8 @@ int PlaylistsListModel::itemsCount() const
 
 void PlaylistsListModel::init()
 {
-    m_xmmsClient->playlistList()(&PlaylistsListModel::getPlaylists, this);
-    m_xmmsClient->playlistCurrentActive()(&PlaylistsListModel::getCurrentPlaylist, this);
+    m_xmmsClient->playlistGetList()(&PlaylistsListModel::getPlaylists, this);
+    m_xmmsClient->playlistGetCurrentActive()(&PlaylistsListModel::getCurrentPlaylist, this);
     m_xmmsClient->playlistLoaded_Connect(&PlaylistsListModel::getCurrentPlaylist, this);
     m_xmmsClient->collectionChanged_Connect(&PlaylistsListModel::handlePlaylistsChange, this);
 }

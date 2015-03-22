@@ -29,7 +29,7 @@ ActivePlaylistWindow::ActivePlaylistWindow(xmms2::Client *xmmsClient, const Rect
     PlaylistView(xmmsClient, rect, parent),
     m_autoScrollToActiveSong(true)
 {
-    xmmsClient->playlistCurrentActive()(&ActivePlaylistWindow::getActivePlaylist, this);
+    xmmsClient->playlistGetCurrentActive()(&ActivePlaylistWindow::getActivePlaylist, this);
     xmmsClient->playlistLoaded_Connect(&ActivePlaylistWindow::getActivePlaylist, this);
 
     PlaylistModel *plsModel = static_cast<PlaylistModel*>(model());

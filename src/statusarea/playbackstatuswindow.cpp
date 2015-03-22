@@ -66,14 +66,14 @@ PlaybackStatusWindow::PlaybackStatusWindow(xmms2::Client *client, int xPos, int 
         );
     }
     
-    m_xmmsClient->playbackStatus()(&PlaybackStatusWindow::getPlaybackStatus, this);
+    m_xmmsClient->playbackGetStatus()(&PlaybackStatusWindow::getPlaybackStatus, this);
     m_xmmsClient->playbackStatusChanged_Connect(&PlaybackStatusWindow::getPlaybackStatus, this);
 
-    m_xmmsClient->playbackCurrentId()(&PlaybackStatusWindow::getCurrentId, this);
+    m_xmmsClient->playbackGetCurrentId()(&PlaybackStatusWindow::getCurrentId, this);
     m_xmmsClient->playbackCurrentIdChanged_Connect(&PlaybackStatusWindow::getCurrentId, this);
     m_xmmsClient->medialibEntryChanged_Connect(&PlaybackStatusWindow::handleIdInfoChanged, this);
 
-    m_xmmsClient->playbackPlaytime()(&PlaybackStatusWindow::getPlaytime, this);
+    m_xmmsClient->playbackGetPlaytime()(&PlaybackStatusWindow::getPlaytime, this);
     m_xmmsClient->playbackPlaytimeChanged_Connect(&PlaybackStatusWindow::getPlaytime, this);
 }
 

@@ -65,7 +65,7 @@ StatusArea::StatusArea(xmms2::Client *xmmsClient, int xPos, int yPos, int cols, 
     
     m_playbackProgressBar = new PlaybackProgressBar(0, 0, cols, this);
     
-    xmmsClient->playbackPlaytime()(&StatusArea::getPlaytime, this);
+    xmmsClient->playbackGetPlaytime()(&StatusArea::getPlaytime, this);
     xmmsClient->playbackPlaytimeChanged_Connect(&StatusArea::getPlaytime, this);
     
     m_playbackProgressBar->progressChangeRequested_Connect([xmmsClient](int value){

@@ -58,6 +58,12 @@ private:
     void activePlaylistAddAlbums(const std::string& artist,
                                  const xmms2::Expected<xmms2::List<xmms2::Dict>>& list,
                                  bool beQuiet = false);
+    
+    void activePlaylistPlaySong(int item);
+    void activePlaylistPlayAlbum(int item);
+    void activePlaylistPlayAlbumColl(const xmms2::Collection& songs, const std::vector<std::string>& sortingOrder);
+    void activePlaylistAddAlbumColl(const xmms2::Collection& songs, const std::vector<std::string>& sortingOrder);
+    void activePlaylistPlayArtist(int item);
 };
 } // ncxmms2
 
