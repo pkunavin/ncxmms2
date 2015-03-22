@@ -68,7 +68,7 @@ Playlist view:
   
 File system browser:
  * `space` - Add file or directory to active playlist
- * `enter` - Add file to active playlist
+ * `enter` - Play file in active playlist
  * `left arrow` - Go up
  * `g` - Change directory
  * `R` - Reload directory

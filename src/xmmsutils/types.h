@@ -298,6 +298,7 @@ class Collection
 public:
     enum class Type
     {
+        Unknown,
         Reference,
         Union,
         Intersection,
@@ -311,14 +312,15 @@ public:
     };
 
     Collection(Type type);
-    explicit Collection(xmmsv_coll_t *coll) : m_coll(coll) {}
+    explicit Collection(xmmsv_coll_t *coll);
     ~Collection();
     
     Collection(const Collection&) = delete;
     Collection& operator=(const Collection&) = delete;
     
     Collection(Collection&& other) noexcept :
-        m_coll(other.m_coll)
+        m_coll(other.m_coll),
+        m_type(other.m_type)
     {
         other.m_coll = nullptr;
     }
@@ -327,6 +329,7 @@ public:
     {
         if (this != &other) {
             m_coll = other.m_coll;
+            m_type = other.m_type;
             other.m_coll = nullptr;
         }
         return *this;
@@ -335,6 +338,10 @@ public:
     void setAttribute(const std::string& key, const std::string& value);
     void addOperand(const Collection& operand);
 
+    // For Idlist type
+    int size() const;
+    int at(int index) const;
+    
     static Collection universe();
     static Collection allByArtist(const std::string& artist, const Collection& source = universe());
     static Collection albumByArtist(const std::string& artist, const std::string& album,
@@ -343,6 +350,7 @@ public:
 private:
     friend class Client;
     xmmsv_coll_t *m_coll;
+    Type m_type;
 };
 
 /* **************************************

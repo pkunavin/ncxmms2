@@ -20,6 +20,7 @@
 #include "../xmmsutils/client.h"
 #include "../utils.h"
 #include "../hotkeys.h"
+#include "../log.h"
 #include "../lib/keyevent.h"
 
 using namespace ncxmms2;
@@ -77,8 +78,7 @@ void FileSystemBrowser::onItemEntered(int item)
         // modify model content, so we need to copy it
         cd(std::string(fsModel()->fileName(item)));
     } else {
-        //TODO: Play file
-        activePlaylistAddFile(item);
+        activePlaylistPlayItem(item);
     }
 }
 
@@ -143,24 +143,65 @@ void FileSystemBrowser::activePlaylistAddFile(int item, bool beQuiet)
     const std::string fileName = fsModel()->fileName(item);
     const std::string fileUrl  = fsModel()->fileUrl(item);
 
-    switch (Utils::getFileType(fileName)) {
-        case Utils::FileType::Playlist:
-            m_xmmsClient->playlistAddPlaylistFile(m_xmmsClient->playlistCurrentActive(), fileUrl);
-            if (!beQuiet)
-                StatusArea::showMessage("Adding \"%s\" playlist file to active playlist", fileName);
-            break;
-
-        case Utils::FileType::Media:
-            m_xmmsClient->playlistAddUrl(m_xmmsClient->playlistCurrentActive(), fileUrl);
-            if (!beQuiet)
-                StatusArea::showMessage("Adding \"%s\" file to active playlist", fileName);
-            break;
-
-        case Utils::FileType::Unknown:
-            if (!beQuiet)
-                StatusArea::showMessage("Unknown file type!");
-            break;
+    if (Utils::getFileType(fileName) ==  Utils::FileType::Playlist) {
+        m_xmmsClient->playlistAddPlaylistFile(m_xmmsClient->playlistCurrentActive(), fileUrl);
+        if (!beQuiet)
+            StatusArea::showMessage("Adding \"%s\" playlist file to active playlist", fileName);
+    } else {
+        m_xmmsClient->playlistAddUrl(m_xmmsClient->playlistCurrentActive(), fileUrl);
+        if (!beQuiet)
+            StatusArea::showMessage("Adding \"%s\" file to active playlist", fileName);
     }
+}
+
+void FileSystemBrowser::activePlaylistPlayItem(int item)
+{
+    assert(item >= 0 && item < fsModel()->itemsCount());
+
+    const std::string fileName = fsModel()->fileName(item);
+    const std::string fileUrl  = fsModel()->fileUrl(item);
+    
+    if (Utils::getFileType(fileName) == Utils::FileType::Playlist) {
+        activePlaylistPlayPlaylistFile(fileUrl);
+    } else {
+        activePlaylistPlayFile(fileUrl);
+    } 
+}
+
+void FileSystemBrowser::activePlaylistPlayFile(const std::string& url)
+{
+    m_xmmsClient->medialibGetId(url)([url, this](const xmms2::Expected<int>& id)
+    {
+        if (id.isError() || id.value() <= 0) {
+            m_xmmsClient->medialibAddEntry(url);
+            m_xmmsClient->medialibGetId(url)([this](const xmms2::Expected<int>& id)
+            {
+                if (id.isValid() && id.value() > 0)
+                    m_xmmsClient->playlistPlayId(m_xmmsClient->playlistCurrentActive(), id.value());
+            });
+            return;
+        }
+        m_xmmsClient->playlistPlayId(m_xmmsClient->playlistCurrentActive(), id.value());
+    });
+}
+
+void FileSystemBrowser::activePlaylistPlayPlaylistFile(const std::string& url)
+{
+    m_xmmsClient->collectionGetIdListFromPlaylistFile(url)([this](const xmms2::Expected<xmms2::Collection>& idlist)
+    {
+        if (idlist.isError()) {
+            NCXMMS2_LOG_ERROR("%s", idlist.error());
+            return;
+        }
+        const int size = idlist->size();
+        if (size <= 0)
+            return;
+        m_xmmsClient->playlistPlayId(m_xmmsClient->playlistCurrentActive(), idlist->at(0));
+        
+        for (int i = 1; i < size; ++i) {
+            m_xmmsClient->playlistAddId(m_xmmsClient->playlistCurrentActive(), idlist->at(i));
+        }
+    });
 }
 
 void FileSystemBrowser::askChangeDirectory()

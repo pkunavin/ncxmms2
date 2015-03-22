@@ -100,6 +100,8 @@ public:
        ************************************** */
 public:
     PropDictResult medialibGetInfo(int id);
+    IntResult medialibGetId(const std::string& url);
+    VoidResult medialibAddEntry(const std::string& url);
     
     NCXMMS2_SIGNAL(medialibEntryChanged, const Expected<int>&)
     NCXMMS2_SIGNAL(medialibEntryAdded, const Expected<int>&)

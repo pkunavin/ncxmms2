@@ -509,6 +509,18 @@ xmms2::PropDictResult xmms2::Client::medialibGetInfo(int id)
     return {d->m_connection, xmmsc_medialib_get_info(d->m_connection, id)};
 }
 
+xmms2::IntResult xmms2::Client::medialibGetId(const std::string& url)
+{
+    CLIENT_CHECK_CONNECTION;
+    return {d->m_connection, xmmsc_medialib_get_id(d->m_connection, url.c_str())};
+}
+
+xmms2::VoidResult xmms2::Client::medialibAddEntry(const std::string& url)
+{
+    CLIENT_CHECK_CONNECTION;
+    return {d->m_connection, xmmsc_medialib_add_entry(d->m_connection, url.c_str())};
+}
+
 xmms2::VoidResult xmms2::Client::collectionRename(const std::string& oldName, const std::string& newName,
                                                   const std::string& kind)
 {

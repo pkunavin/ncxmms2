@@ -53,6 +53,9 @@ private:
     void addItemToActivePlaylist();
     void activePlaylistAddFileOrDirectory(int item, bool beQuiet = false);
     void activePlaylistAddFile(int item, bool beQuiet = false);
+    void activePlaylistPlayItem(int item);
+    void activePlaylistPlayFile(const std::string& url);
+    void activePlaylistPlayPlaylistFile(const std::string& url);
     void askChangeDirectory();
     void goUp();
     void toggleSelectionWithoutDotDot(const KeyEvent& keyEvent);

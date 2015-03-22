@@ -245,10 +245,11 @@ bool xmms2::CollectionChangeEvent::init(xmmsv_t *dict)
    *********** Collection ***************
    ************************************** */
 xmms2::Collection::Collection(xmms2::Collection::Type type) :
-    m_coll(nullptr)
+    m_coll(nullptr),
+    m_type(type)
 {
     xmmsv_coll_type_t collType;
-    switch (type) {
+    switch (m_type) {
         case Type::Reference:    collType = XMMS_COLLECTION_TYPE_REFERENCE;    break;
         case Type::Union:        collType = XMMS_COLLECTION_TYPE_UNION;        break;
         case Type::Intersection: collType = XMMS_COLLECTION_TYPE_INTERSECTION; break;
@@ -267,6 +268,24 @@ xmms2::Collection::Collection(xmms2::Collection::Type type) :
     m_coll = xmmsv_coll_new(collType);
 }
 
+xmms2::Collection::Collection(xmmsv_coll_t *coll) :
+    m_coll(coll)
+{
+    switch (xmmsv_coll_get_type(m_coll)) {
+        case XMMS_COLLECTION_TYPE_REFERENCE:    m_type = Type::Reference;    break;
+        case XMMS_COLLECTION_TYPE_UNION:        m_type = Type::Union;        break;
+        case XMMS_COLLECTION_TYPE_INTERSECTION: m_type = Type::Intersection; break;
+        case XMMS_COLLECTION_TYPE_COMPLEMENT:   m_type = Type::Complement;   break;
+        case XMMS_COLLECTION_TYPE_HAS:          m_type = Type::Has;          break;
+        case XMMS_COLLECTION_TYPE_EQUALS:       m_type = Type::Equals;       break;
+        case XMMS_COLLECTION_TYPE_MATCH:        m_type = Type::Match;        break;
+        case XMMS_COLLECTION_TYPE_SMALLER:      m_type = Type::Smaller;      break;
+        case XMMS_COLLECTION_TYPE_GREATER:      m_type = Type::Greater;      break;
+        case XMMS_COLLECTION_TYPE_IDLIST:       m_type = Type::Idlist;       break;
+        default:                                m_type = Type::Unknown;      break;
+    }
+}
+
 xmms2::Collection::~Collection()
 {
     if (m_coll)
@@ -281,6 +300,20 @@ void xmms2::Collection::setAttribute(const std::string& key, const std::string& 
 void xmms2::Collection::addOperand(const xmms2::Collection& operand)
 {
     xmmsc_coll_add_operand(m_coll, operand.m_coll);
+}
+
+int xmms2::Collection::size() const
+{
+    assert(m_type == Type::Idlist);
+    return xmmsv_coll_idlist_get_size(m_coll);
+}
+
+int xmms2::Collection::at(int index) const
+{
+    assert(m_type == Type::Idlist);
+    int value;
+    xmmsv_coll_idlist_get_index(m_coll, index, &value);
+    return value;
 }
 
 xmms2::Collection xmms2::Collection::universe()
