@@ -1,5 +1,7 @@
 # ncxmms2
 
+[![Build Status](https://travis-ci.org/pkunavin/ncxmms2.svg?branch=master)](https://travis-ci.org/pkunavin/ncxmms2)
+
 ## About
 ncxmms2 is an ncurses xmms2 client. This project is inspired by
 [ncmpcpp](http://ncmpcpp.rybczak.net/) and aimed to have similiar look and feel.
