@@ -64,6 +64,7 @@ void FileSystemBrowser::keyPressedEvent(const KeyEvent& keyEvent)
         case FsBrowser::GoUp:                    goUp();                                 break;
         case FsBrowser::ChangeDirectory:         askChangeDirectory();                   break;
         case FsBrowser::ReloadDirectory:         reloadDirectory();                      break;
+        case FsBrowser::ShowSongInfo:            getFileIdAndShowSongInfo();             break;
         case KeyEvent::KeyInsert:                toggleSelectionWithoutDotDot(keyEvent); break;
         case '*':                                invertSelectionWithoutDotDot(keyEvent); break;
         case '+':                                selectByRegexpWithoutDotDot();          break;
@@ -170,18 +171,13 @@ void FileSystemBrowser::activePlaylistPlayItem(int item)
 
 void FileSystemBrowser::activePlaylistPlayFile(const std::string& url)
 {
-    m_xmmsClient->medialibGetId(url)([url, this](const xmms2::Expected<int>& id)
+    getMedialibIdForFile(url, [this](const xmms2::Expected<int>& id)
     {
-        if (id.isError() || id.value() <= 0) {
-            m_xmmsClient->medialibAddEntry(url);
-            m_xmmsClient->medialibGetId(url)([this](const xmms2::Expected<int>& id)
-            {
-                if (id.isValid() && id.value() > 0)
-                    m_xmmsClient->playlistPlayId(m_xmmsClient->playlistCurrentActive(), id.value());
-            });
-            return;
+        if (id.isValid() && id.value() > 0) {
+            m_xmmsClient->playlistPlayId(m_xmmsClient->playlistCurrentActive(), id.value());
+        } else {
+            StatusArea::showMessage("File not found in medialib and importing failed!");
         }
-        m_xmmsClient->playlistPlayId(m_xmmsClient->playlistCurrentActive(), id.value());
     });
 }
 
@@ -224,6 +220,43 @@ void FileSystemBrowser::goUp()
 void FileSystemBrowser::reloadDirectory()
 {
     fsModel()->refresh();
+}
+
+void FileSystemBrowser::getFileIdAndShowSongInfo()
+{
+    const int item = currentItem();
+    if (item < 0)
+        return;
+
+    if (fsModel()->isDirectory(item))
+        return;
+
+    assert(item >= 0 && item < fsModel()->itemsCount());
+    const std::string url = fsModel()->fileUrl(item);
+    getMedialibIdForFile(url, [this](const xmms2::Expected<int>& id)
+    {
+        if (id.isValid() && id.value() > 0) {
+            showSongInfo(id.value());
+        } else {
+            StatusArea::showMessage("File not found in medialib and importing failed!");
+        }
+    });
+}
+
+void FileSystemBrowser::getMedialibIdForFile(const std::string& url, const std::function<void (const xmms2::Expected<int>&)>& callback)
+{
+    m_xmmsClient->medialibGetId(url)([url, callback, this](const xmms2::Expected<int>& id)
+    {
+        if (id.isError() || id.value() <= 0) {
+            m_xmmsClient->medialibAddEntry(url);
+            m_xmmsClient->medialibGetId(url)([this, callback](const xmms2::Expected<int>& id)
+            {
+                callback(id);
+            });
+            return;
+        }
+        callback(id);
+    });
 }
 
 void FileSystemBrowser::toggleSelectionWithoutDotDot(const KeyEvent& keyEvent)

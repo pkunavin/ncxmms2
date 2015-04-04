@@ -37,7 +37,7 @@
 #include "../lib/stackedwindow.h"
 
 #include "../../3rdparty/folly/sorted_vector_types.h"
-#include "../log.h"
+
 using namespace ncxmms2;
 
 MainWindow::MainWindow(xmms2::Client *xmmsClient) :
@@ -84,6 +84,12 @@ MainWindow::MainWindow(xmms2::Client *xmmsClient) :
     
     auto *medialibBrowser = static_cast<MedialibBrowser*>(m_stackedWindow->window(StackedMedialibBrowser));
     medialibBrowser->showSongInfo_Connect(&MainWindow::showSongInfo, this);
+
+    auto *localFsBrowser = static_cast<FileSystemBrowser*>(m_stackedWindow->window(StackedLocalFileBrowser));
+    localFsBrowser->showSongInfo_Connect(&MainWindow::showSongInfo, this);
+
+    auto *serverFsBrowser = static_cast<FileSystemBrowser*>(m_stackedWindow->window(StackedServerSideBrowser));
+    serverFsBrowser->showSongInfo_Connect(&MainWindow::showSongInfo, this);
     
     auto *songInfoWin = static_cast<SongInfoWindow*>(m_stackedWindow->window(StackedSongInfoWindow));
     songInfoWin->hideRequested_Connect(&MainWindow::showLastVisibleScreen, this);

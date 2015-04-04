@@ -75,7 +75,8 @@ enum
     AddItemToActivePlaylist  = ' ',
     GoUp                     = KeyEvent::KeyLeft,
     ChangeDirectory          = 'g',
-    ReloadDirectory          = 'R'
+    ReloadDirectory          = 'R',
+    ShowSongInfo             = 'i'
 };
 }
 

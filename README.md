@@ -74,6 +74,7 @@ File system browser:
  * `left arrow` - Go up
  * `g` - Change directory
  * `R` - Reload directory
+ * `i` - Show song info
  
 Medialib browser:
  * `R` - Refresh

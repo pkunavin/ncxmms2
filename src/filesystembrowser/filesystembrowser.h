@@ -18,6 +18,7 @@
 #define FILESYSTEMBROWSER_H
 
 #include "dir.h"
+#include "../xmmsutils/result.h"
 #include "../listviewappintegrated/listviewappintegrated.h"
 
 namespace ncxmms2 {
@@ -41,6 +42,9 @@ public:
     
     virtual void keyPressedEvent(const KeyEvent& keyEvent);
     
+    // Signals:
+    NCXMMS2_SIGNAL(showSongInfo, int)
+
 private:
     xmms2::Client *m_xmmsClient;
     Dir m_currentDir;
@@ -62,6 +66,9 @@ private:
     void invertSelectionWithoutDotDot(const KeyEvent& keyEvent);
     void selectByRegexpWithoutDotDot();
     void reloadDirectory();
+    void getFileIdAndShowSongInfo();
+
+    void getMedialibIdForFile(const std::string& url, const std::function<void (const xmms2::Expected<int> &)>& callback);
 };
 } // ncxmms2
 

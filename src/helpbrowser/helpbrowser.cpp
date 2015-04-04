@@ -88,6 +88,7 @@ HelpBrowser::HelpBrowser(const Rectangle& rect, Window *parent) :
         {"Go up",                        FileSystemBrowser::GoUp                   },
         {"Change directory",             FileSystemBrowser::ChangeDirectory        },
         {"Reload directory",             FileSystemBrowser::ReloadDirectory        },
+        {"Show song info",               FileSystemBrowser::ShowSongInfo           },
         {nullptr, 0}
     };
 
