@@ -63,6 +63,9 @@ public:
             if (item1.name == "..")
                 return true;
             
+            if (item2.name == "..")
+                return false;
+
             if (item1.isDirectory() && !item2.isDirectory())
                 return true;
     
@@ -83,6 +86,9 @@ public:
             if (item1.name == "..")
                 return true;
             
+            if (item2 == "..")
+                return false;
+
             if (item1.isDirectory())
                 return true;
     
@@ -97,6 +103,9 @@ public:
             if (item1.name == "..")
                 return true;
             
+            if (item2 == "..")
+                return false;
+
             if (!item1.isDirectory())
                 return false;
     

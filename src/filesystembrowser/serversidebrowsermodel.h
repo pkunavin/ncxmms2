@@ -61,6 +61,9 @@ private:
             if (item1.name == "..")
                 return true;
             
+            if (item2.name == "..")
+                return false;
+
             if (item1.isDir && !item2.isDir)
                 return true;
     
