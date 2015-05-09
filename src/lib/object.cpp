@@ -25,7 +25,7 @@ namespace ncxmms2 {
 class ObjectPrivate
 {
 public:
-    ObjectPrivate(Object *parent_) : parent(parent_), aboutToBeDestroyedByParent(false) {}
+    explicit ObjectPrivate(Object *parent_) : parent(parent_), aboutToBeDestroyedByParent(false) {}
 
     Object *parent;
     std::vector<Object*> children;

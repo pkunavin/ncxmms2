@@ -32,7 +32,7 @@ class StatusArea;
 class MainWindow : public Window
 {
 public:
-    MainWindow(xmms2::Client *xmmsClient);
+    explicit MainWindow(xmms2::Client *xmmsClient);
     ~MainWindow();
 
     enum StackedWindows

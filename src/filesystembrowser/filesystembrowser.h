@@ -35,7 +35,7 @@ public:
     FileSystemBrowser(xmms2::Client *xmmsClient, const Rectangle& rect, Window *parent = nullptr);
     
     void setFsModel(AbstractFileSystemModel *fsModel);
-    AbstractFileSystemModel *fsModel();
+    AbstractFileSystemModel *fsModel() const;
     
     void setDirectory(const Dir& dir);
     const Dir& directory() const;

@@ -26,7 +26,7 @@ struct ListModelItemData;
 class ListModel : public Object
 {
 public:
-    ListModel(Object *parent = nullptr);
+    explicit ListModel(Object *parent = nullptr);
     ~ListModel();
 
     virtual int itemsCount() const = 0;

@@ -26,7 +26,7 @@ class AbstractFileSystemModel;
 class FileSystemItemDelegate : public ListModelItemDelegate
 {
 public:
-    FileSystemItemDelegate(const AbstractFileSystemModel *fsModel);
+    explicit FileSystemItemDelegate(const AbstractFileSystemModel *fsModel);
 
     virtual void paint(Painter *painter, const ListItemPaintOptions& options, int item);
 };

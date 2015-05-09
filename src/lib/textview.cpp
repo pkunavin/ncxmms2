@@ -60,14 +60,14 @@ public:
         TextChunk() :
             attrs(TextNormal),
             color(ColorDefault) {}
-        TextChunk(struct HtmlCompilerState *state);
+        explicit TextChunk(struct HtmlCompilerState *state);
         TextChunk(const TextChunk& other) = delete;
         TextChunk& operator=(const TextChunk& other) = delete;
         TextChunk(TextChunk&&) = default;
         TextChunk& operator=(TextChunk&&) = default;
     };
     
-    TextViewPrivate(TextView *q_) :
+    explicit TextViewPrivate(TextView *q_) :
         q(q_),
         viewportBeginLine(-1),
         mode(TextView::Mode::PlainText) {}

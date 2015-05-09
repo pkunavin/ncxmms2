@@ -29,7 +29,7 @@ class PainterPrivate;
 class Painter
 {
 public:
-    Painter(Window *window);
+    explicit Painter(Window *window);
     ~Painter();
 
     void move(int x, int y);

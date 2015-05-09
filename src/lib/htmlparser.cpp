@@ -314,7 +314,7 @@ class IsNotImpl
 {
     Pred m_pred;
 public:
-    IsNotImpl(Pred pred) : m_pred(pred) {}
+    explicit IsNotImpl(Pred pred) : m_pred(pred) {}
     
     template <typename... Args>
     bool operator()(Args&&... args)

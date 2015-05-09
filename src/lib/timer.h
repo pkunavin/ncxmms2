@@ -26,7 +26,7 @@ class TimerPrivate;
 class Timer : public Object
 {
 public:
-    Timer(Object *parent = nullptr);
+    explicit Timer(Object *parent = nullptr);
     ~Timer();
 
     void start(unsigned int sec);

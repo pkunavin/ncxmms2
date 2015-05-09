@@ -27,7 +27,7 @@ class ListItemPaintOptions;
 class ListModelItemDelegate
 {
 public:
-    ListModelItemDelegate(const ListModel *model);
+    explicit ListModelItemDelegate(const ListModel *model);
     virtual ~ListModelItemDelegate();
 
     virtual void paint(Painter *painter, const ListItemPaintOptions& options, int item);

@@ -28,8 +28,8 @@ class KeyEvent
 public:
     typedef char32_t key_t;
 
-    KeyEvent(const TermKeyKey& termKey);
-    KeyEvent(key_t key) : m_key(key) {}
+    explicit KeyEvent(const TermKeyKey& termKey);
+    explicit KeyEvent(key_t key) : m_key(key) {}
 
     key_t key() const          {return m_key;}
     bool isFunctionKey() const {return (m_key & KeyCodeMask) > KeyLastUtf32Char;}

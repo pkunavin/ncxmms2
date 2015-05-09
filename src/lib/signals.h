@@ -136,7 +136,7 @@ class Connection
 {
     friend class SignalBase;
     uint32_t m_id;
-    Connection(uint32_t id) : m_id(id) {}
+    explicit Connection(uint32_t id) : m_id(id) {}
     
 public:
     Connection() : m_id(0) {}
@@ -168,7 +168,7 @@ class ScopedConnectionBlock
 {
     Connection m_connection;
 public:
-    ScopedConnectionBlock(Connection connection) :
+    explicit ScopedConnectionBlock(Connection connection) :
         m_connection(connection)
     {
         m_connection.block();

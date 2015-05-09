@@ -29,7 +29,7 @@ class ObjectPrivate;
 class Object
 {
 public:
-    Object(Object *parent = nullptr);
+    explicit Object(Object *parent = nullptr);
     Object(const Object& other) = delete;
     Object& operator=(const Object& other) = delete;
     virtual ~Object();

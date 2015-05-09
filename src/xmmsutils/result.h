@@ -37,7 +37,7 @@ class Error
 {
 public:
     template <typename Str>
-    Error(Str&& error) : m_error(std::forward<Str>(error)) {}
+    explicit Error(Str&& error) : m_error(std::forward<Str>(error)) {}
     
     const std::string& toString() const {return m_error;}
     

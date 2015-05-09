@@ -36,7 +36,7 @@ namespace ncxmms2 {
 class FileSystemModelPrivate
 {
 public:
-    FileSystemModelPrivate(FileSystemModel *q_);
+    explicit FileSystemModelPrivate(FileSystemModel *q_);
     
     FileSystemModel *q;
     FileSystemWatcher *m_fsWatcher;
@@ -45,7 +45,7 @@ public:
     struct FileSystemItem
     {
         template <typename T>
-        FileSystemItem(T&& name_) : name(std::forward<T>(name_)) {}
+        explicit FileSystemItem(T&& name_) : name(std::forward<T>(name_)) {}
 
         bool isDirectory() const     {return S_ISDIR(info.st_mode);}
         bool isRegularFile() const   {return S_ISREG(info.st_mode);}

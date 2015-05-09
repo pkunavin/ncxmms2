@@ -40,7 +40,7 @@ void FileSystemBrowser::setFsModel(AbstractFileSystemModel *fsModel)
     fsModel->directoryLoadFailed_Connect(&FileSystemBrowser::directoryLoadFailed, this);
 }
 
-AbstractFileSystemModel * FileSystemBrowser::fsModel()
+AbstractFileSystemModel * FileSystemBrowser::fsModel() const
 {
     assert(dynamic_cast<AbstractFileSystemModel*>(model()));
     return static_cast<AbstractFileSystemModel*>(model());

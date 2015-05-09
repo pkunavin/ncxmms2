@@ -35,7 +35,7 @@ namespace ncxmms2 {
 class ListViewPrivate
 {
 public:
-    ListViewPrivate(ListView *_q) :
+    explicit ListViewPrivate(ListView *_q) :
         q(_q),
         model(nullptr),
         delegate(nullptr),

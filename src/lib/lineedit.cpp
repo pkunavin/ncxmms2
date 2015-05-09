@@ -31,7 +31,7 @@ namespace ncxmms2 {
 class LineEditPrivate
 {
 public:
-    LineEditPrivate(LineEdit *q_) :
+    explicit LineEditPrivate(LineEdit *q_) :
         q(q_),
         textSelected(false),
         cursorPosition(0),

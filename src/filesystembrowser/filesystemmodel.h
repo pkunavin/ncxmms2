@@ -26,7 +26,7 @@ class FileSystemModelPrivate;
 class FileSystemModel : public AbstractFileSystemModel
 {
 public:
-    FileSystemModel(Object *parent = nullptr);
+    explicit FileSystemModel(Object *parent = nullptr);
     ~FileSystemModel();
     
     virtual void setDirectory(const Dir& dir);

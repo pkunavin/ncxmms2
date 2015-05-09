@@ -26,7 +26,7 @@ class FileSystemWatcherPrivate;
 class FileSystemWatcher : public Object
 {
 public:
-    FileSystemWatcher(Object *parent);
+    explicit FileSystemWatcher(Object *parent);
     ~FileSystemWatcher();
     
     void watch(const std::string& path);
