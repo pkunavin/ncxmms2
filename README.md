@@ -44,6 +44,8 @@ Playback control:
 List view:
  * `up arrow` - Move cursor up
  * `down arrow` - Move cursor down
+ * `Page Up` - Move cursor up by half page
+ * `Page Down` - Move cursor down by half page
  * `Home` - Move cursor to the first item
  * `End` - Move cursor to the last item
  * `insert` - Toggle selection
