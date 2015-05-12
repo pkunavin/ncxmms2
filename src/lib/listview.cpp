@@ -502,6 +502,24 @@ void ListView::keyPressedEvent(const KeyEvent& keyEvent)
             d->cursorDown();
             break;
 
+        case KeyEvent::KeyPageUp:
+            if (d->currentItem != -1) {
+                int nc = d->currentItem - (lines() / 2);
+                if (nc < 0)
+                    nc = 0;
+                setCurrentItem(nc);
+            }
+            break;
+
+        case KeyEvent::KeyPageDown:
+            if (d->currentItem != -1) {
+                int nc = d->currentItem + (lines() / 2);
+                if (nc >= d->model->itemsCount())
+                    nc = d->model->itemsCount() - 1;
+                setCurrentItem(nc);
+            }
+            break;
+
         case KeyEvent::KeyEnter:
             if (d->currentItem != -1 && !d->currentItemHidden)
                 itemEntered(d->currentItem);
