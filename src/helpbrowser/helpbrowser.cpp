@@ -45,6 +45,8 @@ HelpBrowser::HelpBrowser(const Rectangle& rect, Window *parent) :
     {
         {"Move cursor up",                       KeyEvent::KeyUp    },
         {"Move cursor down",                     KeyEvent::KeyDown  },
+        {"Move cursor up by half page",          KeyEvent::KeyPageUp},
+        {"Move cursor down by half page",        KeyEvent::KeyPageDown},
         {"Move cursor to the first item",        KeyEvent::KeyHome  },
         {"Move cursor to the last item",         KeyEvent::KeyEnd   },
         {"Toggle selection",                     KeyEvent::KeyInsert},
