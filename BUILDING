@@ -18,4 +18,4 @@ $ make
     And if you need system wide install:
 $ make install
 
-    Also there is a PKGBUILD for Arch Linux, see http://aur.archlinux.org/packages.php?ID=52383
+    Also there is a PKGBUILD for Arch Linux, see http://aur.archlinux.org/packages/ncxmms2-git
