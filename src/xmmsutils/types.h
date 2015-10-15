@@ -17,16 +17,13 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include <xmmsclient/xmmsclient.h>
+
 #include <string>
 #include <functional>
 #include <assert.h>
 
 #include "../lib/stringref.h"
-
-typedef struct xmmsv_St xmmsv_t;
-typedef struct xmmsv_coll_St xmmsv_coll_t;
-typedef struct xmmsv_list_iter_St xmmsv_list_iter_t;
-typedef struct xmmsv_dict_iter_St xmmsv_dict_iter_t;
 
 namespace ncxmms2 {
 namespace xmms2 {

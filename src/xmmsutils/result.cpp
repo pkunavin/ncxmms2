@@ -14,7 +14,6 @@
  *  GNU General Public License for more details.
  */
 
-#include <xmmsclient/xmmsclient.h>
 #include <string>
 
 #include "result.h"

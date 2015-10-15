@@ -9,6 +9,9 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(GLIB glib-2.0 REQUIRED)
 include_directories(${GLIB_INCLUDE_DIRS})
 
+pkg_check_modules(XMMS2_C xmms2-client REQUIRED)
+include_directories(${XMMS2_C_INCLUDE_DIRS})
+
 set(SOURCES
     main.cpp
     test_stringalgo.cpp

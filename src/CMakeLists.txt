@@ -1,5 +1,5 @@
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -Wextra")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -Wall -Wextra -Wno-deprecated-declarations")
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weverything -Wno-documentation -Wno-c++98-compat -Wno-c++98-compat-pedantic")
