@@ -168,15 +168,36 @@ bool xmms2::PlaylistChangeEvent::init(xmmsv_t *dict)
     int type;
     if (!xmmsv_dict_get(dict, "type", &dictEntry) || !xmmsv_get_int(dictEntry, &type))
         return false;
+
     switch (type) {
+#if XMMS_IPC_PROTOCOL_VERSION >= 24
+        case XMMS_PLAYLIST_CHANGED_REPLACE:
+#else
+        case XMMS_PLAYLIST_CHANGED_CLEAR:
         case XMMS_PLAYLIST_CHANGED_SORT:
-        case XMMS_PLAYLIST_CHANGED_SHUFFLE: m_type = Type::Reorder; break;
-        case XMMS_PLAYLIST_CHANGED_ADD:     m_type = Type::Add;     break;
-        case XMMS_PLAYLIST_CHANGED_INSERT:  m_type = Type::Insert;  break;
-        case XMMS_PLAYLIST_CHANGED_REMOVE:  m_type = Type::Remove;  break;
-        case XMMS_PLAYLIST_CHANGED_CLEAR:   m_type = Type::Clear;   break;
-        case XMMS_PLAYLIST_CHANGED_MOVE:    m_type = Type::Move;    break;
-        default: return false;
+        case XMMS_PLAYLIST_CHANGED_SHUFFLE:
+#endif
+            m_type = Type::Replace;
+            break;
+
+        case XMMS_PLAYLIST_CHANGED_ADD:
+            m_type = Type::Add;
+            break;
+
+        case XMMS_PLAYLIST_CHANGED_INSERT:
+            m_type = Type::Insert;
+            break;
+
+        case XMMS_PLAYLIST_CHANGED_REMOVE:
+            m_type = Type::Remove;
+            break;
+
+        case XMMS_PLAYLIST_CHANGED_MOVE:
+            m_type = Type::Move;
+            break;
+
+        default:
+            return false;
     }
     
     if (xmmsv_dict_get(dict, "id", &dictEntry)) {
