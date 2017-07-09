@@ -146,6 +146,7 @@ bool SongDisplayFormatParser::setDisplayFormat(const std::string& formatString)
 
                 case '\\': // Escape
                     ensureNotNullChar(++p);
+                    // Falls through
                 default: // Character
                 {
                     if (!g_ascii_isprint(*p))
