@@ -68,7 +68,6 @@ private:
 
     // Callbacks
     void getEntries(const xmms2::Expected<xmms2::List<int>>& entries);
-    void getEntriesOrder(const xmms2::Expected<xmms2::List<int>>& entries);
     void getSongInfo(int position, const xmms2::Expected<xmms2::PropDict>& info);
     void processPlaylistChange(const xmms2::PlaylistChangeEvent& change);
     void getCurrentPosition(const xmms2::Expected<xmms2::Dict>& position);

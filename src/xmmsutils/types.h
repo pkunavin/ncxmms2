@@ -213,8 +213,7 @@ public:
         Insert,
         Remove,
         Move,
-        Reorder,
-        Clear
+        Replace
     };
 
     Type type() const          {return m_type;}

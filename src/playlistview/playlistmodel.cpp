@@ -93,31 +93,6 @@ void PlaylistModel::getEntries(const xmms2::Expected<xmms2::List<int>>& entries)
     totalDurationChanged();
 }
 
-void PlaylistModel::getEntriesOrder(const xmms2::Expected<xmms2::List<int>>& entries)
-{
-    m_idList.clear();
-    if (entries.isError()) {
-        NCXMMS2_LOG_ERROR("%s", entries.error());
-        m_playlist.clear();
-        reset();
-        totalDurationChanged();
-        return;
-    }
-    
-    m_idList.reserve(entries->size());
-    for (auto it = entries->getIterator(); it.isValid(); it.next()) {
-        bool ok = false;
-        int id = it.value(&ok);
-        if (NCXMMS2_UNLIKELY(!ok)) {
-            m_idList.clear();
-            m_songInfos.clear();
-            break;
-        }
-        m_idList.push_back(id);
-    }
-    itemsChanged(0, m_idList.size() - 1);
-}
-
 void PlaylistModel::getSongInfo(int position, const xmms2::Expected<xmms2::PropDict>& info)
 {
     if (info.isError()) {
@@ -221,17 +196,8 @@ void PlaylistModel::processPlaylistChange(const xmms2::PlaylistChangeEvent& chan
             break;
         }
 
-        case ChangeType::Clear:
-            m_currentPosition = -1;
-            m_totalDuration = 0;
-            m_idList.clear();
-            m_songInfos.clear();
-            totalDurationChanged();
-            reset();
-            break;
-
-        case ChangeType::Reorder:
-            m_xmmsClient->playlistGetEntries(m_playlist)(&PlaylistModel::getEntriesOrder, this);
+        case ChangeType::Replace:
+            m_xmmsClient->playlistGetEntries(m_playlist)(&PlaylistModel::getEntries, this);
             break;
     }
 }
