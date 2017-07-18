@@ -153,6 +153,14 @@ namespace tfm = tinyformat;
 #   define TINYFORMAT_OLD_LIBSTDCPLUSPLUS_WORKAROUND
 #endif
 
+#ifdef __APPLE__
+// Workaround OSX linker warning: xcode uses different default symbol
+// visibilities for static libs vs executables (see issue #25)
+#   define TINYFORMAT_HIDDEN __attribute__((visibility("hidden")))
+#else
+#   define TINYFORMAT_HIDDEN
+#endif
+
 namespace tinyformat {
 
 //------------------------------------------------------------------------------
@@ -260,7 +268,7 @@ inline void formatTruncated(std::ostream& out, const T& value, int ntrunc)
     std::ostringstream tmp;
     tmp << value;
     std::string result = tmp.str();
-    out.write(result.c_str(), std::min(ntrunc, static_cast<int>(result.size())));
+    out.write(result.c_str(), (std::min)(ntrunc, static_cast<int>(result.size())));
 }
 #define TINYFORMAT_DEFINE_FORMAT_TRUNCATED_CSTR(type)       \
 inline void formatTruncated(std::ostream& out, type* value, int ntrunc) \
@@ -501,14 +509,14 @@ class FormatArg
 
     private:
         template<typename T>
-        static void formatImpl(std::ostream& out, const char* fmtBegin,
+        TINYFORMAT_HIDDEN static void formatImpl(std::ostream& out, const char* fmtBegin,
                         const char* fmtEnd, int ntrunc, const void* value)
         {
             formatValue(out, fmtBegin, fmtEnd, ntrunc, *static_cast<const T*>(value));
         }
 
         template<typename T>
-        static int toIntImpl(const void* value)
+        TINYFORMAT_HIDDEN static int toIntImpl(const void* value)
         {
             return convertToInt<T>::invoke(*static_cast<const T*>(value));
         }
@@ -539,19 +547,21 @@ inline int parseIntAndAdvance(const char*& c)
 inline const char* printFormatStringLiteral(std::ostream& out, const char* fmt)
 {
     const char* c = fmt;
-    for(; true; ++c)
+    for(;; ++c)
     {
         switch(*c)
         {
             case '\0':
-                out.write(fmt, static_cast<std::streamsize>(c - fmt));
+                out.write(fmt, c - fmt);
                 return c;
             case '%':
-                out.write(fmt, static_cast<std::streamsize>(c - fmt));
+                out.write(fmt, c - fmt);
                 if(*(c+1) != '%')
                     return c;
                 // for "%%", tack trailing % onto next literal section.
                 fmt = ++c;
+                break;
+            default:
                 break;
         }
     }
@@ -622,6 +632,8 @@ inline const char* streamStateFromFormat(std::ostream& out, bool& spacePadPositi
                 spacePadPositive = false;
                 widthExtra = 1;
                 continue;
+            default:
+                break;
         }
         break;
     }
@@ -692,23 +704,27 @@ inline const char* streamStateFromFormat(std::ostream& out, bool& spacePadPositi
             break;
         case 'X':
             out.setf(std::ios::uppercase);
+            // Falls through
         case 'x': case 'p':
             out.setf(std::ios::hex, std::ios::basefield);
             intConversion = true;
             break;
         case 'E':
             out.setf(std::ios::uppercase);
+            // Falls through
         case 'e':
             out.setf(std::ios::scientific, std::ios::floatfield);
             out.setf(std::ios::dec, std::ios::basefield);
             break;
         case 'F':
             out.setf(std::ios::uppercase);
+            // Falls through
         case 'f':
             out.setf(std::ios::fixed, std::ios::floatfield);
             break;
         case 'G':
             out.setf(std::ios::uppercase);
+            // Falls through
         case 'g':
             out.setf(std::ios::dec, std::ios::basefield);
             // As in boost::format, let stream decide float format.
@@ -735,6 +751,8 @@ inline const char* streamStateFromFormat(std::ostream& out, bool& spacePadPositi
             TINYFORMAT_ERROR("tinyformat: Conversion spec incorrectly "
                              "terminated by end of string");
             return c;
+        default:
+            break;
     }
     if(intConversion && precisionSet && !widthSet)
     {
@@ -847,7 +865,7 @@ class FormatListN : public FormatList
         template<typename... Args>
         FormatListN(const Args&... args)
             : FormatList(&m_formatterStore[0], N),
-            m_formatterStore{FormatArg(args)...}
+            m_formatterStore { FormatArg(args)... }
         { static_assert(sizeof...(args) == N, "Number of args must be N"); }
 #else // C++98 version
         void init(int) {}
