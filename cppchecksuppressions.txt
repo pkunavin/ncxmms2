@@ -2,4 +2,4 @@ missingInclude
 unusedFunction
 variableScope
 
-*:*/json.h
+*:*/3rdparty/*
