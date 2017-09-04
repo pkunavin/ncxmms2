@@ -199,6 +199,9 @@ void PlaylistModel::processPlaylistChange(const xmms2::PlaylistChangeEvent& chan
         case ChangeType::Replace:
             m_xmmsClient->playlistGetEntries(m_playlist)(&PlaylistModel::getEntries, this);
             break;
+
+        default:
+            break;
     }
 }
 

@@ -151,6 +151,7 @@ void PlaylistsListModel::handlePlaylistsChange(const xmms2::CollectionChangeEven
         }
 
         case ChangeType::Update:
+        default:
             break;
     }
 }

@@ -209,12 +209,21 @@ class PlaylistChangeEvent
 public:
     enum class Type
     {
+        Unknown,
         Add,
         Insert,
         Remove,
         Move,
         Replace
     };
+
+    PlaylistChangeEvent() :
+        m_type(Type::Unknown),
+        m_id(-1),
+        m_position(-1),
+        m_newPosition(-1)
+    {
+    }
 
     Type type() const          {return m_type;}
 
@@ -259,12 +268,18 @@ class CollectionChangeEvent
 public:
     enum class Type
     {
+        Unknown,
         Add,
         Update,
         Rename,
         Remove
     };
     
+    CollectionChangeEvent() :
+        m_type(Type::Unknown)
+    {
+    }
+
     Type type() const {return m_type;}
     
     const std::string& kind() const {return m_kind;}
