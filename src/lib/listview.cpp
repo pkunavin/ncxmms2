@@ -622,7 +622,6 @@ void ListView::resize(const Size& size)
             if (extraSize > 0 && d->viewportBeginItem > 0) {
                 const int min = std::min(d->viewportBeginItem, extraSize);
                 d->viewportBeginItem -= min;
-                extraSize -= min;
             }
         }
 

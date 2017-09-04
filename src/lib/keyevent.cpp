@@ -120,13 +120,13 @@ std::string KeyEvent::keyName() const
             name = "Unknown";
         }
     } else {
-        char buf[6];
         char32_t ch = m_key & KeyCodeMask;
         if (ch == ' ') {
             name.append("space");
         } else {
-            if (m_key & (ModifierCtrl | ModifierAlt))
+            if ((m_key & ModifierCtrl) || (m_key & ModifierAlt))
                 ch = g_unichar_toupper(ch);
+            char buf[6];
             const int n = g_unichar_to_utf8(ch, buf);
             name.append(buf, n);
         }

@@ -33,6 +33,8 @@ class PainterPrivate
 {
 public:
     PainterPrivate(Window *window_, WINDOW *cursesWin_) :
+        color(ColorDefault),
+        backgroundColor(ColorDefault),
         window(window_),
         cursesWin(cursesWin_) {}
 

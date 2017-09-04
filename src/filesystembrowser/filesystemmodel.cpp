@@ -38,6 +38,9 @@ class FileSystemModelPrivate
 public:
     explicit FileSystemModelPrivate(FileSystemModel *q_);
     
+    FileSystemModelPrivate(const FileSystemModelPrivate & other) = delete;
+    FileSystemModelPrivate& operator=(const FileSystemModelPrivate & other) = delete;
+
     FileSystemModel *q;
     FileSystemWatcher *m_fsWatcher;
     Dir m_dir;

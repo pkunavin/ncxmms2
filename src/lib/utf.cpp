@@ -34,7 +34,7 @@ std::u32string ncxmms2::utf8ToU32String(const std::string& str)
         c_str = g_utf8_next_char(c_str);
     }
 
-    return std::move(result);
+    return result;
 }
 
 std::string ncxmms2::u32stringToUtf8(const std::u32string& str)
@@ -43,11 +43,10 @@ std::string ncxmms2::u32stringToUtf8(const std::u32string& str)
     result.reserve(str.size() * 3);
 
     char buf[6];
-    int n;
     for (auto ch : str) {
-        n = g_unichar_to_utf8(ch, buf);
+        const int n = g_unichar_to_utf8(ch, buf);
         result.append(buf, n);
     }
 
-    return std::move(result);
+    return result;
 }
