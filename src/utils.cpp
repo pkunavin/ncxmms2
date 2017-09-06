@@ -46,7 +46,7 @@ Utils::FileType Utils::getFileType(const std::string& path)
     {"cue", "m3u", "pls", "asx"};
 
     static const folly::sorted_vector_set<StringRef> mediaFileSuffixes
-    {"mp3", "flac", "ape", "ogg", "wma", "wav", "mp4", "aac", "alac"};
+    {"mp3", "flac", "ape", "ogg", "wma", "wav", "mp4", "aac", "alac", "mod"};
 
     if (mediaFileSuffixes.find(suffix.c_str()) != mediaFileSuffixes.end())
         return Utils::FileType::Media;
