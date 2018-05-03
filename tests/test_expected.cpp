@@ -16,7 +16,7 @@
 
 #include <string>
 #include "gtest/gtest.h"
-#include "xmmsutils/result.h"
+#include "XmmsUtils/Result.h"
 
 using namespace ncxmms2::xmms2;
 

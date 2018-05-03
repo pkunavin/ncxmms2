@@ -15,7 +15,7 @@
  */
 
 #include "gtest/gtest.h"
-#include "filesystembrowser/dir.h"
+#include "FileSystemBrowser/Dir.h"
 
 using namespace ncxmms2;
 

@@ -19,13 +19,13 @@
 #include <iostream>
 
 #include "config.h"
-#include "settings.h"
-#include "commandlineoptions.h"
-#include "mainwindow/mainwindow.h"
-#include "xmmsutils/client.h"
+#include "Settings.h"
+#include "CommandLineOptions.h"
+#include "MainWindow/MainWindow.h"
+#include "XmmsUtils/Client.h"
 
-#include "lib/application.h"
-#include "lib/exceptions.h"
+#include "lib/Application.h"
+#include "lib/Exceptions.h"
 
 int main(int argc, char **argv)
 {

@@ -13,116 +13,59 @@ endif()
 add_subdirectory(lib)
 
 set(SOURCES
-    utils.cpp
-    settings.cpp
-    commandlineoptions.cpp
-    song.cpp
-    songdisplayformatparser.cpp
-    log.cpp
+    Utils.cpp
+    Settings.cpp
+    CommandLineOptions.cpp
+    Song.cpp
+    SongDisplayFormatParser.cpp
+    Log.cpp
 
-    xmmsutils/client.cpp
-    xmmsutils/types.cpp
-    xmmsutils/result.cpp
+    XmmsUtils/Client.cpp
+    XmmsUtils/Types.cpp
+    XmmsUtils/Result.cpp
 
-    mainwindow/mainwindow.cpp
+    MainWindow/MainWindow.cpp
 
-    statusarea/playbackstatuswindow.cpp
-    statusarea/statusarea.cpp
-    statusarea/playbackprogressbar.cpp
-    statusarea/questionwindow.cpp
+    StatusArea/PlaybackStatusWindow.cpp
+    StatusArea/StatusArea.cpp
+    StatusArea/PlaybackProgressBar.cpp
+    StatusArea/QuestionWindow.cpp
 
-    listviewappintegrated/listviewappintegrated.cpp
+    ListViewAppIntegrated/ListViewAppIntegrated.cpp
 
-    filesystembrowser/dir.cpp
-    filesystembrowser/filesystembrowser.cpp
-    filesystembrowser/serversidebrowser.cpp
-    filesystembrowser/serversidebrowsermodel.cpp
-    filesystembrowser/localfilesystembrowser.cpp
-    filesystembrowser/filesystemmodel.cpp
-    filesystembrowser/filesystemitemdelegate.cpp
-    filesystembrowser/filesystemwatcher.cpp
+    FileSystemBrowser/Dir.cpp
+    FileSystemBrowser/FileSystemBrowser.cpp
+    FileSystemBrowser/ServerSideBrowser.cpp
+    FileSystemBrowser/ServerSideBrowserModel.cpp
+    FileSystemBrowser/LocalFileSystemBrowser.cpp
+    FileSystemBrowser/FileSystemModel.cpp
+    FileSystemBrowser/FileSystemItemDelegate.cpp
+    FileSystemBrowser/FileSystemWatcher.cpp
 
-    headerwindow/headerwindow.cpp
+    HeaderWindow/HeaderWindow.cpp
 
-    playlistsbrowser/playlistsbrowser.cpp
-    playlistsbrowser/playlistslistmodel.cpp
-    playlistsbrowser/playlistslistview.cpp
+    PlaylistsBrowser/PlaylistsBrowser.cpp
+    PlaylistsBrowser/PlaylistsListModel.cpp
+    PlaylistsBrowser/PlaylistsListView.cpp
 
-    activeplaylistwindow/activeplaylistwindow.cpp
+    ActivePlaylistWindow/ActivePlaylistWindow.cpp
 
-    helpbrowser/helpbrowser.cpp
+    HelpBrowser/HelpBrowser.cpp
 
-    playlistview/playlistview.cpp
-    playlistview/playlistmodel.cpp
-    playlistview/playlistitemdelegate.cpp
+    PlaylistView/PlaylistView.cpp
+    PlaylistView/PlaylistModel.cpp
+    PlaylistView/PlaylistItemDelegate.cpp
 
-    medialibbrowser/medialibbrowser.cpp
-    medialibbrowser/artistslistmodel.cpp
-    medialibbrowser/albumslistmodel.cpp
-    medialibbrowser/songslistmodel.cpp
+    MedialibBrowser/MedialibBrowser.cpp
+    MedialibBrowser/ArtistsListModel.cpp
+    MedialibBrowser/AlbumsListModel.cpp
+    MedialibBrowser/SongsListModel.cpp
 
-    equalizerwindow/equalizerwindow.cpp
-    equalizerwindow/equalizerbandswindow.cpp
-    equalizerwindow/equalizerpreampwindow.cpp
+    EqualizerWindow/EqualizerWindow.cpp
+    EqualizerWindow/EqualizerBandsWindow.cpp
+    EqualizerWindow/EqualizerPreampWindow.cpp
 
-    songinfowindow/songinfowindow.cpp)
-
-set(HEADERS
-    utils.h
-    settings.h
-    commandlineoptions.h
-    song.h
-    songdisplayformatparser.h
-    hotkeys.h
-    log.h
-
-    xmmsutils/client.h
-    xmmsutils/types.h
-    xmmsutils/result.h
-
-    mainwindow/mainwindow.h
-
-    statusarea/playbackstatuswindow.h
-    statusarea/statusarea.h
-    statusarea/playbackprogressbar.h
-    statusarea/questionwindow.h
-
-    listviewappintegrated/listviewappintegrated.h
-
-    filesystembrowser/dir.h
-    filesystembrowser/abstractfilesystemmodel.h
-    filesystembrowser/filesystembrowser.h
-    filesystembrowser/serversidebrowser.h
-    filesystembrowser/serversidebrowsermodel.h
-    filesystembrowser/localfilesystembrowser.h
-    filesystembrowser/filesystemmodel.h
-    filesystembrowser/filesystemitemdelegate.h
-    filesystembrowser/filesystemwatcher.h
-
-    headerwindow/headerwindow.h
-
-    playlistsbrowser/playlistsbrowser.h
-    playlistsbrowser/playlistslistmodel.h
-    playlistsbrowser/playlistslistview.h
-
-    activeplaylistwindow/activeplaylistwindow.h
-
-    helpbrowser/helpbrowser.h
-
-    playlistview/playlistview.h
-    playlistview/playlistmodel.h
-    playlistview/playlistitemdelegate.h
-
-    medialibbrowser/medialibbrowser.h
-    medialibbrowser/artistslistmodel.h
-    medialibbrowser/albumslistmodel.h
-    medialibbrowser/songslistmodel.h
-
-    equalizerwindow/equalizerwindow.h
-    equalizerwindow/equalizerbandswindow.h
-    equalizerwindow/equalizerpreampwindow.h
-
-    songinfowindow/songinfowindow.h)
+    SongInfoWindow/SongInfoWindow.cpp)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/config.h)

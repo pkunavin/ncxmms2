@@ -1,63 +1,30 @@
 
 set(SOURCES
-    application.cpp
-    signals.cpp
-    object.cpp
-    window.cpp
-    stackedwindow.cpp
-    timer.cpp
-    painter.cpp
-    keyevent.cpp
-    mouseevent.cpp
-    label.cpp
-    lineedit.cpp
-    listmodel.cpp
-    listview.cpp
-    listmodelitemdelegate.cpp
-    utf.cpp
-    textview.cpp
-    iniparser.cpp
-    palette.cpp
-    checkbox.cpp
-    radiobuttongroupbox.cpp
-    htmlparser.cpp
-    stringalgo.cpp)
-
-set(HEADERS
-    signals.h
-    object.h
-    application.h
-    window.h
-    window_p.h
-    exceptions.h
-    point.h
-    size.h
-    stackedwindow.h
-    timer.h
-    colors.h
-    painter.h
-    keyevent.h
-    mouseevent.h
-    label.h
-    lineedit.h
-    rectangle.h
-    listmodel.h
-    listview.h
-    listmodelitemdelegate.h
-    listitempaintoptions.h
-    utf.h
-    textview.h
-    iniparser.h
-    palette.h
-    checkbox.h
-    radiobuttongroupbox.h
-    htmlparser.h
-    stringptr.h
-    stringref.h
-    stringalgo.h)
+    Application.cpp
+    Signals.cpp
+    Object.cpp
+    Window.cpp
+    StackedWindow.cpp
+    Timer.cpp
+    Painter.cpp
+    KeyEvent.cpp
+    MouseEvent.cpp
+    Label.cpp
+    LineEdit.cpp
+    ListModel.cpp
+    ListView.cpp
+    ListModelItemDelegate.cpp
+    Utf.cpp
+    TextView.cpp
+    IniParser.cpp
+    Palette.cpp
+    CheckBox.cpp
+    RadioButtonGroupBox.cpp
+    HtmlParser.cpp
+    StringAlgo.cpp)
 
 add_library(libncxmms2 ${SOURCES})
-SET_TARGET_PROPERTIES(libncxmms2 PROPERTIES PREFIX "")
+set_target_properties(libncxmms2 PROPERTIES PREFIX "")
 
 find_package(PkgConfig REQUIRED)
 

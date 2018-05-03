@@ -18,7 +18,7 @@
 #include <algorithm>
 #include "gtest/gtest.h"
 
-#include "lib/stringalgo.h"
+#include "lib/StringAlgo.h"
 
 using namespace ncxmms2;
 
