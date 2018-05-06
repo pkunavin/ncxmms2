@@ -1,7 +1,7 @@
 /**
  *  This file is a part of ncxmms2, an XMMS2 Client.
  *
- *  Copyright (C) 2011-2015 Pavel Kunavin <tusk.kun@gmail.com>
+ *  Copyright (C) 2011-2018 Pavel Kunavin <tusk.kun@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -19,13 +19,13 @@
 #include <iostream>
 
 #include "config.h"
-#include "settings.h"
-#include "commandlineoptions.h"
-#include "mainwindow/mainwindow.h"
-#include "xmmsutils/client.h"
+#include "Settings.h"
+#include "CommandLineOptions.h"
+#include "MainWindow/MainWindow.h"
+#include "XmmsUtils/Client.h"
 
-#include "lib/application.h"
-#include "lib/exceptions.h"
+#include "lib/Application.h"
+#include "lib/Exceptions.h"
 
 int main(int argc, char **argv)
 {

@@ -1,7 +1,7 @@
 /**
  *  This file is a part of ncxmms2, an XMMS2 Client.
  *
- *  Copyright (C) 2011-2015 Pavel Kunavin <tusk.kun@gmail.com>
+ *  Copyright (C) 2011-2018 Pavel Kunavin <tusk.kun@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -16,7 +16,7 @@
 
 #include <string>
 #include "gtest/gtest.h"
-#include "xmmsutils/result.h"
+#include "XmmsUtils/Result.h"
 
 using namespace ncxmms2::xmms2;
 

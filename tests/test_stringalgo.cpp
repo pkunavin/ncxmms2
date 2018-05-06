@@ -1,7 +1,7 @@
 /**
  *  This file is a part of ncxmms2, an XMMS2 Client.
  *
- *  Copyright (C) 2011-2015 Pavel Kunavin <tusk.kun@gmail.com>
+ *  Copyright (C) 2011-2018 Pavel Kunavin <tusk.kun@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -18,7 +18,7 @@
 #include <algorithm>
 #include "gtest/gtest.h"
 
-#include "lib/stringalgo.h"
+#include "lib/StringAlgo.h"
 
 using namespace ncxmms2;
 
