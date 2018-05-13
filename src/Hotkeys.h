@@ -101,7 +101,8 @@ enum
 
     AddItemToActivePlaylist = ' ',
     Refresh                 = 'R',
-    ShowSongInfo            = 'i'
+    ShowSongInfo            = 'i',
+    SetPrimaryTag           = '`'
 };
 }
 

@@ -77,6 +77,7 @@ File system browser:
  * `g` - Change directory
  * `R` - Reload directory
  * `i` - Show song info
+ * ``` - Change tag used for left column
  
 Medialib browser:
  * `R` - Refresh

@@ -17,6 +17,7 @@
 #ifndef MEDIALIBBROWSER_H
 #define MEDIALIBBROWSER_H
 
+#include "../Song.h"
 #include "../XmmsUtils/Result.h"
 #include "../lib/Window.h"
 
@@ -45,25 +46,34 @@ protected:
 private:
     xmms2::Client *m_xmmsClient;
 
-    ListView *m_artistsListView;
+    ListView *m_primaryTagListView;
     ListView *m_albumsListView;
     ListView *m_songsListView;
 
-    void setAlbumsListViewArtist(int item);
+    enum
+    {
+      HeaderLines = 2
+    };
+
+    void askPrimaryListViewTag();
+    void setPrimaryListViewTag(Song::Tag tag);
+    std::string getPrimaryListViewName() const;
+    std::string getAlbumsListViewName() const;
+
+    void setAlbumsListViewFilterTag(int item);
     void setSongsListViewAlbum(int item);
 
     void activePlaylistAddSong(int item, bool beQuiet = false);
     void activePlaylistAddAlbum(int item, bool beQuiet = false);
-    void activePlaylistAddArtist(int item, bool beQuiet = false);
-    void activePlaylistAddAlbums(const std::string& artist,
-                                 const xmms2::Expected<xmms2::List<xmms2::Dict>>& list,
-                                 bool beQuiet = false);
+    void activePlaylistAddByPrimaryTag(int item, bool beQuiet = false);
+    void activePlaylistAddAlbums(Song::Tag primaryTag, const std::string& primaryTagValue,
+                                 const xmms2::Expected<xmms2::List<xmms2::Dict>>& list, bool beQuiet = false);
     
     void activePlaylistPlaySong(int item);
     void activePlaylistPlayAlbum(int item);
     void activePlaylistPlayAlbumColl(const xmms2::Collection& songs, const std::vector<std::string>& sortingOrder);
     void activePlaylistAddAlbumColl(const xmms2::Collection& songs, const std::vector<std::string>& sortingOrder);
-    void activePlaylistPlayArtist(int item);
+    void activePlaylistPlayByPrimaryTag(int item);
 };
 } // ncxmms2
 

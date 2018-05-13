@@ -19,10 +19,12 @@
 
 #include "../lib/Window.h"
 #include "../lib/LineEdit.h"
+#include "../lib/HtmlParser.h"
 
 namespace ncxmms2 {
 
 class Label;
+class Painter;
 
 class QuestionWindow : public Window
 {
@@ -39,9 +41,12 @@ protected:
 
 private:
     LineEdit *m_answerEdit;
-    std::string m_question;
+
+    HtmlParser m_htmlParser;
 
     void adjustSize();
+    int calculateQuestionTextLength() const;
+    void applyHtmlTag(const HtmlParser::TokenTag & tag, Painter * painter);
 };
 } // ncxmms2
 

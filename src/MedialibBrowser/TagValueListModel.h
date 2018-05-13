@@ -14,8 +14,8 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef ALBUMSLISTMODEL_H
-#define ALBUMSLISTMODEL_H
+#ifndef TAGVALUELISTMODEL_H
+#define TAGVALUELISTMODEL_H
 
 #include <vector>
 #include "../Song.h"
@@ -28,19 +28,16 @@ namespace xmms2 {
 class Client;
 }
 
-class AlbumsListModel : public ListModel
+class TagValueListModel : public ListModel
 {
 public:
-    AlbumsListModel(xmms2::Client *xmmsClient, Object *parent = nullptr);
+    TagValueListModel(xmms2::Client *xmmsClient, Object *parent = nullptr);
 
-    void setFilterByTag(Song::Tag tag, const std::string & tagValue);
+    void setTag(Song::Tag tag);
 
-    const std::string& album(int item) const;
+    Song::Tag tag() const {return m_tag;}
 
-    static xmms2::Collection getAlbumsCollection(Song::Tag tag, const std::string & tagValue);
-    xmms2::Collection getAlbumsCollection() const;
-
-    const std::vector<std::string>& sortingOrder() const;
+    const std::string& tagValue(int item) const;
 
     virtual void data(int item, ListModelItemData *itemData) const;
     virtual int itemsCount() const;
@@ -49,21 +46,11 @@ public:
 
 private:
     xmms2::Client *m_xmmsClient;
+    Song::Tag m_tag;
+    std::vector<std::string> m_tagValues;
 
-    Song::Tag m_filterTag;
-    std::string m_filterTagValue;
-
-    std::vector<std::string> m_sortingOrder;
-
-    struct AlnumData
-    {
-        std::string artist;
-        std::string album;
-    };
-    std::vector<AlnumData> m_albums;
-
-    void getAlbumsList(const xmms2::Expected<xmms2::List<xmms2::Dict>>& list);
+    void getTagValueList(const xmms2::Expected<xmms2::List<xmms2::Dict>>& list);
 };
 } // ncxmms2
 
-#endif // ALBUMSLISTMODEL_H
+#endif // TAGVALUELISTMODEL_H

@@ -347,9 +347,11 @@ const char * SongDisplayFormatParser::getSongVariableName(char var)
 {
     switch (var) {
         case 'a' : return "Artist";
+        case 'A' : return "Album Artist";
         case 't' : return "Title";
         case 'b' : return "Album";
         case 'p' : return "Performer";
+        case 'c' : return "Composer";
         case 'y' : return "Date";
         case 'g' : return "Genre";
         case 'f' : return "File name";
@@ -391,14 +393,16 @@ bool SongDisplayFormatParser::Variable::init(char key)
 {
     m_songStrRefFuncPtr = nullptr;
     switch (key) {
-        case 'a': m_songStrRefFuncPtr = &Song::artist;    break;
-        case 't': m_songStrRefFuncPtr = &Song::title;     break;
-        case 'b': m_songStrRefFuncPtr = &Song::album;     break;
-        case 'p': m_songStrRefFuncPtr = &Song::performer; break;
-        case 'y': m_songStrRefFuncPtr = &Song::date;      break;
-        case 'g': m_songStrRefFuncPtr = &Song::genre;     break;
-        case 'f': m_songStrRefFuncPtr = &Song::fileName;  break;
-        case 'F': m_songStrRefFuncPtr = &Song::url;       break;
+        case 'a': m_songStrRefFuncPtr = &Song::artist;      break;
+        case 'A': m_songStrRefFuncPtr = &Song::albumArtist; break;
+        case 't': m_songStrRefFuncPtr = &Song::title;       break;
+        case 'b': m_songStrRefFuncPtr = &Song::album;       break;
+        case 'p': m_songStrRefFuncPtr = &Song::performer;   break;
+        case 'c': m_songStrRefFuncPtr = &Song::composer;    break;
+        case 'y': m_songStrRefFuncPtr = &Song::date;        break;
+        case 'g': m_songStrRefFuncPtr = &Song::genre;       break;
+        case 'f': m_songStrRefFuncPtr = &Song::fileName;    break;
+        case 'F': m_songStrRefFuncPtr = &Song::url;         break;
 
         default: break;
     }

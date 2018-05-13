@@ -69,7 +69,7 @@ void SongInfoWindow::getSongInfo(const xmms2::Expected<xmms2::PropDict>& info)
     Song song;
     song.loadInfo(info.value());
     
-    const char songVariables[] = {'t', 'a', 'b', 'p', 'g', 'y', 'F', 'i', 'n', 'N', 'l', 'B', 'S'};
+    const char songVariables[] = {'t', 'a', 'A', 'b', 'p', 'c', 'g', 'y', 'F', 'i', 'n', 'N', 'l', 'B', 'S'};
     std::string text;
     text.append("<pre>");
     for (char var : songVariables) {

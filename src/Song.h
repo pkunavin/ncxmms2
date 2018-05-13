@@ -18,6 +18,7 @@
 #define SONG_H
 
 #include <string>
+#include "lib/StringRef.h"
 
 namespace ncxmms2 {
 
@@ -47,11 +48,27 @@ public:
     const std::string& title() const          {return m_title;}
     const std::string& artist() const         {return m_artist;}
     const std::string& album() const          {return m_album;}
+    const std::string& albumArtist() const    {return m_albumArtist;}
     const std::string& performer() const      {return m_performer;}
+    const std::string& composer() const       {return m_composer;}
     const std::string& date() const           {return m_date;}
     const std::string& genre() const          {return m_genre;}
     const std::string& url() const            {return m_url;}
     const std::string& fileName() const       {return m_fileName;}
+
+    enum class Tag
+    {
+        Title,
+        Artist,
+        Album,
+        AlbumArtist,
+        Year,
+        Genre,
+        Composer,
+        Performer
+    };
+
+    static StringRef getTagKey(Tag tag);
 
 private:
     int m_id;
@@ -63,7 +80,9 @@ private:
     std::string m_title;
     std::string m_artist;
     std::string m_album;
+    std::string m_albumArtist;
     std::string m_performer;
+    std::string m_composer;
     std::string m_date;
     std::string m_genre;
     std::string m_url;

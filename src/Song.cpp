@@ -28,12 +28,16 @@ void Song::loadInfo(const xmms2::PropDict& info)
     m_bitrate     = info.value<int>("bitrate"    , -1);
     m_samplerate  = info.value<int>("samplerate" , -1);
     
-    m_title     = info.value<StringRef>("title"    , "").c_str();
-    m_artist    = info.value<StringRef>("artist"   , "").c_str();
-    m_album     = info.value<StringRef>("album"    , "").c_str();
-    m_performer = info.value<StringRef>("performer", "").c_str();
-    m_date      = info.value<StringRef>("date"     , "").c_str();
-    m_genre     = info.value<StringRef>("genre"    , "").c_str();
+#define GET_STRING_TAG_VALUE(var, tag) var = info.value<StringRef>(getTagKey(Tag::tag).c_str(), "").c_str()
+    GET_STRING_TAG_VALUE(m_title,       Title);
+    GET_STRING_TAG_VALUE(m_artist,      Artist);
+    GET_STRING_TAG_VALUE(m_album,       Album);
+    GET_STRING_TAG_VALUE(m_albumArtist, AlbumArtist);
+    GET_STRING_TAG_VALUE(m_performer,   Performer);
+    GET_STRING_TAG_VALUE(m_composer,    Composer);
+    GET_STRING_TAG_VALUE(m_date,        Year);
+    GET_STRING_TAG_VALUE(m_genre,       Genre);
+#undef GET_STRING_TAG_VALUE
     
     m_url.clear();
     m_fileName.clear();
@@ -41,6 +45,23 @@ void Song::loadInfo(const xmms2::PropDict& info)
     if (!urlRef.isNull()) {
         m_url = xmms2::decodeUrl(urlRef.c_str());
         m_fileName = xmms2::getFileNameFromUrl(m_url);
+    }
+}
+
+StringRef Song::getTagKey(Song::Tag tag)
+{
+    switch (tag) {
+        case Tag::Title:       return "title";
+        case Tag::Artist:      return "artist";
+        case Tag::Album:       return "album";
+        case Tag::AlbumArtist: return "album_artist";
+        case Tag::Year:        return "date";
+        case Tag::Genre:       return "genre";
+        case Tag::Composer:    return "composer";
+        case Tag::Performer:   return "performer";
+        default:
+            assert(false);
+            return "";
     }
 }
 

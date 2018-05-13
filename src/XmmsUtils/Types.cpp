@@ -341,57 +341,6 @@ xmms2::Collection xmms2::Collection::universe()
     return Collection(xmmsc_coll_universe());
 }
 
-xmms2::Collection xmms2::Collection::allByArtist(const std::string& artist, const xmms2::Collection& source)
-{
-    if (artist.empty()) {
-        Collection hasArtist(Collection::Type::Has);
-        hasArtist.setAttribute("field", "artist");
-        hasArtist.addOperand(source);
-        
-        Collection hasNoArtist(Collection::Type::Complement);
-        hasNoArtist.addOperand(hasArtist);
-        
-        Collection collection(Collection::Type::Intersection);
-        collection.addOperand(hasNoArtist);
-        collection.addOperand(source);
-        return collection;
-    }
-    
-    Collection collection(Collection::Type::Equals);
-    collection.setAttribute("field", "artist");
-    collection.setAttribute("case-sensitive", "true");
-    collection.setAttribute("value", artist);
-    collection.addOperand(source);
-    return collection;
-}
-
-xmms2::Collection xmms2::Collection::albumByArtist(const std::string& artist, const std::string& album,
-                                                   const xmms2::Collection& source)
-{
-    Collection artistColl = allByArtist(artist, source);
-    
-    if (album.empty()) {
-        Collection hasAlbum(Collection::Type::Has);
-        hasAlbum.setAttribute("field", "album");
-        hasAlbum.addOperand(artistColl);
-        
-        Collection hasNoAlbum(Collection::Type::Complement);
-        hasNoAlbum.addOperand(hasAlbum);
-        
-        Collection collection(Collection::Type::Intersection);
-        collection.addOperand(hasNoAlbum);
-        collection.addOperand(artistColl);
-        return collection;
-    }
-   
-    Collection collection(Collection::Type::Equals);
-    collection.setAttribute("field", "album");
-    collection.setAttribute("case-sensitive", "true");
-    collection.setAttribute("value", album);
-    collection.addOperand(artistColl);
-    return collection;    
-}
-
 /* **************************************
    ************* Misc *******************
    ************************************** */
