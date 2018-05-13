@@ -99,7 +99,7 @@ void AlbumsListModel::refresh()
     m_albums.clear();
     
     const std::vector<std::string>    fetch = {"artist", "album"};
-    const std::vector<std::string>& groupBy = fetch;
+    const std::vector<std::string>& groupBy = {"album"};
     
     m_xmmsClient->collectionQueryInfos(getAlbumsCollection(), fetch, m_sortingOrder, groupBy)(
         &AlbumsListModel::getAlbumsList, this);
