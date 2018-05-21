@@ -14,10 +14,11 @@
  *  GNU General Public License for more details.
  */
 
-#ifndef ARTISTSLISTMODEL_H
-#define ARTISTSLISTMODEL_H
+#ifndef TAGVALUELISTMODEL_H
+#define TAGVALUELISTMODEL_H
 
 #include <vector>
+#include "../Song.h"
 #include "../XmmsUtils/Result.h"
 #include "../lib/ListModel.h"
 
@@ -27,12 +28,16 @@ namespace xmms2 {
 class Client;
 }
 
-class ArtistsListModel : public ListModel
+class TagValueListModel : public ListModel
 {
 public:
-    ArtistsListModel(xmms2::Client *xmmsClient, Object *parent = nullptr);
+    TagValueListModel(xmms2::Client *xmmsClient, Object *parent = nullptr);
 
-    const std::string& artist(int item) const;
+    void setTag(Song::Tag tag);
+
+    Song::Tag tag() const {return m_tag;}
+
+    const std::string& tagValue(int item) const;
 
     virtual void data(int item, ListModelItemData *itemData) const;
     virtual int itemsCount() const;
@@ -41,9 +46,11 @@ public:
 
 private:
     xmms2::Client *m_xmmsClient;
-    std::vector<std::string> m_artists;
-    void getArtistsList(const xmms2::Expected<xmms2::List<xmms2::Dict>>& list);
+    Song::Tag m_tag;
+    std::vector<std::string> m_tagValues;
+
+    void getTagValueList(const xmms2::Expected<xmms2::List<xmms2::Dict>>& list);
 };
 } // ncxmms2
 
-#endif // ARTISTSLISTMODEL_H
+#endif // TAGVALUELISTMODEL_H

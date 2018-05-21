@@ -18,6 +18,7 @@
 #define ALBUMSLISTMODEL_H
 
 #include <vector>
+#include "../Song.h"
 #include "../XmmsUtils/Result.h"
 #include "../lib/ListModel.h"
 
@@ -32,9 +33,12 @@ class AlbumsListModel : public ListModel
 public:
     AlbumsListModel(xmms2::Client *xmmsClient, Object *parent = nullptr);
 
-    void setArtist(const std::string& artist);
-    const std::string& artist() const;
+    void setFilterByTag(Song::Tag tag, const std::string & tagValue);
+
     const std::string& album(int item) const;
+
+    static xmms2::Collection getAlbumsCollection(Song::Tag tag, const std::string & tagValue);
+    xmms2::Collection getAlbumsCollection() const;
 
     const std::vector<std::string>& sortingOrder() const;
 
@@ -45,12 +49,20 @@ public:
 
 private:
     xmms2::Client *m_xmmsClient;
-    std::string m_artist;
-    std::vector<std::string> m_sortingOrder;
-    std::vector<std::string> m_albums;
 
-    void getAlbumsList(const std::string& artist,
-                       const xmms2::Expected<xmms2::List<xmms2::Dict>>& list);
+    Song::Tag m_filterTag;
+    std::string m_filterTagValue;
+
+    std::vector<std::string> m_sortingOrder;
+
+    struct AlnumData
+    {
+        std::string artist;
+        std::string album;
+    };
+    std::vector<AlnumData> m_albums;
+
+    void getAlbumsList(const xmms2::Expected<xmms2::List<xmms2::Dict>>& list);
 };
 } // ncxmms2
 

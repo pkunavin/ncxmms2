@@ -14,9 +14,7 @@
  *  GNU General Public License for more details.
  */
 
-#include <assert.h>
-
-#include "ArtistsListModel.h"
+#include "TagValueListModel.h"
 #include "../XmmsUtils/Client.h"
 #include "../Log.h"
 
@@ -24,58 +22,68 @@
 
 using namespace ncxmms2;
 
-ArtistsListModel::ArtistsListModel(xmms2::Client *xmmsClient, Object *parent) :
+TagValueListModel::TagValueListModel(xmms2::Client *xmmsClient, Object *parent) :
     ListModel(parent),
-    m_xmmsClient(xmmsClient)
+    m_xmmsClient(xmmsClient),
+    m_tag(Song::Tag::Artist)
 {
-    
+
 }
 
-const std::string& ArtistsListModel::artist(int item) const
+void TagValueListModel::setTag(Song::Tag tag)
 {
-    assert(item >= 0 && (size_t)item < m_artists.size());
-    return m_artists[item];
+    if (m_tag == tag)
+        return;
+    m_tag = tag;
+    m_tagValues.clear();
+    reset();
 }
 
-void ArtistsListModel::data(int item, ListModelItemData *itemData) const
+const std::string &TagValueListModel::tagValue(int item) const
 {
-    static const std::string unknownArtist = "Unknown artist";
-    itemData->textPtr = !m_artists[item].empty() ? &m_artists[item] : &unknownArtist;
+    assert(item >= 0 && (size_t)item < m_tagValues.size());
+    return m_tagValues[item];
 }
 
-int ArtistsListModel::itemsCount() const
+void TagValueListModel::data(int item, ListModelItemData *itemData) const
 {
-    return m_artists.size();
+    static const std::string unknown = "<Unknown>";
+    itemData->textPtr = !m_tagValues[item].empty() ? &m_tagValues[item] : &unknown;
 }
 
-void ArtistsListModel::refresh()
+int TagValueListModel::itemsCount() const
 {
-    m_artists.clear();
+    return m_tagValues.size();
+}
+
+void TagValueListModel::refresh()
+{
+    m_tagValues.clear();
     reset();
 
     const xmms2::Collection allMedia = xmms2::Collection::universe();
-    const std::vector<std::string>  fetch = {"artist"};
+    const std::vector<std::string>  fetch = {Song::getTagKey(m_tag).c_str()};
     const std::vector<std::string>& order = fetch;
     const std::vector<std::string>& groupBy = fetch;
 
-    m_xmmsClient->collectionQueryInfos(allMedia, fetch, order, groupBy)(&ArtistsListModel::getArtistsList, this);
+    m_xmmsClient->collectionQueryInfos(allMedia, fetch, order, groupBy)(&TagValueListModel::getTagValueList, this);
 }
 
-void ArtistsListModel::getArtistsList(const xmms2::Expected<xmms2::List<xmms2::Dict>>& list)
+void TagValueListModel::getTagValueList(const xmms2::Expected<xmms2::List<xmms2::Dict>> &list)
 {
     if (list.isError()) {
         NCXMMS2_LOG_ERROR("%s", list.error());
         return;
     }
-    
-    m_artists.clear();
+
+    m_tagValues.clear();
     for (auto it = list->getIterator(); it.isValid(); it.next()) {
         bool ok = false;
         xmms2::Dict dict = it.value(&ok);
         if (NCXMMS2_UNLIKELY(!ok))
             continue;
-        StringRef artist = dict.value<StringRef>("artist", "");
-        m_artists.emplace_back(artist.c_str());
+        StringRef artist = dict.value<StringRef>(Song::getTagKey(m_tag).c_str(), "");
+        m_tagValues.emplace_back(artist.c_str());
     }
     reset();
 }

@@ -57,9 +57,9 @@ set(SOURCES
     PlaylistView/PlaylistItemDelegate.cpp
 
     MedialibBrowser/MedialibBrowser.cpp
-    MedialibBrowser/ArtistsListModel.cpp
     MedialibBrowser/AlbumsListModel.cpp
     MedialibBrowser/SongsListModel.cpp
+    MedialibBrowser/TagValueListModel.cpp
 
     EqualizerWindow/EqualizerWindow.cpp
     EqualizerWindow/EqualizerBandsWindow.cpp

@@ -111,7 +111,7 @@ public:
     template <typename T>
     T value(const std::string& key, T defaultValue = T()) const
     {
-        return value<T>(key.c_str(), &defaultValue);
+        return value<T>(key.c_str(), defaultValue);
     }
     
     typedef std::function<void (StringRef,  Variant)> ForEachFunction;
@@ -354,9 +354,6 @@ public:
     int at(int index) const;
     
     static Collection universe();
-    static Collection allByArtist(const std::string& artist, const Collection& source = universe());
-    static Collection albumByArtist(const std::string& artist, const std::string& album,
-                                    const Collection& source = universe());
 
 private:
     friend class Client;

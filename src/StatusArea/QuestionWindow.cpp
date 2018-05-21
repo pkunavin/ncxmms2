@@ -14,6 +14,7 @@
  *  GNU General Public License for more details.
  */
 
+#include <glib.h>
 #include "QuestionWindow.h"
 
 #include "../lib/Painter.h"
@@ -32,11 +33,11 @@ QuestionWindow::QuestionWindow(int xPos, int yPos, int cols, Window *parent) :
     m_answerEdit->loadPalette("QuestionWindow");
 }
 
-void QuestionWindow::askQuestion(const std::string &question,
+void QuestionWindow::askQuestion(const std::string& question,
                                  const LineEdit::ResultCallback& answerCallback,
                                  const std::string& initialAnswer)
 {
-    m_question = question;
+    m_htmlParser.parse(question);
     m_answerEdit->edit(answerCallback, initialAnswer);
     adjustSize();
 }
@@ -49,8 +50,52 @@ void QuestionWindow::resizeChildren(const Size& size)
 
 void QuestionWindow::adjustSize()
 {
-    m_answerEdit->resize(Size(cols() - m_question.size(), lines()));
-    m_answerEdit->move(m_question.size(), 0);
+    int questionTextLength = calculateQuestionTextLength();
+    if (questionTextLength > cols())
+        questionTextLength = cols();
+
+    m_answerEdit->resize(Size(cols() - questionTextLength, lines()));
+    m_answerEdit->move(questionTextLength, 0);
+}
+
+int QuestionWindow::calculateQuestionTextLength() const
+{
+    int length = 0;
+    for (const auto & token : m_htmlParser) {
+        switch (token.type()) {
+            case HtmlParser::Token::Type::Text:
+                length += g_utf8_strlen(token.text().text().c_str(), token.text().text().size());
+                break;
+
+            case HtmlParser::Token::Type::Entity:
+                ++length;
+                break;
+
+            default:
+                break;
+        }
+    }
+    return length;
+}
+
+void QuestionWindow::applyHtmlTag(const HtmlParser::TokenTag& tag, Painter * painter)
+{
+    switch (tag.type()) {
+        case HtmlParser::TokenTag::Type::Bold:
+            painter->setBold(tag.isStartTag());
+            break;
+
+        case HtmlParser::TokenTag::Type::Underline:
+            painter->setUnderline(tag.isStartTag());
+            break;
+
+        case HtmlParser::TokenTag::Type::Blink:
+            painter->setBlink(tag.isStartTag());
+            break;
+
+        default:
+            break;
+    }
 }
 
 void QuestionWindow::paint(const Rectangle &rect)
@@ -58,7 +103,20 @@ void QuestionWindow::paint(const Rectangle &rect)
     NCXMMS2_UNUSED(rect);
 
     Painter painter(this);
-    painter.setBold(true);
-    painter.printString(m_question);
+    for (const auto & token : m_htmlParser) {
+        switch (token.type()) {
+            case HtmlParser::Token::Type::Text:
+                painter.printString(token.text().text());
+                break;
+
+            case HtmlParser::Token::Type::Entity:
+                painter.printChar(token.entity().character());
+                break;
+
+            case HtmlParser::Token::Type::Tag:
+                applyHtmlTag(token.tag(), &painter);
+                break;
+        }
+    }
     painter.flush();
 }

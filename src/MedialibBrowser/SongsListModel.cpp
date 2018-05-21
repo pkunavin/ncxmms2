@@ -32,14 +32,14 @@ SongsListModel::SongsListModel(xmms2::Client *xmmsClient, Object *parent) :
     m_sortingOrder = {"tracknr", "id"};
 }
 
-void SongsListModel::setAlbumByArtist(const std::string& artist, const std::string& album)
+void SongsListModel::setAlbum(xmms2::Collection albumsColl, const std::string& album)
 {
-    m_artist = artist;
+    m_albumsColl = make_unique<xmms2::Collection>(std::move(albumsColl));
     m_album = album;
     refresh();
 }
 
-int SongsListModel::id(int item) const
+int SongsListModel::songId(int item) const
 {
     assert(item >= 0 && (size_t)item < m_songs.size());
     return m_songs[item].id;
@@ -68,27 +68,55 @@ int SongsListModel::itemsCount() const
 
 void SongsListModel::refresh()
 {
-    xmms2::Collection songs = xmms2::Collection::albumByArtist(m_artist, m_album);
-    const std::vector<std::string> fetch = {"id", "title", "url"};
-    
-    m_xmmsClient->collectionQueryInfos(songs, fetch, m_sortingOrder)(
-        &SongsListModel::getSongsList, this, m_artist, m_album, std::placeholders::_1);
+    if (m_albumsColl) {
+        const std::vector<std::string> fetch = {"id", "title", "url"};
+        m_xmmsClient->collectionQueryInfos(getSongsCollection(), fetch, m_sortingOrder)(
+                    &SongsListModel::getSongsList, this, m_album, std::placeholders::_1);
+    }
     
     m_songs.clear();
     reset();
 }
 
-void SongsListModel::getSongsList(const std::string& artist,
-                                  const std::string& album,
-                                  const xmms2::Expected<xmms2::List<xmms2::Dict>>& list)
+xmms2::Collection SongsListModel::getSongsCollection(const xmms2::Collection& albumsColl, const std::string &album)
+{
+    if (album.empty()) {
+        xmms2::Collection hasAlbumColl(xmms2::Collection::Type::Has);
+        hasAlbumColl.setAttribute("field", "album");
+        hasAlbumColl.addOperand(albumsColl);
+
+        xmms2::Collection hasNoAlbumColl(xmms2::Collection::Type::Complement);
+        hasNoAlbumColl.addOperand(hasAlbumColl);
+
+        xmms2::Collection coll(xmms2::Collection::Type::Intersection);
+        coll.addOperand(hasNoAlbumColl);
+        coll.addOperand(albumsColl);
+        return coll;
+    }
+
+    xmms2::Collection coll(xmms2::Collection::Type::Equals);
+    coll.setAttribute("field", "album");
+    coll.setAttribute("case-sensitive", "true");
+    coll.setAttribute("value", album);
+    coll.addOperand(albumsColl);
+    return coll;
+}
+
+xmms2::Collection SongsListModel::getSongsCollection() const
+{
+    assert(m_albumsColl);
+    return getSongsCollection(*m_albumsColl, m_album);
+}
+
+void SongsListModel::getSongsList(const std::string& album, const xmms2::Expected<xmms2::List<xmms2::Dict>>& list)
 {
     if (list.isError()) {
-        StatusArea::showMessage("Failed to get songs of \"%s\":\"%s\": %s!", artist, album, list.error());
+        StatusArea::showMessage("Failed to get songs of \"%s\": %s!", album, list.error());
         NCXMMS2_LOG_ERROR("%s", list.error());
         return;
     }
     
-    if (artist != m_artist || album != m_album)
+    if (album != m_album)
         return;
 
     m_songs.clear();

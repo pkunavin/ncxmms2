@@ -27,26 +27,48 @@ using namespace ncxmms2;
 
 AlbumsListModel::AlbumsListModel(xmms2::Client *xmmsClient, Object *parent) :
     ListModel(parent),
-    m_xmmsClient(xmmsClient)
+    m_xmmsClient(xmmsClient),
+    m_filterTag(Song::Tag::Artist)
 {
-    m_sortingOrder = {"date", "album"};
+    m_sortingOrder = {"date", "artist", "album"};
 }
 
-void AlbumsListModel::setArtist(const std::string& artist)
+void AlbumsListModel::setFilterByTag(Song::Tag tag, const std::string& tagValue)
 {
-    m_artist = artist;
+    m_filterTag = tag;
+    m_filterTagValue = tagValue;
     refresh();
-}
-
-const std::string &AlbumsListModel::artist() const
-{
-    return m_artist;
 }
 
 const std::string& AlbumsListModel::album(int item) const
 {
     assert(item >= 0 && (size_t)item < m_albums.size());
-    return m_albums[item];
+    return m_albums[item].album;
+}
+
+xmms2::Collection AlbumsListModel::getAlbumsCollection(Song::Tag tag, const std::string& tagValue)
+{
+    xmms2::Collection allMedia = xmms2::Collection::universe();
+    if (tagValue.empty()) {
+        xmms2::Collection hasFilterTagColl(xmms2::Collection::Type::Has);
+        hasFilterTagColl.setAttribute("field", Song::getTagKey(tag).c_str());
+        hasFilterTagColl.addOperand(allMedia);
+
+        xmms2::Collection hasNoFilterTagColl(xmms2::Collection::Type::Complement);
+        hasNoFilterTagColl.addOperand(hasFilterTagColl);
+
+        xmms2::Collection coll(xmms2::Collection::Type::Intersection);
+        coll.addOperand(hasNoFilterTagColl);
+        coll.addOperand(allMedia);
+        return coll;
+    }
+
+    xmms2::Collection coll(xmms2::Collection::Type::Match); //NOTE: Don't khow why Type::Equals doesn't work
+    coll.setAttribute("field", Song::getTagKey(tag).c_str());
+    coll.setAttribute("case-sensitive", "true");
+    coll.setAttribute("value", tagValue);
+    coll.addOperand(allMedia);
+    return coll;
 }
 
 const std::vector<std::string>& AlbumsListModel::sortingOrder() const
@@ -56,8 +78,15 @@ const std::vector<std::string>& AlbumsListModel::sortingOrder() const
 
 void AlbumsListModel::data(int item, ListModelItemData *itemData) const
 {
-    static const std::string unknownAlbum = "Unknown album";
-    itemData->textPtr = !m_albums[item].empty() ? &m_albums[item] : &unknownAlbum;
+    static const std::string unknown = "<Unknown>";
+    if (m_filterTag == Song::Tag::Year || m_filterTag == Song::Tag::Genre) {
+        itemData->text.append("[");
+        itemData->text.append(!m_albums[item].artist.empty() ? m_albums[item].artist : unknown);
+        itemData->text.append("] ");
+        itemData->text.append(!m_albums[item].album.empty() ? m_albums[item].album : unknown);
+    } else {
+        itemData->textPtr = !m_albums[item].album.empty() ? &m_albums[item].album : &unknown;
+    }
 }
 
 int AlbumsListModel::itemsCount() const
@@ -69,27 +98,27 @@ void AlbumsListModel::refresh()
 {
     m_albums.clear();
     
-    xmms2::Collection albums = xmms2::Collection::allByArtist(m_artist);
-    const std::vector<std::string>    fetch = {"album"};
-    const std::vector<std::string>& groupBy = fetch;
+    const std::vector<std::string>    fetch = {"artist", "album"};
+    const std::vector<std::string>& groupBy = {"album"};
     
-    m_xmmsClient->collectionQueryInfos(albums, fetch, m_sortingOrder, groupBy)(
-        &AlbumsListModel::getAlbumsList, this, m_artist, std::placeholders::_1);
+    m_xmmsClient->collectionQueryInfos(getAlbumsCollection(), fetch, m_sortingOrder, groupBy)(
+        &AlbumsListModel::getAlbumsList, this);
     
     reset();
 }
 
-void AlbumsListModel::getAlbumsList(const std::string& artist,
-                                    const xmms2::Expected<xmms2::List<xmms2::Dict>>& list)
+xmms2::Collection AlbumsListModel::getAlbumsCollection() const
+{
+    return getAlbumsCollection(m_filterTag, m_filterTagValue);
+}
+
+void AlbumsListModel::getAlbumsList(const xmms2::Expected<xmms2::List<xmms2::Dict>>& list)
 {
     if (list.isError()) {
-        StatusArea::showMessage("Failed to get albums for \"%s\": %s!", artist, list.error());
+        StatusArea::showMessage("Failed to get albums %s!", list.error());
         NCXMMS2_LOG_ERROR("%s", list.error());
         return;
     }
-    
-    if (artist != m_artist)
-        return;
 
     m_albums.clear();
     for (auto it = list->getIterator(); it.isValid(); it.next()) {
@@ -97,8 +126,9 @@ void AlbumsListModel::getAlbumsList(const std::string& artist,
         xmms2::Dict dict = it.value(&ok);
         if (NCXMMS2_UNLIKELY(!ok))
             continue;
+        StringRef artist = dict.value<StringRef>("artist", "");
         StringRef album = dict.value<StringRef>("album", "");
-        m_albums.emplace_back(album.c_str());
+        m_albums.push_back({artist.c_str(), album.c_str()});
     }
     reset();
 }

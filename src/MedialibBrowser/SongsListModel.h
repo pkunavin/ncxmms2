@@ -32,9 +32,9 @@ class SongsListModel : public ListModel
 public:
     SongsListModel(xmms2::Client *xmmsClient, Object *parent = nullptr);
 
-    void setAlbumByArtist(const std::string& artist, const std::string& album);
+    void setAlbum(xmms2::Collection albumsColl, const std::string& album);
 
-    int id(int item) const;
+    int songId(int item) const;
     const std::string& title(int item) const;
 
     const std::vector<std::string>& sortingOrder() const;
@@ -44,9 +44,12 @@ public:
 
     virtual void refresh();
 
+    static xmms2::Collection getSongsCollection(const xmms2::Collection& albumsColl, const std::string& album);
+
 private:
     xmms2::Client *m_xmmsClient;
-    std::string m_artist;
+
+    std::unique_ptr<xmms2::Collection> m_albumsColl;
     std::string m_album;
 
     struct SongData
@@ -58,9 +61,9 @@ private:
     std::vector<std::string> m_sortingOrder;
     std::vector<SongData> m_songs;
 
-    void getSongsList(const std::string& artist,
-                      const std::string& album,
-                      const xmms2::Expected<xmms2::List<xmms2::Dict>>& list);
+    xmms2::Collection getSongsCollection() const;
+
+    void getSongsList(const std::string& album, const xmms2::Expected<xmms2::List<xmms2::Dict>>& list);
 };
 } // ncxmms2
 

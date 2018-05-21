@@ -97,10 +97,11 @@ HelpBrowser::HelpBrowser(const Rectangle& rect, Window *parent) :
     namespace MedialibBrowser = Hotkeys::Screens::MedialibBrowser;
     const KeyDescription medialibBrowserKeys[] =
     {
-        {"Play item in active playlist", KeyEvent::KeyEnter                      },
-        {"Add item to active playlist",  MedialibBrowser::AddItemToActivePlaylist},
-        {"Refresh",                      MedialibBrowser::Refresh                },
-        {"Show song info",               MedialibBrowser::ShowSongInfo           },
+        {"Play item in active playlist",    KeyEvent::KeyEnter                      },
+        {"Add item to active playlist",     MedialibBrowser::AddItemToActivePlaylist},
+        {"Refresh",                         MedialibBrowser::Refresh                },
+        {"Show song info",                  MedialibBrowser::ShowSongInfo           },
+        {"Change tag used for left column", MedialibBrowser::SetPrimaryTag          },
         {nullptr, 0}
     };
 
