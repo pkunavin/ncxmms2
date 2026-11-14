@@ -37,7 +37,8 @@ enum
 {
     RoleBarLow = Palette::RoleUser,
     RoleBarMid,
-    RoleBarHigh
+    RoleBarHigh,
+    RoleBarPeak
 };
 
 const float Pi = 3.14159265358979323846f;
@@ -54,6 +55,7 @@ const int BandFrequenciesNumber = sizeof(BandFrequencies) / sizeof(BandFrequenci
 const float SpectrumDynamicRangeDb = 60.0f;
 
 const char32_t FullBlock = 0x2588; // █
+const char32_t PeakMarker = 0x2500; // ─
 const char32_t PartialBlocks[] =
 {
     0,
@@ -119,6 +121,7 @@ VisualizerWindow::VisualizerWindow(const std::string& ipcPath, const Rectangle& 
     m_visualizationClient(new xmms2::VisualizationClient()),
     m_refreshTimer(new Timer(this)),
     m_fps(Settings::value("VisualizerScreen", "fps", 40)),
+    m_peakFalloff(Settings::value("VisualizerScreen", "peakFalloff", 40) / 100.0f),
     m_idleTicks(0),
     m_noDataTicks(0),
     m_gotData(false),
@@ -130,7 +133,8 @@ VisualizerWindow::VisualizerWindow(const std::string& ipcPath, const Rectangle& 
                 {
                     {"BarLow",  RoleBarLow },
                     {"BarMid",  RoleBarMid },
-                    {"BarHigh", RoleBarHigh}
+                    {"BarHigh", RoleBarHigh},
+                    {"BarPeak", RoleBarPeak}
                 });
 
     if (m_fps < 1)
@@ -138,10 +142,15 @@ VisualizerWindow::VisualizerWindow(const std::string& ipcPath, const Rectangle& 
     else if (m_fps > 120)
         m_fps = 120;
 
+    if (m_peakFalloff < 0.0f)
+        m_peakFalloff = 0.0f;
+
     m_leftHistory.assign(HistoryFrames, short(0));
     m_rightHistory.assign(HistoryFrames, short(0));
     m_leftBarHeights.assign(BandsNumber, 0.0f);
     m_rightBarHeights.assign(BandsNumber, 0.0f);
+    m_leftPeaks.assign(BandsNumber, 0.0f);
+    m_rightPeaks.assign(BandsNumber, 0.0f);
 
     m_window.resize(SpectrumFftSize);
     for (int i = 0; i < SpectrumFftSize; ++i) {
@@ -209,7 +218,8 @@ void VisualizerWindow::paint(const Rectangle& rect)
     }
 
     // Left channel is drawn in the left half of the screen, right channel in
-    // the right half. A small gap in the middle separates the two analyzers.
+    // the right half. All bands have the same width; the unused columns are
+    // left as empty space around the analyzers.
     const int centerGap = cols() >= 2 * BandsNumber + 2 ? 2 : 0;
     const int groupWidth = (cols() - centerGap) / 2;
     if (groupWidth <= 0) {
@@ -217,17 +227,29 @@ void VisualizerWindow::paint(const Rectangle& rect)
         return;
     }
 
-    const int rightStart = cols() - groupWidth;
-    for (int band = 0; band < BandsNumber; ++band) {
-        const int xBegin = band * groupWidth / BandsNumber;
-        const int xEnd = (band + 1) * groupWidth / BandsNumber;
-        const int slotWidth = xEnd - xBegin;
-        if (slotWidth <= 0)
-            continue;
+    int barGap = groupWidth >= 3 * BandsNumber ? 1 : 0;
+    int barWidth = (groupWidth - (BandsNumber - 1) * barGap) / BandsNumber;
+    if (barWidth <= 0) {
+        barGap = 0;
+        barWidth = groupWidth / BandsNumber;
+    }
+    if (barWidth <= 0) {
+        painter.flush();
+        return;
+    }
 
-        const int barWidth = slotWidth >= 3 ? slotWidth - 1 : slotWidth;
-        drawBar(painter, xBegin, barWidth, m_leftBarHeights[band], height);
-        drawBar(painter, rightStart + xBegin, barWidth, m_rightBarHeights[band], height);
+    const int usedWidth = BandsNumber * barWidth + (BandsNumber - 1) * barGap;
+    const int leftOffset = (groupWidth - usedWidth) / 2;
+    const int leftStart = leftOffset;
+    const int rightStart = cols() - groupWidth + leftOffset;
+    const int stride = barWidth + barGap;
+
+    for (int band = 0; band < BandsNumber; ++band) {
+        const int x = leftStart + band * stride;
+        drawBar(painter, x, barWidth, m_leftBarHeights[band],
+                m_leftPeaks[band], height);
+        drawBar(painter, rightStart + band * stride, barWidth,
+                m_rightBarHeights[band], m_rightPeaks[band], height);
     }
 
     if (m_showHint) {
@@ -261,6 +283,8 @@ void VisualizerWindow::showEvent()
         std::fill(m_rightHistory.begin(), m_rightHistory.end(), short(0));
         std::fill(m_leftBarHeights.begin(), m_leftBarHeights.end(), 0.0f);
         std::fill(m_rightBarHeights.begin(), m_rightBarHeights.end(), 0.0f);
+        std::fill(m_leftPeaks.begin(), m_leftPeaks.end(), 0.0f);
+        std::fill(m_rightPeaks.begin(), m_rightPeaks.end(), 0.0f);
         m_idleTicks = 0;
         m_noDataTicks = 0;
         m_gotData = false;
@@ -349,6 +373,10 @@ void VisualizerWindow::updateSpectrum()
            std::any_of(m_leftBarHeights.begin(), m_leftBarHeights.end(),
                        [](float level) {return level > 0.0f;})
         || std::any_of(m_rightBarHeights.begin(), m_rightBarHeights.end(),
+                       [](float level) {return level > 0.0f;})
+        || std::any_of(m_leftPeaks.begin(), m_leftPeaks.end(),
+                       [](float level) {return level > 0.0f;})
+        || std::any_of(m_rightPeaks.begin(), m_rightPeaks.end(),
                        [](float level) {return level > 0.0f;});
     if (!haveBars)
         return;
@@ -391,6 +419,8 @@ void VisualizerWindow::updateBarHeights(bool newData)
     }
 
     const float falloff = std::max(0.02f, 2.5f / m_fps);
+    const float peakFalloff = m_peakFalloff / m_fps;
+
     for (int band = 0; band < BandsNumber; ++band) {
         if (leftTargets[band] >= m_leftBarHeights[band])
             m_leftBarHeights[band] = leftTargets[band];
@@ -398,11 +428,23 @@ void VisualizerWindow::updateBarHeights(bool newData)
             m_leftBarHeights[band] = std::max(leftTargets[band],
                                               m_leftBarHeights[band] - falloff);
 
+        if (m_leftBarHeights[band] >= m_leftPeaks[band])
+            m_leftPeaks[band] = m_leftBarHeights[band];
+        else
+            m_leftPeaks[band] = std::max(m_leftBarHeights[band],
+                                         m_leftPeaks[band] - peakFalloff);
+
         if (rightTargets[band] >= m_rightBarHeights[band])
             m_rightBarHeights[band] = rightTargets[band];
         else
             m_rightBarHeights[band] = std::max(rightTargets[band],
                                                m_rightBarHeights[band] - falloff);
+
+        if (m_rightBarHeights[band] >= m_rightPeaks[band])
+            m_rightPeaks[band] = m_rightBarHeights[band];
+        else
+            m_rightPeaks[band] = std::max(m_rightBarHeights[band],
+                                          m_rightPeaks[band] - peakFalloff);
     }
 }
 
@@ -444,35 +486,52 @@ void VisualizerWindow::computeBandLevels(const short *samples, float *levels)
     }
 }
 
-void VisualizerWindow::drawBar(Painter& painter, int x, int width, float level, int height)
+void VisualizerWindow::drawBar(Painter& painter, int x, int width, float level,
+                               float peak, int height)
 {
-    if (width <= 0 || level <= 0.0f)
-        return;
+    if (width > 0 && level > 0.0f) {
+        int eighths = int(level * height * 8.0f + 0.5f);
+        if (eighths > 0) {
+            int fullCells = eighths / 8;
+            int partialCell = eighths % 8;
+            if (fullCells >= height) {
+                fullCells = height;
+                partialCell = 0;
+            }
 
-    int eighths = int(level * height * 8.0f + 0.5f);
-    if (eighths <= 0)
-        return;
+            for (int row = 0; row < fullCells; ++row) {
+                painter.setColor(barColor(row, height));
+                for (int dx = 0; dx < width; ++dx) {
+                    painter.move(x + dx, height - 1 - row);
+                    painter.printChar(FullBlock);
+                }
+            }
 
-    int fullCells = eighths / 8;
-    int partialCell = eighths % 8;
-    if (fullCells >= height) {
-        fullCells = height;
-        partialCell = 0;
-    }
-
-    for (int row = 0; row < fullCells; ++row) {
-        painter.setColor(barColor(row, height));
-        for (int dx = 0; dx < width; ++dx) {
-            painter.move(x + dx, height - 1 - row);
-            painter.printChar(FullBlock);
+            if (partialCell > 0) {
+                painter.setColor(barColor(fullCells, height));
+                for (int dx = 0; dx < width; ++dx) {
+                    painter.move(x + dx, height - 1 - fullCells);
+                    painter.printChar(PartialBlocks[partialCell]);
+                }
+            }
         }
     }
 
-    if (partialCell > 0) {
-        painter.setColor(barColor(fullCells, height));
-        for (int dx = 0; dx < width; ++dx) {
-            painter.move(x + dx, height - 1 - fullCells);
-            painter.printChar(PartialBlocks[partialCell]);
+    // Peak marker: a thin line that stays above the bar and falls down
+    // gradually.
+    if (m_peakFalloff > 0.0f && width > 0 && peak > level + 0.001f) {
+        int peakEighths = int(peak * height * 8.0f + 0.5f);
+        int peakCell = peakEighths / 8;
+        if (peakEighths % 8)
+            ++peakCell;
+        peakCell = std::min(peakCell, height - 1);
+
+        if (peakCell >= 0) {
+            painter.setColor(barPeakColor());
+            for (int dx = 0; dx < width; ++dx) {
+                painter.move(x + dx, height - 1 - peakCell);
+                painter.printChar(PeakMarker);
+            }
         }
     }
 }
@@ -484,6 +543,8 @@ void VisualizerWindow::stopWithError(const std::string& message)
     m_refreshTimer->stop();
     std::fill(m_leftBarHeights.begin(), m_leftBarHeights.end(), 0.0f);
     std::fill(m_rightBarHeights.begin(), m_rightBarHeights.end(), 0.0f);
+    std::fill(m_leftPeaks.begin(), m_leftPeaks.end(), 0.0f);
+    std::fill(m_rightPeaks.begin(), m_rightPeaks.end(), 0.0f);
     update();
 }
 
@@ -499,4 +560,12 @@ Color VisualizerWindow::barColor(int row, int height) const
     if (position < 0.8f)
         return palette.color(group, RoleBarMid, ColorYellow);
     return palette.color(group, RoleBarHigh, ColorRed);
+}
+
+Color VisualizerWindow::barPeakColor() const
+{
+    const Palette& palette = this->palette();
+    const Palette::ColorGroup group = hasFocus() ? Palette::GroupActive
+                                                  : Palette::GroupInactive;
+    return palette.color(group, RoleBarPeak, ColorWhite);
 }

@@ -58,6 +58,7 @@ private:
     std::unique_ptr<xmms2::VisualizationClient> m_visualizationClient;
     Timer *m_refreshTimer;
     int m_fps;
+    float m_peakFalloff;
     int m_idleTicks;
     int m_noDataTicks;
     bool m_gotData;
@@ -69,6 +70,8 @@ private:
     std::vector<float> m_window;
     std::vector<float> m_leftBarHeights;
     std::vector<float> m_rightBarHeights;
+    std::vector<float> m_leftPeaks;
+    std::vector<float> m_rightPeaks;
     std::vector<int> m_bandFirstBins;
     std::vector<int> m_bandLastBins;
 
@@ -77,9 +80,11 @@ private:
     void appendPcm(const short *pcm, int samples);
     void updateBarHeights(bool newData);
     void computeBandLevels(const short *samples, float *levels);
-    void drawBar(Painter& painter, int x, int width, float level, int height);
+    void drawBar(Painter& painter, int x, int width, float level, float peak,
+                 int height);
     void stopWithError(const std::string& message);
     Color barColor(int row, int height) const;
+    Color barPeakColor() const;
 };
 } // ncxmms2
 

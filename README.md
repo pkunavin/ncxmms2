@@ -99,6 +99,9 @@ Visualizer:
    The effect is applied when a playback stream is created, so restart playback
    after enabling it. The visualizer screen also shows a hint if it receives no
    data.
+ * Peak markers above the bars rise instantly to the maximum and fall down
+   gradually. Their falloff speed is set by the `peakFalloff` option in percent
+   of the full scale per second (`0` disables the markers).
  * Refresh rate can be changed with the `fps` option in the `[VisualizerScreen]`
    config section.
 

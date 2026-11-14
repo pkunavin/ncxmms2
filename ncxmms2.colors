@@ -29,10 +29,11 @@
 //  "StatusMessageWindow", "EqualizerBandsWindow", "EqualizerPreampWindow",
 //  "HelpBrowser", "SongInfoWindow".
 //
-// VisualizerWindow has three additional roles used to color the bars:
-//  "BarLow" - color of the bottom part of the bars,
-//  "BarMid" - color of the middle part of the bars,
-//  "BarHigh" - color of the top part of the bars.
+// VisualizerWindow has four additional roles used to color the bars:
+//  "BarLow"  - color of the bottom part of the bars,
+//  "BarMid"  - color of the middle part of the bars,
+//  "BarHigh" - color of the top part of the bars,
+//  "BarPeak" - color of the peak markers.
 {
    "Window":
     {
@@ -152,14 +153,16 @@
         {
             "BarLow"  : "Green",
             "BarMid"  : "Yellow",
-            "BarHigh" : "Red"
+            "BarHigh" : "Red",
+            "BarPeak" : "White"
         },
 
         "Inactive":
         {
             "BarLow"  : "Green",
             "BarMid"  : "Yellow",
-            "BarHigh" : "Red"
+            "BarHigh" : "Red",
+            "BarPeak" : "White"
         }
     }
 }
