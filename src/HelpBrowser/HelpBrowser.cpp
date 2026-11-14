@@ -38,6 +38,7 @@ HelpBrowser::HelpBrowser(const Rectangle& rect, Window *parent) :
         {"Medialib browser",          Hotkeys::Screens::MedialibBrowser::Activate       },
         {"Playlists browser",         Hotkeys::Screens::PlaylistsBrowser::Activate      },
         {"Equalizer",                 Hotkeys::Screens::Equalizer::Activate             },
+        {"Visualizer",                Hotkeys::Screens::Visualizer::Activate            },
         {nullptr, 0}
     };
 

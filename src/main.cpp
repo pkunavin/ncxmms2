@@ -80,7 +80,7 @@ int main(int argc, char **argv)
             }
         }
 
-        ncxmms2::Window *mainWindow = new ncxmms2::MainWindow(&xmmsClient);
+        ncxmms2::Window *mainWindow = new ncxmms2::MainWindow(&xmmsClient, ipcPath);
         ncxmms2::Application::setMainWindow(mainWindow);
         mainWindow->show();
         ncxmms2::Application::run();

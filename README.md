@@ -22,6 +22,7 @@ Currently supported features:
   * Medialib browser
   * Playlists browser
   * Equalizer
+  * Visualizer (audio spectrum)
 
 ## Key bindings
 Screens switching:
@@ -32,6 +33,7 @@ Screens switching:
  * `5` - Medialib browser
  * `6` - Playlists browser
  * `7` - Equalizer
+ * `8` - Visualizer
   
 Playback control:
  * `P` - Toggle
@@ -84,6 +86,21 @@ Medialib browser:
  * `space` - Add artist / album / song to active playlist
  * `enter` - Play artist / album / song in active playlist
  * `i` - Show song info
+
+Visualizer:
+ * The spectrum is displayed as 16 bands per channel: the left channel is drawn
+   in the left half of the screen and the right channel in the right half.
+ * The spectrum is rendered from PCM data provided by the XMMS2 visualization
+   subsystem. The `visualization` effect has to be enabled in the XMMS2 effect
+   chain, for example (use the first free `effect.order.N` slot):
+   ```
+   xmms2 server config effect.order.1 visualization
+   ```
+   The effect is applied when a playback stream is created, so restart playback
+   after enabling it. The visualizer screen also shows a hint if it receives no
+   data.
+ * Refresh rate can be changed with the `fps` option in the `[VisualizerScreen]`
+   config section.
 
 ## Settings
 For customization see ncxmms2.conf and ncxmms2.colors.

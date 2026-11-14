@@ -32,7 +32,7 @@ class StatusArea;
 class MainWindow : public Window
 {
 public:
-    explicit MainWindow(xmms2::Client *xmmsClient);
+    MainWindow(xmms2::Client *xmmsClient, const std::string& ipcPath);
     ~MainWindow();
 
     enum StackedWindows
@@ -44,6 +44,7 @@ public:
         StackedMedialibBrowser,
         StackedPlaylistsBrowser,
         StackedEqualizerWindow,
+        StackedVisualizerWindow,
         StackedSongInfoWindow
     };
 
