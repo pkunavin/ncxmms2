@@ -24,6 +24,7 @@
 #include "../FileSystemBrowser/LocalFileSystemBrowser.h"
 #include "../FileSystemBrowser/ServerSideBrowser.h"
 #include "../EqualizerWindow/EqualizerWindow.h"
+#include "../VisualizerWindow/VisualizerWindow.h"
 #include "../MedialibBrowser/MedialibBrowser.h"
 #include "../PlaylistsBrowser/PlaylistsBrowser.h"
 #include "../SongInfoWindow/SongInfoWindow.h"
@@ -40,7 +41,7 @@
 
 using namespace ncxmms2;
 
-MainWindow::MainWindow(xmms2::Client *xmmsClient) :
+MainWindow::MainWindow(xmms2::Client *xmmsClient, const std::string& ipcPath) :
     Window(Rectangle(0, 0, Application::terminalSize().cols(), Application::terminalSize().lines())),
     m_xmmsClient(xmmsClient)
 {
@@ -65,6 +66,7 @@ MainWindow::MainWindow(xmms2::Client *xmmsClient) :
         {StackedMedialibBrowser,   new MedialibBrowser       (m_xmmsClient, stackedSubWinRect, m_stackedWindow)},
         {StackedPlaylistsBrowser,  new PlaylistsBrowser      (m_xmmsClient, stackedSubWinRect, m_stackedWindow)},
         {StackedEqualizerWindow,   new EqualizerWindow       (m_xmmsClient, stackedSubWinRect, m_stackedWindow)},
+        {StackedVisualizerWindow,  new VisualizerWindow      (ipcPath, stackedSubWinRect, m_stackedWindow)},
         {StackedSongInfoWindow,    new SongInfoWindow        (m_xmmsClient, stackedSubWinRect, m_stackedWindow)}
     };
 
@@ -124,6 +126,10 @@ void MainWindow::keyPressedEvent(const KeyEvent& keyEvent)
 
         case Hotkeys::Screens::PlaylistsBrowser::Activate:
             setVisibleScreen(StackedPlaylistsBrowser);
+            break;
+
+        case Hotkeys::Screens::Visualizer::Activate:
+            setVisibleScreen(StackedVisualizerWindow);
             break;
             
         case Hotkeys::Playback::Toggle:

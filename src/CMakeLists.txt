@@ -21,6 +21,7 @@ set(SOURCES
     Log.cpp
 
     XmmsUtils/Client.cpp
+    XmmsUtils/VisualizationClient.cpp
     XmmsUtils/Types.cpp
     XmmsUtils/Result.cpp
 
@@ -64,6 +65,8 @@ set(SOURCES
     EqualizerWindow/EqualizerWindow.cpp
     EqualizerWindow/EqualizerBandsWindow.cpp
     EqualizerWindow/EqualizerPreampWindow.cpp
+
+    VisualizerWindow/VisualizerWindow.cpp
 
     SongInfoWindow/SongInfoWindow.cpp)
 

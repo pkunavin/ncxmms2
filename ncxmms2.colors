@@ -28,6 +28,11 @@
 //  "PlaybackProgressBar", "PlaybackStatusWindow", "QuestionWindow",
 //  "StatusMessageWindow", "EqualizerBandsWindow", "EqualizerPreampWindow",
 //  "HelpBrowser", "SongInfoWindow".
+//
+// VisualizerWindow has three additional roles used to color the bars:
+//  "BarLow" - color of the bottom part of the bars,
+//  "BarMid" - color of the middle part of the bars,
+//  "BarHigh" - color of the top part of the bars.
 {
    "Window":
     {
@@ -138,6 +143,23 @@
         "Inactive":
         {
             "Text" : "Default"
+        }
+    },
+
+    "VisualizerWindow":
+    {
+        "Active":
+        {
+            "BarLow"  : "Green",
+            "BarMid"  : "Yellow",
+            "BarHigh" : "Red"
+        },
+
+        "Inactive":
+        {
+            "BarLow"  : "Green",
+            "BarMid"  : "Yellow",
+            "BarHigh" : "Red"
         }
     }
 }

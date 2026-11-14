@@ -5,6 +5,15 @@
 # ctest.  You can select which tests to run using 'ctest -R regex'.
 # For more options, run 'ctest --help'.
 
+cmake_minimum_required(VERSION 3.10)
+
+# Google Test 1.7.0 optionally looks for FindPythonInterp, which was removed
+# in CMake 3.27. Python is only used for Google Test's own tests, so simply
+# use the new policy behavior.
+if(POLICY CMP0148)
+  cmake_policy(SET CMP0148 NEW)
+endif()
+
 option(gtest_disable_pthreads "Disable uses of pthreads in gtest." OFF)
 
 # Defines pre_project_set_up_hermetic_build() and set_up_hermetic_build().
@@ -25,7 +34,6 @@ endif()
 # ${gtest_BINARY_DIR}.
 # Language "C" is required for find_package(Threads).
 project(gtest CXX C)
-cmake_minimum_required(VERSION 2.6.2)
 
 if (COMMAND set_up_hermetic_build)
   set_up_hermetic_build()

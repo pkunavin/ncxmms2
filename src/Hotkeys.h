@@ -124,6 +124,13 @@ enum
 };
 }
 
+namespace Visualizer {
+enum
+{
+    Activate = '8'
+};
+}
+
 } // Screens
 } // Hotkeys
 } // ncxmms2
